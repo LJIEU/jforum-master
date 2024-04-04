@@ -1,7 +1,7 @@
 package com.liu.core.config;
 
-import com.liu.core.config.repeat.RepeatableFilter;
-import com.liu.core.config.xxs.XssFilter;
+import com.liu.core.fiter.RepeatableFilter;
+import com.liu.core.fiter.XssFilter;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
