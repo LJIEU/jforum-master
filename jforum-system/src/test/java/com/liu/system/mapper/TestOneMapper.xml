@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace等于mapper接口类的全限定名,这样实现对应 -->
+<mapper namespace="com.liu.system.mapper.TestOneMapper">
+    <resultMap id="TestOneMapperResult" type="com.liu.system.dao.TestOne">
+        <result property="oneId" column="one_id"/>
+        <result property="oneName" column="one_name"/>
+        <result property="age" column="age"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="selectTestOneVo">
+        select *
+        from test_one
+    </sql>
+    <insert id="insert" parameterType="com.liu.system.dao.TestOne">
+        insert into test_one
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="oneId != null">
+                one_id,
+            </if>
+            <if test="oneName != null and oneName.length() > 0">
+                one_name,
+            </if>
+            <if test="age != null">
+                age,
+            </if>
+            <if test="createBy != null and createBy.length() > 0">
+                create_by,
+            </if>
+            create_time
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="oneId != null">
+                #{oneId},
+            </if>
+            <if test="oneName != null and oneName.length() > 0">
+                #{oneName},
+            </if>
+            <if test="age != null">
+                #{age},
+            </if>
+            <if test="createBy != null and createBy.length() > 0">
+                #{createBy},
+            </if>
+            sysdate()
+        </trim>
+    </insert>
+    <update id="update" parameterType="com.liu.system.dao.TestOne">
+        update test_one
+        <trim prefix="set" suffixOverrides=",">
+            <if test="oneName != null and oneName.length() > 0">
+                one_name = #{oneName},
+            </if>
+            <if test="age != null">
+                age = #{age},
+            </if>
+            <if test="updateBy != null and updateBy.length() > 0">
+                update_by = #{updateBy},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            update_time = sysdate(),
+        </trim>
+        where one_id = #{oneId}
+    </update>
+
+    <delete id="deleteById" parameterType="String">
+        update test_one set is_delete = 1
+        where one_id;
+    </delete>
+
+    <select id="selectTestOneList" parameterType="com.liu.system.dao.TestOne"
+            resultMap="TestOneMapperResult">
+        <include refid="selectTestOneVo"/>
+        <where>
+            <if test="oneName != null and oneName.length() > 0">
+                <bind name="oneName" value="oneName + '%'"/>
+                and one_name like #{oneName}
+            </if>
+        </where>
+    </select>
+    <select id="selectTestOneByOneId" resultType="com.liu.system.dao.TestOne">
+        <include refid="selectTestOneVo"/>
+        <where>
+            one_id = #{oneId}
+        </where>
+    </select>
+</mapper>

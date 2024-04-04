@@ -1,0 +1,54 @@
+package ${packageName}.service.impl;
+
+import ${packageName}.dao.${ClassName};
+import ${packageName}.mapper.${ClassName}Mapper;
+import ${packageName}.service.${ClassName}Service;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+/**
+ * ${tableDesc}实际业务层 ${tableName}
+ *
+ * @author ${author}
+ * @since ${dateTime}
+ */
+@Service
+public class ${ClassName}ServiceImpl implements ${ClassName}Service {
+
+    @Autowired
+    private ${ClassName}Mapper $ClassName.toLowerCase()Mapper;
+
+    @Override
+    public List<${ClassName}> select${ClassName}List(${ClassName} $ClassName.toLowerCase())
+    {
+        return $ClassName.toLowerCase()Mapper.select${ClassName}List($ClassName.toLowerCase());
+    }
+
+    @Override
+    public ${ClassName} select${ClassName}By${pkColumn.capJavaField}(${pkColumn.javaType} ${pkColumn.javaField}) {
+        return $ClassName.toLowerCase()Mapper.select${ClassName}By${pkColumn.capJavaField}(${pkColumn.javaField});
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public int insert(${ClassName} $ClassName.toLowerCase())
+    {
+        return $ClassName.toLowerCase()Mapper.insert($ClassName.toLowerCase());
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public int update(${ClassName} $ClassName.toLowerCase())
+    {
+        return $ClassName.toLowerCase()Mapper.update($ClassName.toLowerCase());
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public int delete(${pkColumn.javaType}[] ${pkColumn.javaField}s) {
+        return $ClassName.toLowerCase()Mapper.deleteById(${pkColumn.javaField}s);
+    }
+}

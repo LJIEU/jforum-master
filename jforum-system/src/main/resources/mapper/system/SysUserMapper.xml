@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace等于mapper接口类的全限定名,这样实现对应 -->
+<mapper namespace="com.liu.system.mapper.SysUserMapper">
+    <resultMap id="SysUserMapperResult" type="com.liu.system.dao.SysUser">
+        <result property="userId" column="user_id"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="userName" column="user_name"/>
+        <result property="nickName" column="nick_name"/>
+        <result property="userType" column="user_type"/>
+        <result property="email" column="email"/>
+        <result property="phone" column="phone"/>
+        <result property="sex" column="sex"/>
+        <result property="avatar" column="avatar"/>
+        <result property="password" column="password"/>
+        <result property="status" column="status"/>
+        <result property="isDelete" column="is_delete"/>
+        <result property="loginIp" column="login_ip"/>
+        <result property="loginDate" column="login_date"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+    <sql id="selectSysUserVo">
+        select *
+        from sys_user
+    </sql>
+    <insert id="insert" parameterType="com.liu.system.dao.SysUser">
+        insert into sys_user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="deptId != null">
+                dept_id,
+            </if>
+            <if test="userName != null and userName.length() > 0">
+                user_name,
+            </if>
+            <if test="nickName != null and nickName.length() > 0">
+                nick_name,
+            </if>
+            <if test="userType != null and userType.length() > 0">
+                user_type,
+            </if>
+            <if test="email != null and email.length() > 0">
+                email,
+            </if>
+            <if test="phone != null and phone.length() > 0">
+                phone,
+            </if>
+            <if test="sex != null and sex.length() > 0">
+                sex,
+            </if>
+            <if test="avatar != null and avatar.length() > 0">
+                avatar,
+            </if>
+            <if test="password != null and password.length() > 0">
+                password,
+            </if>
+            <if test="status != null and status.length() > 0">
+                status,
+            </if>
+            <if test="isDelete != null and isDelete.length() > 0">
+                is_delete,
+            </if>
+            <if test="loginIp != null and loginIp.length() > 0">
+                login_ip,
+            </if>
+            <if test="loginDate != null">
+                login_date,
+            </if>
+            <if test="createBy != null and createBy.length() > 0">
+                create_by,
+            </if>
+            <if test="remark != null and remark.length() > 0">
+                remark,
+            </if>
+            create_time
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">
+                #{userId},
+            </if>
+            <if test="deptId != null">
+                #{deptId},
+            </if>
+            <if test="userName != null and userName.length() > 0">
+                #{userName},
+            </if>
+            <if test="nickName != null and nickName.length() > 0">
+                #{nickName},
+            </if>
+            <if test="userType != null and userType.length() > 0">
+                #{userType},
+            </if>
+            <if test="email != null and email.length() > 0">
+                #{email},
+            </if>
+            <if test="phone != null and phone.length() > 0">
+                #{phone},
+            </if>
+            <if test="sex != null and sex.length() > 0">
+                #{sex},
+            </if>
+            <if test="avatar != null and avatar.length() > 0">
+                #{avatar},
+            </if>
+            <if test="password != null and password.length() > 0">
+                #{password},
+            </if>
+            <if test="status != null and status.length() > 0">
+                #{status},
+            </if>
+            <if test="isDelete != null and isDelete.length() > 0">
+                #{isDelete},
+            </if>
+            <if test="loginIp != null and loginIp.length() > 0">
+                #{loginIp},
+            </if>
+            <if test="loginDate != null">
+                #{loginDate},
+            </if>
+            <if test="createBy != null and createBy.length() > 0">
+                #{createBy},
+            </if>
+            <if test="remark != null and remark.length() > 0">
+                #{remark},
+            </if>
+            sysdate()
+        </trim>
+    </insert>
+    <update id="update" parameterType="com.liu.system.dao.SysUser">
+        update sys_user
+        <trim prefix="set" suffixOverrides=",">
+            <if test="deptId != null">
+                dept_id = #{deptId},
+            </if>
+            <if test="userName != null and userName.length() > 0">
+                user_name = #{userName},
+            </if>
+            <if test="nickName != null and nickName.length() > 0">
+                nick_name = #{nickName},
+            </if>
+            <if test="userType != null and userType.length() > 0">
+                user_type = #{userType},
+            </if>
+            <if test="email != null and email.length() > 0">
+                email = #{email},
+            </if>
+            <if test="phone != null and phone.length() > 0">
+                phone = #{phone},
+            </if>
+            <if test="sex != null and sex.length() > 0">
+                sex = #{sex},
+            </if>
+            <if test="avatar != null and avatar.length() > 0">
+                avatar = #{avatar},
+            </if>
+            <if test="password != null and password.length() > 0">
+                password = #{password},
+            </if>
+            <if test="status != null and status.length() > 0">
+                status = #{status},
+            </if>
+            <if test="loginIp != null and loginIp.length() > 0">
+                login_ip = #{loginIp},
+            </if>
+            <if test="loginDate != null">
+                login_date = #{loginDate},
+            </if>
+            <if test="updateBy != null and updateBy.length() > 0">
+                update_by = #{updateBy},
+            </if>
+            <if test="remark != null and remark.length() > 0">
+                remark = #{remark},
+            </if>
+            update_time = sysdate(),
+        </trim>
+        where user_id = #{userId}
+    </update>
+    <update id="updateUserProfile">
+        update sys_user
+        set login_ip   = #{loginIp},
+            login_date = #{loginDate}
+        where user_id = #{userId}
+    </update>
+
+    <delete id="deleteById" parameterType="String">
+        update sys_user
+        set is_delete = 1
+        where user_id = #{userIds};
+    </delete>
+
+    <select id="selectSysUserList" parameterType="com.liu.system.dao.SysUser"
+            resultMap="SysUserMapperResult">
+        <include refid="selectSysUserVo"/>
+        <where>
+            <if test="userName != null and userName.length() > 0">
+                <bind name="userName" value="userName + '%'"/>
+                and user_name like #{userName}
+            </if>
+            <if test="nickName != null and nickName.length() > 0">
+                <bind name="nickName" value="nickName + '%'"/>
+                and nick_name like #{nickName}
+            </if>
+        </where>
+    </select>
+    <select id="selectSysUserByUserId" resultType="com.liu.system.dao.SysUser">
+        <include refid="selectSysUserVo"/>
+        <where>
+            user_id = #{userId}
+            and is_delete = 0
+        </where>
+    </select>
+    <select id="checkUserNameUnique" resultType="com.liu.system.dao.SysUser">
+        select user_id, user_name
+        from sys_user
+        where user_name = #{userName}
+          and is_delete = '0'
+        limit 1
+    </select>
+    <select id="selectSysUserByUserName" resultType="com.liu.system.dao.SysUser">
+        <include refid="selectSysUserVo"/>
+        <where>
+            user_name = #{userName}
+        </where>
+    </select>
+</mapper>

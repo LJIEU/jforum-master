@@ -1,0 +1,58 @@
+package ${packageName}.mapper;
+
+import ${packageName}.dao.${ClassName};
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
+
+/**
+ * ${tableDesc}接口层 ${tableName}
+ *
+ * @author ${author}
+ * @since ${dateTime}
+ */
+@Mapper
+public interface ${ClassName}Mapper {
+
+
+    /**
+     * 查询 ${tableDesc} 列表
+     *
+     * @param $ClassName.toLowerCase() 可以根据字段查询
+     * @return 返回 列表集合
+     */
+    List<${ClassName}> select${ClassName}List(${ClassName} $ClassName.toLowerCase());
+
+    /**
+     * 获取 ${tableDesc} 详细信息
+     *
+     * @param ${pkColumn.javaField} ${tableDesc}ID
+     * @return 返回${tableDesc}信息
+     */
+    ${ClassName} select${ClassName}By${pkColumn.capJavaField}(${pkColumn.javaType} ${pkColumn.javaField});
+
+    /**
+     * 新增 ${tableDesc}
+     *
+     * @param $ClassName.toLowerCase() ${tableDesc}
+     * @return 添加情况
+     */
+    int insert(${ClassName} $ClassName.toLowerCase());
+
+    /**
+     * 修改 ${tableDesc}
+     *
+     * @param $ClassName.toLowerCase() ${tableDesc}
+     * @return 修改情况
+     */
+    int update(${ClassName} $ClassName.toLowerCase());
+
+    /**
+     * 批量删除 ${tableDesc}
+     *
+     * @param ${pkColumn.javaField}s ${pkColumn.columnComment}列表
+     * @return 删除情况
+     */
+    int deleteById(@Param("${pkColumn.javaField}s") ${pkColumn.javaType}[] ${pkColumn.javaField}s);
+}

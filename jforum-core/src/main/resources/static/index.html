@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form method="post">
+    id:<input type="text" name="userId"><br>
+    userName:<input type="text" name="userName"><br>
+    age:<input type="text" name="age"><br>
+    <input type="button" value="提交" onclick="submitForm()">
+</form>
+<div id="result"></div>
+<script language="JavaScript">
+    function submitForm() {
+        const formData = {
+            "userId": document.getElementsByName("userId")[0].value,
+            "userName": document.getElementsByName("userName")[0].value,
+            "age": document.getElementsByName("age")[0].value,
+        };
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", "/test/test8", true);
+        xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        xhr.onreadystatechange = function () {
+            console.log(xhr.responseText)
+            var parse = JSON.parse(xhr.responseText);
+            console.log(parse)
+            document.getElementById('result').innerHTML = parse.data
+        }
+        xhr.send(JSON.stringify(formData))
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace等于mapper接口类的全限定名,这样实现对应 -->
+<mapper namespace="${packageName}.mapper.${ClassName}Mapper">
+    <resultMap id="${ClassName}MapperResult" type="${packageName}.dao.${ClassName}">
+        #foreach($column in $columns)
+            <result property="$column.javaField" column="$column.columnName"/>
+        #end
+    </resultMap>
+
+    <sql id="select${ClassName}Vo">
+        select *
+        from ${tableName}
+    </sql>
+    <insert id="insert" parameterType="${packageName}.dao.${ClassName}">
+        insert into ${tableName}
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            #foreach($column in $columns)
+                #if($column.columnName == "update_time"||$column.columnName == "update_by"||$column.columnName==
+                    "create_time")
+                #elseif($column.javaType == "String")
+                    <if test="$column.javaField != null and ${column.javaField}.length() > 0">
+                        $column.columnName,
+                    </if>
+                #else
+                    <if test="$column.javaField != null">
+                        $column.columnName,
+                    </if>
+                #end
+            #end
+            #if($sqlColumns.contains("create_time"))
+                create_time
+            #end
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            #foreach($column in $columns)
+                #if($column.columnName == "update_time"||$column.columnName == "update_by"||$column.columnName==
+                    "create_time")
+                #elseif($column.javaType == "String")
+                    <if test="$column.javaField != null and ${column.javaField}.length() > 0">
+                        #{$column.javaField},
+                    </if>
+                #else
+                    <if test="$column.javaField != null">
+                        #{$column.javaField},
+                    </if>
+                #end
+            #end
+            #if($sqlColumns.contains("create_time"))
+                sysdate()
+            #end
+        </trim>
+    </insert>
+    <update id="update" parameterType="${packageName}.dao.${ClassName}">
+        update ${tableName}
+        <trim prefix="set" suffixOverrides=",">
+            #foreach($column in $columns)
+                #if($column.columnName == "create_time"||$column.columnName ==
+                    "create_by"||$column.columnName=="is_delete"||$column.columnName=="update_time"||
+                    $column.columnName==$pkColumn.columnName)
+                #elseif($column.javaType == "String")
+                    <if test="$column.javaField != null and ${column.javaField}.length() > 0">
+                        $column.columnName = #{$column.javaField},
+                    </if>
+                #else
+                    <if test="$column.javaField != null">
+                        $column.columnName = #{$column.javaField},
+                    </if>
+                #end
+            #end
+            #if($sqlColumns.contains("update_time"))
+                update_time = sysdate(),
+            #end
+        </trim>
+        where ${pkColumn.columnName} = #{${pkColumn.javaField}}
+    </update>
+
+    <delete id="deleteById" parameterType="String">
+            #if(!$lackVolumns.contains("isDelete"))
+            update ${tableName} set is_delete = 1
+            where ${pkColumn.columnName} = #{${pkColumn.javaField}s};
+            #else
+            delete
+            from ${tableName} where ${pkColumn.columnName} = #{${pkColumn.javaField}s}
+            #end
+    </delete>
+
+    <select id="select${ClassName}List" parameterType="${packageName}.dao.${ClassName}"
+            resultMap="${ClassName}MapperResult">
+        <include refid="select${ClassName}Vo"/>
+        <where>
+            #foreach($column in $selectColumns)
+                #if($column.columnName=="is_delete")
+                    and is_delete = 0
+                #elseif($column.columnName=="password")
+                #elseif($column.javaType != "Long" && $column.javaType != "Integer" && $column.javaType != "BigDecimal")
+                    <if test="$column.javaField != null and ${column.javaField}.length() > 0">
+                        <bind name="$column.javaField" value="$column.javaField + '%'"/>
+                        and $column.columnName like #{$column.javaField}
+                    </if>
+                #else
+                    <if test="$column.javaField != null">
+                        and $column.columnName = #{$column.javaField}
+                    </if>
+                #end
+            #end
+        </where>
+    </select>
+    <select id="select${ClassName}By${pkColumn.capJavaField}" resultType="${packageName}.dao.${ClassName}">
+        <include refid="select${ClassName}Vo"/>
+        <where>
+            ${pkColumn.columnName} = #{${pkColumn.javaField}}
+            #if(!$lackVolumns.contains("isDelete"))
+                and is_delete = 0
+            #end
+        </where>
+    </select>
+</mapper>

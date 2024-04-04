@@ -1,0 +1,116 @@
+server:
+  port: 8080
+  servlet:
+    # 应用访问路径
+    context-path: /
+  tomcat:
+    # TomcatURI编码
+    uri-encoding: UTF-8
+    # 连接数满后的排队数 默认100
+    accept-count: 1000
+    # 线程数
+    threads:
+      max: 800  # 默认最大数 200
+      min-spare: 100 # 默认Tomcat启动初始化的线程数 10
+spring:
+  # 数据源配置
+  #  datasource:
+  #    type: com.alibaba.druid.pool.DruidDataSource
+  #    druid:
+  #      driver-class-name: com.mysql.cj.jdbc.Driver
+  #      url: jdbc:mysql://localhost:3306/test?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+  #      username: root
+  #      password: jie1234
+  profiles:
+    active: druid
+  # 资源信息
+  messages:
+    # 国际化资源文件路径
+    basename: i18n/messages
+    # 默认语言
+    default-language: zh_CN
+  #    default-language: en_US
+  # redis配置
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      database: 0 # 数据库索引
+      password:
+      connect-timeout: 10s # 连接超时
+      lettuce:
+        pool:
+          min-idle: 0 # 最小空闲连接
+          max-idle: 8 # 最大空闲连接
+          max-active: 8 # 最大数据库连接
+          max-wait: -1ms # 最大阻塞等待时间【负值表示没有限制】
+
+# Mybatis 配置
+mybatis:
+  # 搜索指定包 别名
+  type-aliases-package: com.liu.**.dao
+  # 配置 Mapper 扫描 查询所有 mapper.xml 映射文件
+  mapper-locations: classpath*:mapper/**/*.xml
+  # 加载全局配置文件
+  config-location: classpath:mybatis-config.xml
+
+# PageHelper 分页插件
+pagehelper:
+  helper-dialect: mysql
+  support-methods-arguments: true
+  params: count=countSql
+
+# Log 配置
+logging:
+  config: classpath:logback-spring.xml
+  level:
+    com.liu: info   # 以yaml中配置为主 如果没有配置那就是 与<logger> 标签中的 level 对应
+    org.springframework: info # 设置为 debug
+    org.springframework.web.servlet.handler.HandlerMappingIntrospector: OFF
+    org.springframework.security.web.DefaultSecurityFilterChain: OFF
+
+# springdoc-openapi项目配置
+springdoc:
+  default-flat-param-object: true
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    # 该参数是swagger默认的排序规则，如果设置为alpha，那么Knife4j提供的按照order排序的增强规则不生效
+    #    operations-sorter: alpha
+    operations-sorter: order
+#  api-docs:
+#    path: /v3/api-docs
+#  group-configs:
+#    - group: '所有模块'
+#      paths-to-match: '/**'
+#      packages-to-scan: com.liu
+#    - group: '代码生成'
+#      paths-to-match: '/tools/gen'
+#      packages-to-scan: com.liu
+#    - group: '功能测试'
+#      paths-to-match: '/test/**'
+#      packages-to-scan: com.liu
+## knife4j的增强配置，不需要增强可以不配
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
+#    swagger-model-name: 实体类列表
+
+# 代码生成器一些基础信息
+gen:
+  author: JIE
+  package-name: com.liu
+  module-name: system
+  auto-remove-pre: true
+  table-prefix: t_,s_
+
+# Token
+token:
+  header: authorization
+  key: 123!+[]abcd
+  expireTime: 60
+
+# 验证码类型 math->数学计算 | char->字符验证
+captchaType: math
+#captchaType: char

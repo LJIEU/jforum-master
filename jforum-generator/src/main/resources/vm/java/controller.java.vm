@@ -1,0 +1,146 @@
+package ${packageName}.controller;
+
+import ${packageName}.core.controller.BaseController;
+import ${packageName}.core.converter.TreeConverter;
+import ${packageName}.core.result.R;
+import ${packageName}.core.utils.ExcelUtil;
+import ${packageName}.core.utils.TreeUtils;
+import ${packageName}.dao.${ClassName};
+import ${packageName}.service.${ClassName}Service;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
+import java.util.List;
+
+/**
+ * ${tableDesc}控制层 ${tableName}
+ *
+ * @author ${author}
+ * @since ${dateTime}
+ */
+@Tag(name = "${functionName}")
+@RestController
+@RequestMapping("/system/$ClassName.toLowerCase()")
+public class ${ClassName}Controller extends BaseController {
+
+    @Autowired
+    private ${ClassName}Service $ClassName.toLowerCase()Service;
+
+    /**
+     * 查询 ${tableDesc} 列表
+     *
+     * @param pageNum   当前页码
+     * @param pageSize  页记录数
+     * @param sortRules 排序规则
+     * @param isDesc    是否逆序
+     * @param $ClassName.toLowerCase()  ${tableDesc}对象
+     * @return 返回 分页 查询结果
+     */
+    @Operation(summary = "分页查询")
+    @Parameters({
+            @Parameter(name = "pageNum" , description = "当前页" , example = "1"),
+            @Parameter(name = "pageSize" , description = "页大小" , example = "10"),
+            @Parameter(name = "sortRules" , description = "排序规则"),
+            @Parameter(name = "isDesc" , description = "是否逆序排序"),
+            @Parameter(name = "$ClassName.toLowerCase()" , description = "实体参数")
+    })
+    @GetMapping("/list")
+    public R<List<${ClassName}>> list(
+            @RequestParam(value = "pageNum" , defaultValue = "1") Integer pageNum,
+            @RequestParam(value = "pageSize" , defaultValue = "10") Integer pageSize,
+            @RequestParam(value = "sortRules" , defaultValue = "$pkColumn.columnName") String sortRules,
+            @RequestParam(value = "isDesc" , defaultValue = "false") Boolean isDesc,
+        ${ClassName} $ClassName.toLowerCase()) {
+        startPage(pageNum, pageSize, sortRules, isDesc);
+        // 获取到数据 进行整理[当前页码,页记录数,总页数,查询总条数,数据]
+        List<${ClassName}> list = $ClassName.toLowerCase()Service.select${ClassName}List($ClassName.toLowerCase());
+        clearPage();
+        return R.success(list);
+    }
+
+    #if($template == "tree")
+        /**
+         * 树型结构 数据
+         */
+        @Operation(summary = "获取树型结构")
+        @GetMapping("/tree")
+        public R<List<${ClassName}>> list(${ClassName} $ClassName.toLowerCase()) {
+            List<${ClassName}> list = $ClassName.toLowerCase()Service.select${ClassName}List($ClassName.toLowerCase());
+            // 整理成 树型结构
+            TreeConverter<${ClassName}> converter = new ${ClassName}Converter();
+            List<${ClassName}> treeList = TreeUtils.convertTree(list, converter);
+            if (CollUtil.isEmpty(treeList)) {
+                return R.success(list);
+            } else {
+                return R.success(treeList);
+            }
+        }
+    #end
+
+    /**
+     * 导出数据 Excel格式
+     */
+    @Operation(summary = "导出数据 Excel格式")
+    @GetMapping("/export")
+    public void export(HttpServletResponse response, ${ClassName} $ClassName.toLowerCase()) {
+        // 忽略字段
+        Set<String> excludeColumnFiledNames = new HashSet<>();
+        #foreach($item in $lackColumns)
+            excludeColumnFiledNames.add("$item");
+        #end
+        List<${ClassName}> list = $ClassName.toLowerCase()Service.select${ClassName}List($ClassName.toLowerCase());
+        ExcelUtil<${ClassName}> util = new ExcelUtil<>(${ClassName}. class);
+        util.exportExcel(response, list, "${tableDesc}数据" , excludeColumnFiledNames);
+    }
+
+
+    /**
+     * 获取 ${tableDesc} 详细信息
+     */
+    @Operation(summary = "根据ID获取详细信息")
+    @GetMapping("/{${pkColumn.javaField}}")
+    public R<${ClassName}> getInfo(
+            @Parameter(name = "${pkColumn.javaField}" , description = "ID" , in = ParameterIn.PATH)
+            @PathVariable("${pkColumn.javaField}") ${pkColumn.javaType} ${pkColumn.javaField}) {
+        return R.success($ClassName.toLowerCase()Service.select${ClassName}By${pkColumn.capJavaField}(${pkColumn.javaField}));
+    }
+
+
+    /**
+     * 新增 ${tableDesc}
+     */
+    @Operation(summary = "新增")
+    @PostMapping("/add")
+    public R<Integer> add(@RequestBody ${ClassName} $ClassName.toLowerCase()) {
+        return R.success($ClassName.toLowerCase()Service.insert($ClassName.toLowerCase()));
+    }
+
+
+    /**
+     * 修改 ${tableDesc}
+     */
+    @Operation(summary = "修改")
+    @PutMapping("/update")
+    public R<Integer> update(@RequestBody ${ClassName} $ClassName.toLowerCase()) {
+        return R.success($ClassName.toLowerCase()Service.update($ClassName.toLowerCase()));
+    }
+
+
+    /**
+     * 删除 ${tableDesc}
+     * /delete/1,2,3
+     */
+    @Operation(summary = "删除")
+    @DeleteMapping("/delete/{${pkColumn.javaField}s}")
+    public R<Integer> delete(@PathVariable("${pkColumn.javaField}s") ${pkColumn.javaType}[] ${pkColumn.javaField}s) {
+        return R.success($ClassName.toLowerCase()Service.delete(${pkColumn.javaField}s));
+    }
+
+
+}
