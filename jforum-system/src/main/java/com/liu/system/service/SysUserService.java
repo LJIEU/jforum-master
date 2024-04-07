@@ -70,4 +70,10 @@ public interface SysUserService {
      * @return 返回是否注册成功
      */
     boolean registerUser(SysUser sysUser);
+
+    /**
+     * 根据用户名获取用户信息
+     * @param username 用户名
+     */
+    SysUser getItemByUserName(String username);
 }

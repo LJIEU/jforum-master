@@ -7,6 +7,7 @@ import com.liu.core.config.xxs.XssRequestWrapper;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpMethod;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -77,6 +78,11 @@ public class XssFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
         log.debug("XSS filter [XSSFilter] starting");
+        // 如果是 GET 请求直接放行
+        if (isGetMethod((HttpServletRequest) request)) {
+            chain.doFilter(request, response);
+            return;
+        }
         // 判断uri是否包含项目名称
         String uriPath = ((HttpServletRequest) request).getRequestURI();
         if (isIgnorePath(uriPath)) {
@@ -89,6 +95,14 @@ public class XssFilter implements Filter {
             chain.doFilter(new XssRequestWrapper((HttpServletRequest) request, ignoreParamValueList), response);
         }
         log.debug("XSS filter [XSSFilter] stop");
+    }
+
+    /**
+     * 如果是 GET 请求直接放行
+     */
+    private boolean isGetMethod(HttpServletRequest request) {
+        String method = request.getMethod();
+        return method == null || HttpMethod.GET.matches(method);
     }
 
     @Override

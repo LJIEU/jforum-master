@@ -26,7 +26,7 @@ public interface SysRoleService {
      * @param roleId 角色ID
      * @return 返回角色信息信息
      */
-        SysRole selectSysRoleByRoleId(Long roleId);
+    SysRole selectSysRoleByRoleId(Long roleId);
 
     /**
      * 新增 角色信息
@@ -51,4 +51,13 @@ public interface SysRoleService {
      * @return 删除情况
      */
     int delete(Long[] roleIds);
+
+    /**
+     * 修改角色状态
+     *
+     * @param roleId 角色ID
+     * @param status 角色状态
+     */
+    void updateStatus(Long roleId, String status);
+
 }

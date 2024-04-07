@@ -10,8 +10,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Description: 登录
@@ -21,9 +25,9 @@ import org.springframework.web.bind.annotation.RestController;
  * @since 2024/04/03 18:54
  */
 @RestController
-@RequestMapping("/")
+@RequestMapping("/sys")
 @Tag(name = "登录模块")
-public class LoginController {
+public class SysLoginController {
 
     @Autowired
     private LoginService loginService;
@@ -33,15 +37,17 @@ public class LoginController {
 
     @Operation(summary = "登录")
     @PostMapping("/login")
-    public R<String> login(LoginBody loginBody) {
+    public R<Map<String, Object>> login(@RequestBody LoginBody loginBody) {
         // 生成令牌
-        String token = loginService.login(loginBody.getUsername(), loginBody.getPassword(), loginBody.getCode(), loginBody.getUuid());
-        return R.success(token);
+        String token = loginService.login(loginBody.getUsername(), loginBody.getPassword(), loginBody.getCaptchaCode(), loginBody.getUuid());
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("token", token);
+        return R.success(map);
     }
 
     @Operation(summary = "注册")
     @PostMapping("/register")
-    public R<String> register(RegisterBody registerBody) {
+    public R<String> register(@RequestBody RegisterBody registerBody) {
         if (!("true".equalsIgnoreCase(configService.selectConfigByKey("sys.account.register")))) {
             return R.fail("当前系统没有开启注册功能！");
         }

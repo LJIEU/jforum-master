@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -26,7 +25,7 @@ import java.net.UnknownHostException;
 @ComponentScan({"com.liu.core.*",
         "com.liu.generator.*",
         "com.liu.security.*"})
-@SpringBootApplication(exclude = {SecurityAutoConfiguration.class})
+@SpringBootApplication(exclude = {/*SecurityAutoConfiguration.class*/})
 @Slf4j
 public class SystemApplication {
     public static void main(String[] args) throws UnknownHostException {

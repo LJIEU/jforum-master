@@ -94,7 +94,7 @@ public class CaptchaController {
         } catch (IOException e) {
             return R.fail(e.getMessage());
         }
-        HashMap<String, String> result = new HashMap<>();
+        HashMap<String, String> result = new HashMap<>(2);
         result.put("uuid", uuid);
         result.put("img", "data:image/png;base64," + base64Code);
         return R.success(result);

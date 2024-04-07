@@ -9,7 +9,7 @@
 // * @version 1.0
 // * @since 2024/03/30 17:25
 // */
-//public class TableSupper {
+//public class TableSupport {
 //
 //    /**
 //     * 当前记录起始索引

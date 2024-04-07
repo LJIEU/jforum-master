@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace等于mapper接口类的全限定名,这样实现对应 -->
+<mapper namespace="com.liu.system.mapper.relation.SysRoleAndMenuMapper">
+
+    <resultMap id="SysMenuMapperResult" type="com.liu.system.dao.SysMenu">
+        <result property="menuId" column="menu_id"/>
+        <result property="menuName" column="menu_name"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="orderNum" column="order_num"/>
+        <result property="path" column="path"/>
+        <result property="component" column="component"/>
+        <result property="query" column="query"/>
+        <result property="isFrame" column="is_frame"/>
+        <result property="isCache" column="is_cache"/>
+        <result property="menuType" column="menu_type"/>
+        <result property="visible" column="visible"/>
+        <result property="status" column="status"/>
+        <result property="perms" column="perms"/>
+        <result property="icon" column="icon"/>
+        <result property="isDelete" column="is_delete"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+    <resultMap id="SysRoleMapperResult" type="com.liu.system.dao.SysRole">
+        <result property="roleId" column="role_id"/>
+        <result property="roleName" column="role_name"/>
+        <result property="roleKey" column="role_key"/>
+        <result property="roleSort" column="role_sort"/>
+        <result property="dataScope" column="data_scope"/>
+        <result property="menuCheckStrictly" column="menu_check_strictly"/>
+        <result property="deptCheckStrictly" column="dept_check_strictly"/>
+        <result property="status" column="status"/>
+        <result property="isDelete" column="is_delete"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+    <insert id="insert">
+        insert into sys_role_menu(`role_id`, `menu_id`)
+        values (#{roleId}, #{menuId})
+    </insert>
+
+    <select id="selectMenuListByRoleId" resultMap="SysMenuMapperResult">
+        SELECT m.*
+        FROM sys_menu AS m
+                 LEFT JOIN sys_role_menu as rm ON m.menu_id = rm.menu_id
+        where rm.role_id = #{roleId}
+          and m.is_delete = '0';
+    </select>
+    <select id="selectRoleByMenuId" resultMap="SysRoleMapperResult">
+        SELECT r.*
+        FROM sys_role AS r
+                 LEFT JOIN sys_role_menu as rm ON r.role_id = rm.role_id
+        where rm.menu_id = #{menuId}
+          and r.is_delete = '0';
+
+    </select>
+</mapper>

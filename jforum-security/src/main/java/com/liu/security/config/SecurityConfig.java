@@ -125,14 +125,14 @@ public class SecurityConfig {
                         // 过滤请求
                         .authorizeHttpRequests(auth -> auth
                                 // 匿名访问
-                                .requestMatchers("/test/index",
+                                .requestMatchers("/test/index","/**",
                                         "/test/test", "/test/test2", "/test/test3", "/test/test4", "/test/test5",
-                                        "/test/test8", "/test/test9/*",
-                                        "/login", "/register", "/captcha/*", "/gen/*").permitAll()
+                                        "/test/test8", "/test/test9/*","/gen/**",
+                                        "/captcha/**", "*/login", "*/register" ).permitAll()
                                 .requestMatchers(HttpMethod.GET, "/",
-                                        "**.htm", "**.html", "**.css", "**.js").anonymous()
-                                .requestMatchers("/swagger-ui/*",
-                                        "/swagger-resources/*", "/webjars/*", "/*/api-docs/*").anonymous()
+                                        "/**.htm", "/**.html", "/**.css", "/**.js").anonymous()
+                                .requestMatchers("/swagger-ui/**",
+                                        "/swagger-resources/**", "/webjars/**", "/*/api-docs/**").anonymous()
                                 .requestMatchers("/druid/**").anonymous()
                                 // 除了上面的请求 其他所有请求都需要鉴权认证
                                 .anyRequest().authenticated())

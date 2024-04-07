@@ -109,7 +109,7 @@ gen:
 token:
   header: authorization
   key: 123!+[]abcd
-  expireTime: 60
+  expireTime: 1440  # 60*24
 
 # 验证码类型 math->数学计算 | char->字符验证
 captchaType: math

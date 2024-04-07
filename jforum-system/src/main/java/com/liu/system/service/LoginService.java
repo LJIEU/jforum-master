@@ -6,6 +6,7 @@ import com.liu.core.constant.Constants;
 import com.liu.core.excption.ServiceException;
 import com.liu.core.excption.user.*;
 import com.liu.core.manager.AsyncManager;
+import com.liu.core.model.BaseUser;
 import com.liu.core.model.LoginUser;
 import com.liu.core.utils.IpUtils;
 import com.liu.core.utils.MessageUtils;
@@ -34,7 +35,7 @@ import java.util.Date;
  * @since 2024/04/03 19:06
  */
 @Service
-public class LoginService{
+public class LoginService {
 
     @Autowired
     private SysUserService userService;
@@ -85,6 +86,9 @@ public class LoginService{
         }
         AsyncManager.manager().execute(AsyncFactory.recordLoginLog(username, Constants.LOGIN_SUCCESS, MessageUtils.message("user.login.success")));
         LoginUser loginUser = (LoginUser) authentication.getPrincipal();
+        BaseUser baseUser = new BaseUser();
+        baseUser.setUsername(username);
+        loginUser.setUser(baseUser);
         recordLoginInfo(loginUser.getUserId());
         // 生成token
         return tokenService.createToken(loginUser);
@@ -174,7 +178,7 @@ public class LoginService{
         // 验证码开关
         boolean captchaEnabled = configService.selectCaptchaEnabled();
         if (captchaEnabled) {
-            validateCaptcha(username, registerBody.getCode(), registerBody.getUuid());
+            validateCaptcha(username, registerBody.getCaptchaCode(), registerBody.getUuid());
         }
 
         if (StringUtils.isEmpty(username)) {

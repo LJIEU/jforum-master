@@ -33,7 +33,7 @@ public class LoginBody {
     /**
      * 验证码
      */
-    private String code;
+    private String captchaCode;
 
     /**
      * 唯一标识

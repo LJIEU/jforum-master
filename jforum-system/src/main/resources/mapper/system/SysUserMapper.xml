@@ -229,7 +229,7 @@
     <select id="selectSysUserByUserName" resultType="com.liu.system.dao.SysUser">
         <include refid="selectSysUserVo"/>
         <where>
-            user_name = #{userName}
+            user_name = #{userName} and is_delete = '0'
         </where>
     </select>
 </mapper>

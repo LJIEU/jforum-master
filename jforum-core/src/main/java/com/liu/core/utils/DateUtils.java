@@ -13,7 +13,7 @@ import java.util.Date;
 public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
     // 一系列解析模式
     private static final String[] PARSE_PATTERNS = {
-            "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm", "yyyy-MM",
+            "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss", "yyyy-MM-ddHH:mm:ss", "yyyy-MM-dd HH:mm", "yyyy-MM",
             "yyyy/MM/dd", "yyyy/MM/dd HH:mm:ss", "yyyy/MM/dd HH:mm", "yyyy/MM",
             "yyyy/MM/dd HH/mm/ss",
             "yyyy.MM.dd", "yyyy.MM.dd HH:mm:ss", "yyyy.MM.dd HH:mm", "yyyy.MM",};

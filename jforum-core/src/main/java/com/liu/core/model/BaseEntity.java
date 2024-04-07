@@ -51,7 +51,7 @@ public class BaseEntity implements Serializable {
     @ExcelProperty(value = "创建时间")
     @Schema(description = "创建时间")
     @ColumnWidth(20) // 设置Excel表格中该属性为 20 像素宽度
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "GMT+8")
 //    @Future(message = "日期不在将来")
     private Date createTime;
 
@@ -67,7 +67,7 @@ public class BaseEntity implements Serializable {
      */
     @ExcelProperty(value = "更新时间")
     @Schema(description = "更新时间")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "GMT+8")
     @ColumnWidth(20)
 //    @Past(message = "日期不在将来")
     private Date updateTime;

@@ -1,5 +1,6 @@
 package com.liu.system.service.impl;
 
+import cn.hutool.core.util.StrUtil;
 import com.liu.system.dao.SysRole;
 import com.liu.system.mapper.SysRoleMapper;
 import com.liu.system.service.SysRoleService;
@@ -22,8 +23,7 @@ public class SysRoleServiceImpl implements SysRoleService {
     private SysRoleMapper sysroleMapper;
 
     @Override
-    public List<SysRole> selectSysRoleList(SysRole sysrole)
-    {
+    public List<SysRole> selectSysRoleList(SysRole sysrole) {
         return sysroleMapper.selectSysRoleList(sysrole);
     }
 
@@ -34,21 +34,36 @@ public class SysRoleServiceImpl implements SysRoleService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public int insert(SysRole sysrole)
-    {
+    public int insert(SysRole sysrole) {
         return sysroleMapper.insert(sysrole);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public int update(SysRole sysrole)
-    {
+    public int update(SysRole sysrole) {
         return sysroleMapper.update(sysrole);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public int delete(Long[] roleIds) {
-        return sysroleMapper.deleteById(roleIds);
+        int count = 0;
+        for (Long roleId : roleIds) {
+            sysroleMapper.deleteById(roleId);
+            count++;
+        }
+        return count;
     }
+
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateStatus(Long roleId, String status) {
+        if (roleId != null) {
+            if (StrUtil.isNotEmpty(status) && (status.equals("1") || status.equals("0"))) {
+                sysroleMapper.updateStatus(roleId, status);
+            }
+        }
+    }
+
 }

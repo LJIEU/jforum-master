@@ -78,6 +78,11 @@ public class SysUserServiceImpl implements SysUserService, BaseService<SysUser> 
         return sysuserMapper.insert(sysUser) > 0;
     }
 
+    @Override
+    public SysUser getItemByUserName(String username) {
+        return sysuserMapper.selectSysUserByUserName(username);
+    }
+
     /**
      * 根据用户名查询用户
      *

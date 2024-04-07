@@ -2,7 +2,6 @@ package com.liu.system.mapper;
 
 import com.liu.system.dao.SysRole;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -51,8 +50,16 @@ public interface SysRoleMapper {
     /**
      * 批量删除 角色信息
      *
-     * @param roleIds 角色ID列表
+     * @param roleId 角色ID
      * @return 删除情况
      */
-    int deleteById(@Param("roleIds") Long[] roleIds);
+    int deleteById(Long roleId);
+
+    /**
+     * 修改角色状态
+     *
+     * @param roleId 角色ID
+     * @param status 角色状态
+     */
+    void updateStatus(Long roleId, String status);
 }

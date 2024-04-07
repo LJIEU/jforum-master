@@ -1,5 +1,6 @@
 package com.liu.core.utils;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 /**
@@ -20,5 +21,18 @@ public class SecurityUtils {
     public static String encryptPassword(String password) {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         return passwordEncoder.encode(password);
+    }
+
+    /**
+     * 获取 当前登录用户的 用户名
+     */
+    public static String getCurrentUser(HttpServletRequest request) {
+        String username = "JIE123";
+        try {
+            username = request.getUserPrincipal().getName();
+        } catch (Exception ignored) {
+
+        }
+        return username;
     }
 }
