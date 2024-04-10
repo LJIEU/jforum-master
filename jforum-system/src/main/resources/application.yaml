@@ -44,6 +44,8 @@ spring:
           max-idle: 8 # 最大空闲连接
           max-active: 8 # 最大数据库连接
           max-wait: -1ms # 最大阻塞等待时间【负值表示没有限制】
+  jackson:
+    default-property-inclusion: non_null # JSON处理时忽略非空字段
 
 # Mybatis 配置
 mybatis:
@@ -64,11 +66,11 @@ pagehelper:
 logging:
   config: classpath:logback-spring.xml
   level:
-    com.liu: info   # 以yaml中配置为主 如果没有配置那就是 与<logger> 标签中的 level 对应
+    com.liu: debug   # 以yaml中配置为主 如果没有配置那就是 与<logger> 标签中的 level 对应
     org.springframework: info # 设置为 debug
+#    org.springframework.data.redis: debug
     org.springframework.web.servlet.handler.HandlerMappingIntrospector: OFF
     org.springframework.security.web.DefaultSecurityFilterChain: OFF
-
 # springdoc-openapi项目配置
 springdoc:
   default-flat-param-object: true

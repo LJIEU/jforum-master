@@ -8,7 +8,8 @@
 例如:  16:29:37.993    [main]     INFO  com.liu.Application - [logStartupProfileInfo,659] - The following 1 profile is active: "local"
     %d{HH:mm:ss.SSS} [%thread] %-5level %logger{20} - [%method,%line] - %msg%n
     -->
-    <property name="log.pattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS}:[%5p] [%t:%r] [%logger{50}.%M:%L] --> %highlight(%msg) %n}"/>
+<!--    <property name="log.pattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS}:[%5p] [%t:%r] [%logger{50}.%M:%L] &ndash;&gt; %highlight(%msg) %n}"/>-->
+    <property name="log.pattern" value="%boldMagenta(JIE控制台-) %red(%d{yyyy-MM-dd HH:mm:ss}) %green([%thread]) %highlight(%-5level) %yellow(%logger) - %cyan(%msg%n)"/>
 
     <!-- 控制台输出 -->
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">

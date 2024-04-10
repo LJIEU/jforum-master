@@ -136,7 +136,7 @@ public class LoginService {
         // IP黑名单校验
         String blackStr = configService.selectConfigByKey("sys.login.blackIPList");
         if (IpUtils.isMatchedIp(blackStr, IpUtils.getIpAddress())) {
-            AsyncManager.manager().execute(AsyncFactory.recordLoginLog(username, Constants.LOGIN_FAIL, MessageUtils.message("login.blocked")));
+            AsyncManager.manager().execute(AsyncFactory.recordLoginLog(username, Constants.LOGIN_FAIL, MessageUtils.message("user.login.blocked")));
             throw new BlackListException();
         }
     }

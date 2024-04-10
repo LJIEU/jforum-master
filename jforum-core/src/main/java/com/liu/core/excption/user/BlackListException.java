@@ -14,7 +14,7 @@ public class BlackListException extends UserException {
     private static final long serialVersionUID = -5043399062076909187L;
 
     public BlackListException() {
-        super("login.blocked" , null);
+        super("user.login.blocked", null);
     }
 
 }

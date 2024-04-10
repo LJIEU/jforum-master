@@ -35,27 +35,10 @@ public class MenuLevelConverter implements LevelConverter<SysMenu, MenuLevel> {
     }
 
     @Override
-    public List<SysMenu> getChildrenByD(SysMenu menu) {
-        return menu.getChildren();
-    }
-
-    @Override
     public List<MenuLevel> getChildrenByL(MenuLevel menuLevel) {
+        if (menuLevel.getChildren() == null) {
+            menuLevel.setChildren(new ArrayList<>());
+        }
         return menuLevel.getChildren();
-    }
-
-    @Override
-    public void setChildren(SysMenu menu, List<SysMenu> children) {
-        menu.setChildren(children);
-    }
-
-    @Override
-    public void setChildrenByL(MenuLevel level, List<MenuLevel> children) {
-        level.setChildren(children);
-    }
-
-    @Override
-    public int hashCode() {
-        return super.hashCode();
     }
 }

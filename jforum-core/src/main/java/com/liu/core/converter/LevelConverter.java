@@ -33,34 +33,10 @@ public interface LevelConverter<D, L> {
     Object getId(D parent);
 
     /**
-     * 获取 D类型 的子类
-     *
-     * @param parent D类型
-     * @return D的孩子节点
-     */
-    List<D> getChildrenByD(D parent);
-
-    /**
      * 获取 L类型 的子类
      *
      * @param parent L类型
      * @return L的孩子节点
      */
     List<L> getChildrenByL(L parent);
-
-    /**
-     * 设置值
-     *
-     * @param parent   父节点
-     * @param children 孩子列表
-     */
-    void setChildren(D parent, List<D> children);
-
-    /**
-     * 设置值
-     *
-     * @param parent   父节点
-     * @param children 孩子列表
-     */
-    void setChildrenByL(L parent, List<L> children);
 }
