@@ -62,22 +62,16 @@ public class SysMenu extends BaseEntity {
     @ExcelProperty(value = "路由参数")
     private String query;
     /**
-     * 是否为外链（0是 1否）
-     */
-    @Schema(description = "是否为外链（0是 1否）")
-    @ExcelProperty(value = "是否为外链（0是 1否）")
-    private Integer isFrame;
-    /**
      * 是否缓存（0缓存 1不缓存）
      */
     @Schema(description = "是否缓存（0缓存 1不缓存）")
     @ExcelProperty(value = "是否缓存（0缓存 1不缓存）")
     private Integer isCache;
     /**
-     * 菜单类型（M目录 C菜单 F按钮）
+     * 菜单类型（M目录 C菜单 F按钮 E外链）
      */
-    @Schema(description = "菜单类型（M目录 C菜单 F按钮）")
-    @ExcelProperty(value = "菜单类型（M目录 C菜单 F按钮）")
+    @Schema(description = "菜单类型（M目录 C菜单 F按钮 E外链）")
+    @ExcelProperty(value = "菜单类型（M目录 C菜单 F按钮 E外链）")
     private String menuType;
     /**
      * 菜单状态（0显示 1隐藏）
@@ -177,16 +171,6 @@ public class SysMenu extends BaseEntity {
         return query;
     }
 
-
-    public void setIsFrame(Integer isFrame) {
-        this.isFrame = isFrame;
-    }
-
-    public Integer getIsFrame() {
-        return isFrame;
-    }
-
-
     public void setIsCache(Integer isCache) {
         this.isCache = isCache;
     }
@@ -250,7 +234,6 @@ public class SysMenu extends BaseEntity {
                 .append("path" , getPath())
                 .append("component" , getComponent())
                 .append("query" , getQuery())
-                .append("isFrame" , getIsFrame())
                 .append("isCache" , getIsCache())
                 .append("menuType" , getMenuType())
                 .append("visible" , getVisible())

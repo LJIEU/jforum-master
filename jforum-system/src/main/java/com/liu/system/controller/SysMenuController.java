@@ -1,13 +1,16 @@
 package com.liu.system.controller;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjUtil;
 import com.github.pagehelper.PageInfo;
 import com.liu.core.controller.BaseController;
+import com.liu.core.converter.TreeConverter;
 import com.liu.core.result.R;
 import com.liu.core.utils.ExcelUtil;
 import com.liu.core.utils.SecurityUtils;
 import com.liu.core.utils.SpringUtils;
 import com.liu.core.utils.TreeUtils;
+import com.liu.system.converter.MenuVoConverter;
 import com.liu.system.converter.RoutesVoConverter;
 import com.liu.system.dao.SysMenu;
 import com.liu.system.dao.SysRole;
@@ -16,6 +19,7 @@ import com.liu.system.service.SysMenuService;
 import com.liu.system.service.SysUserService;
 import com.liu.system.service.relation.SysRoleAndMenuService;
 import com.liu.system.service.relation.SysUserAndRoleService;
+import com.liu.system.vo.MenuVo;
 import com.liu.system.vo.RoutesVo;
 import com.liu.system.vo.level.MenuLevel;
 import io.swagger.v3.oas.annotations.Operation;
@@ -82,7 +86,7 @@ public class SysMenuController extends BaseController {
         // 当前页面的总记录数
         int size = pageInfo.getSize();
         clearPage();
-        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>(3);
         // 整理数据
         map.put("list", list);
         map.put("total", total);
@@ -106,7 +110,7 @@ public class SysMenuController extends BaseController {
         SysRoleAndMenuService roleAndMenuService = SpringUtils.getBean(SysRoleAndMenuService.class);
         for (SysRole sysRole : roleByUserId) {
             List<SysMenu> menus = roleAndMenuService.selectMenuListByRoleId(sysRole.getRoleId()).stream()
-                    .filter(v -> v.getMenuType().equals("M") || v.getMenuType().equals("C")).collect(Collectors.toList());
+                    .filter(v -> "M".equals(v.getMenuType()) || "C".equals(v.getMenuType())).collect(Collectors.toList());
             for (SysMenu menu : menus) {
                 RoutesVo routesVo = new RoutesVo();
                 routesVo.setId(menu.getMenuId());
@@ -118,8 +122,7 @@ public class SysMenuController extends BaseController {
                 RoutesVo.Meta meta = new RoutesVo.Meta();
                 meta.setTitle(menu.getMenuName());
                 meta.setIcon(menu.getIcon());
-                meta.setHidden(menu.getVisible().equals("1"));
-                meta.setAffix(menu.getIsFrame() == 1);
+                meta.setHidden("1".equals(menu.getVisible()));
                 meta.setKeepAlive(menu.getIsCache() == 1);
                 meta.setBreadcrumb(false);
                 // 根据 菜单ID 获取对应的 角色列表
@@ -137,22 +140,6 @@ public class SysMenuController extends BaseController {
         return R.success(tree);
     }
 
-//    /**
-//     * 树型结构 数据
-//     */
-//    @Operation(summary = "获取树型结构")
-//    @GetMapping("/tree")
-//    public R<List<SysMenu>> list(SysMenu sysmenu) {
-//        List<SysMenu> list = sysmenuService.selectSysMenuList(sysmenu);
-//        // 整理成 树型结构
-//        TreeConverter<SysMenu> converter = new SysMenuConverter();
-//        List<SysMenu> treeList = TreeUtils.convertTree(list, converter);
-//        if (CollUtil.isEmpty(treeList)) {
-//            return R.success(list);
-//        } else {
-//            return R.success(treeList);
-//        }
-//    }
 
     /**
      * {
@@ -234,36 +221,80 @@ public class SysMenuController extends BaseController {
         util.exportExcel(response, list, "菜单权限数据", excludeColumnFiledNames);
     }
 
+    @Operation(summary = "获取菜单列表")
+    @GetMapping("/menusList")
+    public R<Object> menusList(
+            @Parameter(name = "status", description = "状态", in = ParameterIn.QUERY)
+            @RequestParam("status") String status,
+            @Parameter(name = "keywords", description = "关键词[菜单名称]", in = ParameterIn.QUERY)
+            @RequestParam("keywords") String keywords) {
+        List<SysMenu> sysMenuList = sysmenuService.selectSysMenuListByStatusOrKeywords(status, keywords);
+        List<MenuVo> data = sysMenuList.stream().map(this::menuToMenuVo).collect(Collectors.toList());
+        TreeConverter<MenuVo> converter = new MenuVoConverter();
+        List<MenuVo> treeMenuVo = TreeUtils.convertTree(data, converter);
+        // 如果 treeMenuVo 为空 说明没有根菜单  返回原始的数据即可
+        if (CollUtil.isNotEmpty(treeMenuVo) || treeMenuVo.size() != 0) {
+            return R.success(treeMenuVo);
+        }
+        return R.success(data);
+    }
 
     /**
      * 获取 菜单权限 详细信息
      */
     @Operation(summary = "根据ID获取详细信息")
     @GetMapping("/{menuId}")
-    public R<SysMenu> getInfo(
+    public R<MenuVo> getInfo(
             @Parameter(name = "menuId", description = "ID", in = ParameterIn.PATH)
             @PathVariable("menuId") Long menuId) {
-        return R.success(sysmenuService.selectSysMenuByMenuId(menuId));
+        SysMenu sysMenu = sysmenuService.selectSysMenuByMenuId(menuId);
+        return R.success(menuToMenuVo(sysMenu));
     }
 
 
     /**
      * 新增 菜单权限
      */
-    @Operation(summary = "新增")
+    @Operation(summary = "新增菜单")
     @PostMapping("/add")
-    public R<Integer> add(@RequestBody SysMenu sysmenu) {
-        return R.success(sysmenuService.insert(sysmenu));
+    public R<Integer> add(@RequestBody MenuVo menuVo, HttpServletRequest request) {
+        SysMenu sysMenu = menuVoToMenu(menuVo);
+        sysMenu.setCreateBy(SecurityUtils.getCurrentUser(request));
+        return R.success(sysmenuService.insert(sysMenu));
     }
 
 
     /**
      * 修改 菜单权限
      */
-    @Operation(summary = "修改")
+    @Operation(summary = "修改菜单")
     @PutMapping("/update")
-    public R<Integer> update(@RequestBody SysMenu sysmenu) {
-        return R.success(sysmenuService.update(sysmenu));
+    public R<Integer> update(@RequestBody MenuVo menuVo, HttpServletRequest request) {
+        SysMenu sysMenu = menuVoToMenu(menuVo);
+        sysMenu.setUpdateBy(SecurityUtils.getCurrentUser(request));
+        return R.success(sysmenuService.update(sysMenu));
+    }
+
+    /**
+     * 隐藏菜单
+     */
+    @Parameters({
+            @Parameter(name = "menuId", description = "菜单ID", in = ParameterIn.PATH),
+            @Parameter(name = "visible", description = "显示状态(0:显示,1:隐藏)", in = ParameterIn.QUERY)
+    })
+    @Operation(summary = "修改菜单显示状态")
+    @PutMapping("/update/{menuId}")
+    public R<Integer> update(
+            @PathVariable("menuId") Long menuId,
+            @RequestParam("visible") String visible,
+            HttpServletRequest request) {
+        SysMenu sysMenu = sysmenuService.selectSysMenuByMenuId(menuId);
+        if (sysMenu == null) {
+            return R.fail("菜单不存在!");
+        }
+        sysMenu.setVisible(visible);
+        sysMenu.setUpdateBy(SecurityUtils.getCurrentUser(request));
+        return R.success(sysmenuService.update(sysMenu));
     }
 
 
@@ -271,11 +302,52 @@ public class SysMenuController extends BaseController {
      * 删除 菜单权限
      * /delete/1,2,3
      */
-    @Operation(summary = "删除")
+    @Operation(summary = "删除菜单")
     @DeleteMapping("/delete/{menuIds}")
     public R<Integer> delete(@PathVariable("menuIds") Long[] menuIds) {
         return R.success(sysmenuService.delete(menuIds));
     }
 
+
+    private SysMenu menuVoToMenu(MenuVo menuVo) {
+        SysMenu sysMenu = new SysMenu();
+        sysMenu.setChildren(null);
+        sysMenu.setMenuId(menuVo.getId());
+        sysMenu.setMenuName(menuVo.getName());
+        sysMenu.setParentId(menuVo.getParentId());
+        sysMenu.setOrderNum(menuVo.getSort());
+        sysMenu.setPath(menuVo.getPath());
+        sysMenu.setComponent(menuVo.getComponent());
+        sysMenu.setQuery(menuVo.getRouting());
+        sysMenu.setIsCache(menuVo.getKeepAlive() == 1 ? 1 : 0);
+        sysMenu.setMenuType(menuVo.getType());
+        sysMenu.setVisible(menuVo.getVisible() == 0 ? "0" : "1");
+        sysMenu.setStatus(menuVo.getStatus());
+        sysMenu.setPerms(menuVo.getPerm());
+        sysMenu.setIcon(menuVo.getIcon());
+        sysMenu.setRemark(menuVo.getRemark());
+        return sysMenu;
+    }
+
+
+    private MenuVo menuToMenuVo(SysMenu menu) {
+        MenuVo menuVo = new MenuVo();
+        menuVo.setId(menu.getMenuId());
+        menuVo.setParentId(menu.getParentId());
+        menuVo.setName(menu.getMenuName());
+        menuVo.setType(menu.getMenuType());
+        menuVo.setPath(menu.getPath());
+        menuVo.setComponent(menu.getComponent());
+        menuVo.setPerm(menu.getPerms());
+        menuVo.setVisible("0".equals(menu.getVisible()) ? 0 : 1);
+        menuVo.setSort(menu.getOrderNum());
+        menuVo.setIcon(menu.getIcon());
+        menuVo.setKeepAlive(menu.getIsCache());
+        menuVo.setAlwaysShow(1);
+        menuVo.setStatus(menu.getStatus());
+        menuVo.setRemark(menu.getRemark());
+        menuVo.setRouting(menu.getQuery());
+        return menuVo;
+    }
 
 }

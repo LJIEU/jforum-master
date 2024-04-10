@@ -2,7 +2,6 @@ package com.liu.system.mapper;
 
 import com.liu.system.dao.SysMenu;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -51,8 +50,8 @@ public interface SysMenuMapper {
     /**
      * 批量删除 菜单权限
      *
-     * @param menuIds 菜单ID列表
+     * @param menuId 菜单ID
      * @return 删除情况
      */
-    int deleteById(@Param("menuIds") Long[] menuIds);
+    int deleteById(Long menuId);
 }

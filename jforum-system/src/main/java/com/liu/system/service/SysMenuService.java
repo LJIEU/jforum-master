@@ -26,7 +26,7 @@ public interface SysMenuService {
      * @param menuId 菜单ID
      * @return 返回菜单权限信息
      */
-        SysMenu selectSysMenuByMenuId(Long menuId);
+    SysMenu selectSysMenuByMenuId(Long menuId);
 
     /**
      * 新增 菜单权限
@@ -51,4 +51,13 @@ public interface SysMenuService {
      * @return 删除情况
      */
     int delete(Long[] menuIds);
+
+    /**
+     * 根据状态 或 关键词 查询菜单列表
+     *
+     * @param status   状态
+     * @param keywords 关键词
+     * @return 菜单集合
+     */
+    List<SysMenu> selectSysMenuListByStatusOrKeywords(String status, String keywords);
 }
