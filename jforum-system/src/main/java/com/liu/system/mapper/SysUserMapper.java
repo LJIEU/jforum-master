@@ -2,7 +2,6 @@ package com.liu.system.mapper;
 
 import com.liu.system.dao.SysUser;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -49,12 +48,12 @@ public interface SysUserMapper {
     int update(SysUser sysuser);
 
     /**
-     * 批量删除 用户信息
+     * 删除 用户信息
      *
-     * @param userIds 用户ID列表
+     * @param userId 用户ID
      * @return 删除情况
      */
-    int deleteById(@Param("userIds") Long[] userIds);
+    int deleteById(Long userId);
 
     /**
      * 更新用户 IP信息

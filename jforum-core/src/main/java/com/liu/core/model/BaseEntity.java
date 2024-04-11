@@ -84,7 +84,7 @@ public class BaseEntity implements Serializable {
      * 是否删除
      */
     @Schema(description = "逻辑删除")
-    @ExcelProperty(value = "删除",converter = IsDeleteConverter.class)
+    @ExcelProperty(value = "删除", converter = IsDeleteConverter.class)
     private Integer isDelete;
 
     /**

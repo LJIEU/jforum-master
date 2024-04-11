@@ -53,7 +53,14 @@ public class SysUserServiceImpl implements SysUserService, BaseService<SysUser> 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public int delete(Long[] userIds) {
-        return sysuserMapper.deleteById(userIds);
+        int count = 0;
+        for (Long userId : userIds) {
+            sysuserMapper.deleteById(userId);
+            count++;
+        }
+
+        // TODO 2024/4/11/16:43 这里用户角色关联表也需要删除
+        return count;
     }
 
     @Override

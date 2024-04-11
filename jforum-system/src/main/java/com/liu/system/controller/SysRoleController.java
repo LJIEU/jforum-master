@@ -9,6 +9,7 @@ import com.liu.system.dao.SysRole;
 import com.liu.system.service.SysRoleService;
 import com.liu.system.service.relation.SysRoleAndMenuService;
 import com.liu.system.vo.RoleVo;
+import com.liu.system.vo.level.Level;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -136,6 +137,22 @@ public class SysRoleController extends BaseController {
             @PathVariable("roleId") Long roleId) {
         List<Long> menusId = roleAndMenuService.selectMenuListByRoleId(roleId).stream().map(SysMenu::getMenuId).collect(Collectors.toList());
         return R.success(menusId);
+    }
+
+
+    /**
+     * 获取 角色 下拉列表
+     */
+    @Operation(summary = "获取 角色 下拉列表")
+    @GetMapping("/options")
+    public R<List<Level>> options() {
+        List<Level> result = sysroleService.selectSysRoleList(null).stream().map(v -> {
+            Level level = new Level();
+            level.setValue(v.getRoleId());
+            level.setLabel(v.getRoleName());
+            return level;
+        }).collect(Collectors.toList());
+        return R.success(result);
     }
 
 

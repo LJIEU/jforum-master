@@ -1,4 +1,4 @@
-package com.liu.system.converter;
+package com.liu.system.converter.level;
 
 import com.liu.core.converter.LevelConverter;
 import com.liu.system.dao.SysMenu;

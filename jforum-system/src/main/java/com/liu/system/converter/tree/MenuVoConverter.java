@@ -1,4 +1,4 @@
-package com.liu.system.converter;
+package com.liu.system.converter.tree;
 
 import com.liu.core.converter.TreeConverter;
 import com.liu.system.vo.MenuVo;

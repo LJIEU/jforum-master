@@ -192,10 +192,10 @@
         where user_id = #{userId}
     </update>
 
-    <delete id="deleteById" parameterType="String">
+    <delete id="deleteById">
         update sys_user
         set is_delete = 1
-        where user_id = #{userIds};
+        where user_id = #{userId};
     </delete>
 
     <select id="selectSysUserList" parameterType="com.liu.system.dao.SysUser"

@@ -1,10 +1,10 @@
 package com.liu.system.vo;
 
-import com.liu.system.dao.SysRole;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Description:
@@ -16,16 +16,13 @@ import java.util.List;
 @Accessors(chain = true)
 @Data
 public class UserInfo {
-    private String loginTenantId;
-
     private Long userId;
     private String username;
     private String nickname;
     private Long deptId;
     private String avatar;
-    private String homePath;
-    private String tenantId;
-    private List<SysRole> roleInfo;
+    private List<String> roles;
+    private Set<String> perms;
     /*链式编程 和 构造器原理*/
 /*
 

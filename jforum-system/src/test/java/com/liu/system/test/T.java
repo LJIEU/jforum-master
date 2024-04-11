@@ -4,7 +4,7 @@ import cn.hutool.json.JSONUtil;
 import com.liu.core.config.redis.RedisCache;
 import com.liu.core.converter.LevelConverter;
 import com.liu.core.utils.LevelUtils;
-import com.liu.system.converter.MenuLevelConverter;
+import com.liu.system.converter.level.MenuLevelConverter;
 import com.liu.system.dao.SysMenu;
 import com.liu.system.dao.SysUser;
 import com.liu.system.service.SysMenuService;
