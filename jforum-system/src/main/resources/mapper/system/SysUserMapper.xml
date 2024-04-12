@@ -201,25 +201,31 @@
     <select id="selectSysUserList" parameterType="com.liu.system.dao.SysUser"
             resultMap="SysUserMapperResult">
         <include refid="selectSysUserVo"/>
-
         <where>
             <if test="userName != null and userName.length() > 0">
                 <bind name="userName" value="userName + '%'"/>
-                or user_name like #{userName}
+                and user_name like #{userName}
             </if>
             <if test="nickName != null and nickName.length() > 0">
                 <bind name="nickName" value="nickName + '%'"/>
-                or nick_name like #{nickName}
+                and nick_name like #{nickName}
             </if>
             <if test="phone != null and phone.length() > 0">
                 <bind name="phone" value="phone + '%'"/>
-                or phone like #{phone}
+                and phone like #{phone}
             </if>
             <if test="status != null and status.length() > 0">
                 and `status` = #{status}
             </if>
             <if test="deptId != null">
                 and `dept_id` = #{deptId}
+            </if>
+            <!--如果要使用 param 必须要初始化并赋值-->
+            <if test="params.startTime != null"><!-- 开始时间检索 -->
+                AND date_format(create_time,'%y%m%d') &gt;= date_format(#{params.startTime},'%y%m%d')
+            </if>
+            <if test="params.endTime != null"><!-- 结束时间检索 -->
+                AND date_format(create_time,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
             </if>
             and `is_delete` = '0'
         </where>

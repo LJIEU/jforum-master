@@ -3,6 +3,7 @@ package com.liu.core.model;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.alibaba.excel.annotation.write.style.ColumnWidth;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.liu.core.converter.IsDeleteConverter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -11,6 +12,7 @@ import org.hibernate.validator.constraints.Length;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Map;
 
 /**
  * Description: 基类 --》 实体类
@@ -87,9 +89,10 @@ public class BaseEntity implements Serializable {
     @ExcelProperty(value = "删除", converter = IsDeleteConverter.class)
     private Integer isDelete;
 
+
     /**
      * 请求参数
      */
-//    @JsonInclude(JsonInclude.Include.NON_EMPTY)
-//    private Map<String, Object> params;
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    private Map<String, Object> params;
 }

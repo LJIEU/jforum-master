@@ -4,6 +4,7 @@ package com.liu.system.controller;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.StrUtil;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.github.pagehelper.PageInfo;
 import com.liu.core.controller.BaseController;
 import com.liu.core.result.R;
@@ -82,8 +83,10 @@ public class SysUserController extends BaseController {
             @RequestParam(value = "deptId", required = false) Long deptId,
             @RequestParam(value = "status", required = false) Long status,
             @RequestParam(value = "sortRules", defaultValue = "user_id") String sortRules,
-            @RequestParam(value = "startTime", required = false) String startTime,
-            @RequestParam(value = "endTime", required = false) String endTime,
+            @RequestParam(value = "startTime", required = false) @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
+                    Date startTime,
+            @RequestParam(value = "endTime", required = false) @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
+                    Date endTime,
             @RequestParam(value = "isDesc", defaultValue = "false") Boolean isDesc,
             @RequestParam(value = "keywords", required = false) String keywords) {
         startPage(pageNum, pageSize, sortRules, isDesc);
@@ -97,9 +100,12 @@ public class SysUserController extends BaseController {
         if (StrUtil.isNotEmpty(keywords)) {
             user.setUserName(keywords);
             user.setNickName(keywords);
-            user.setPassword(keywords);
         }
-        // TODO 2024/4/12/21:05 对于时间区间还未完成....  状态、关键词搜索 有些问题 如果关键词有内容状态为1 则会出现以关键词为准的数据 这个是因为关键词数据时以 or 查询的 or .. and .. 不管怎么样都会有数据
+        HashMap<String, Object> param = new HashMap<>(2);
+        param.put("startTime", startTime);
+        param.put("endTime", endTime);
+        user.setParams(param);
+        // 2024/4/12/21:05 对于时间区间还未完成....  状态、关键词搜索 有些问题 如果关键词有内容状态为1 则会出现以关键词为准的数据 这个是因为关键词数据时以 or 查询的 or .. and .. 不管怎么样都会有数据
 
         // 获取到数据 进行整理[当前页码,页记录数,总页数,查询总条数,数据]
         List<SysUser> list = sysuserService.selectSysUserList(user);
