@@ -201,15 +201,27 @@
     <select id="selectSysUserList" parameterType="com.liu.system.dao.SysUser"
             resultMap="SysUserMapperResult">
         <include refid="selectSysUserVo"/>
+
         <where>
             <if test="userName != null and userName.length() > 0">
                 <bind name="userName" value="userName + '%'"/>
-                and user_name like #{userName}
+                or user_name like #{userName}
             </if>
             <if test="nickName != null and nickName.length() > 0">
                 <bind name="nickName" value="nickName + '%'"/>
-                and nick_name like #{nickName}
+                or nick_name like #{nickName}
             </if>
+            <if test="phone != null and phone.length() > 0">
+                <bind name="phone" value="phone + '%'"/>
+                or phone like #{phone}
+            </if>
+            <if test="status != null and status.length() > 0">
+                and `status` = #{status}
+            </if>
+            <if test="deptId != null">
+                and `dept_id` = #{deptId}
+            </if>
+            and `is_delete` = '0'
         </where>
     </select>
     <select id="selectSysUserByUserId" resultType="com.liu.system.dao.SysUser">

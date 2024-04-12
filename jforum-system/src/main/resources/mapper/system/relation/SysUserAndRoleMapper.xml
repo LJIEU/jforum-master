@@ -21,7 +21,7 @@
         <result property="remark" column="remark"/>
     </resultMap>
     <insert id="add">
-        insert into sys_user_role(user_id, role_id) value (#{userId}, #{roleId})
+        insert into sys_user_role(`user_id`, `role_id`) value (#{userId}, #{roleId})
     </insert>
     <update id="update">
         update sys_user_role

@@ -67,20 +67,42 @@ public class SysUserController extends BaseController {
     @Parameters({
             @Parameter(name = "pageNum", description = "当前页", example = "1"),
             @Parameter(name = "pageSize", description = "页大小", example = "10"),
+            @Parameter(name = "deptId", description = "部门ID"),
+            @Parameter(name = "status", description = "状态"),
             @Parameter(name = "sortRules", description = "排序规则"),
             @Parameter(name = "isDesc", description = "是否逆序排序"),
-            @Parameter(name = "sysuser", description = "实体参数")
+            @Parameter(name = "startTime", description = "开始时间"),
+            @Parameter(name = "endTime", description = "结束时间"),
+            @Parameter(name = "keywords", description = "关键词")
     })
     @GetMapping("/list")
     public R<Map<String, Object>> list(
             @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
             @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize,
+            @RequestParam(value = "deptId", required = false) Long deptId,
+            @RequestParam(value = "status", required = false) Long status,
             @RequestParam(value = "sortRules", defaultValue = "user_id") String sortRules,
+            @RequestParam(value = "startTime", required = false) String startTime,
+            @RequestParam(value = "endTime", required = false) String endTime,
             @RequestParam(value = "isDesc", defaultValue = "false") Boolean isDesc,
-            SysUser sysuser) {
+            @RequestParam(value = "keywords", required = false) String keywords) {
         startPage(pageNum, pageSize, sortRules, isDesc);
+        SysUser user = new SysUser();
+        if (deptId != null && deptId != 0) {
+            user.setDeptId(deptId);
+        }
+        if (status != null) {
+            user.setStatus(String.valueOf(status));
+        }
+        if (StrUtil.isNotEmpty(keywords)) {
+            user.setUserName(keywords);
+            user.setNickName(keywords);
+            user.setPassword(keywords);
+        }
+        // TODO 2024/4/12/21:05 对于时间区间还未完成....  状态、关键词搜索 有些问题 如果关键词有内容状态为1 则会出现以关键词为准的数据 这个是因为关键词数据时以 or 查询的 or .. and .. 不管怎么样都会有数据
+
         // 获取到数据 进行整理[当前页码,页记录数,总页数,查询总条数,数据]
-        List<SysUser> list = sysuserService.selectSysUserList(sysuser);
+        List<SysUser> list = sysuserService.selectSysUserList(user);
         PageInfo<SysUser> pageInfo = new PageInfo<>();
         long total = pageInfo.getTotal();
         clearPage();
@@ -247,7 +269,7 @@ public class SysUserController extends BaseController {
         sysUser.setNickName(userVo.getNickname());
         sysUser.setEmail(userVo.getEmail());
         sysUser.setPhone(userVo.getMobile());
-        sysUser.setSex(userVo.getGender());
+        sysUser.setSex(String.valueOf(userVo.getGender()));
         sysUser.setAvatar(userVo.getAvatar());
         sysUser.setStatus(userVo.getStatus() == 0 ? "0" : "1");
 //        sysUser.setUserType("00");
@@ -270,7 +292,7 @@ public class SysUserController extends BaseController {
         userVo.setUsername(sysUser.getUserName());
         userVo.setNickname(sysUser.getNickName());
         userVo.setMobile(sysUser.getPhone());
-        userVo.setGender(sysUser.getSex());
+        userVo.setGender(Long.valueOf(sysUser.getSex()));
         userVo.setAvatar(sysUser.getAvatar());
         userVo.setEmail(sysUser.getEmail());
         userVo.setStatus(Objects.equals(sysUser.getStatus(), "0") ? 0 : 1);

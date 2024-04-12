@@ -12,6 +12,7 @@ import com.liu.system.converter.SysDeptConverter;
 import com.liu.system.converter.level.DeptLevelConverter;
 import com.liu.system.dao.SysDept;
 import com.liu.system.service.SysDeptService;
+import com.liu.system.vo.DeptVo;
 import com.liu.system.vo.level.Level;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * 部门控制层 sys_dept
@@ -127,10 +129,27 @@ public class SysDeptController extends BaseController {
      */
     @Operation(summary = "根据ID获取详细信息")
     @GetMapping("/{deptId}")
-    public R<SysDept> getInfo(
+    public R<DeptVo> getInfo(
             @Parameter(name = "deptId", description = "ID", in = ParameterIn.PATH)
             @PathVariable("deptId") Long deptId) {
-        return R.success(sysdeptService.selectSysDeptByDeptId(deptId));
+        SysDept sysDept = sysdeptService.selectSysDeptByDeptId(deptId);
+        return R.success(deptToVo(sysDept));
+    }
+
+    /**
+     * 获取 部门 所有名称
+     */
+    @Operation(summary = "获取所有名称")
+    @GetMapping("/names")
+    public R<List<DeptVo>> allNames() {
+        SysDept dept = new SysDept();
+        dept.setStatus("0");
+        List<SysDept> sysDepts = sysdeptService.selectSysDeptList(dept);
+        if (sysDepts.isEmpty()) {
+            return R.success();
+        }
+        List<DeptVo> deptVos = sysDepts.stream().map(this::deptToVo).collect(Collectors.toList());
+        return R.success(deptVos);
     }
 
 
@@ -164,5 +183,15 @@ public class SysDeptController extends BaseController {
         return R.success(sysdeptService.delete(deptIds));
     }
 
+
+    private DeptVo deptToVo(SysDept dept) {
+        DeptVo deptVo = new DeptVo();
+        deptVo.setId(dept.getDeptId());
+        deptVo.setName(dept.getDeptName());
+        deptVo.setParentId(dept.getParentId());
+        deptVo.setSort(dept.getOrderNum());
+        deptVo.setStatus(Integer.valueOf(dept.getStatus()));
+        return deptVo;
+    }
 
 }

@@ -22,7 +22,7 @@ public class UserVo {
     private String username;
     private String nickname;
     private String mobile;
-    private String gender;
+    private Long gender;
     private String avatar;
     private String email;
     private Integer status;

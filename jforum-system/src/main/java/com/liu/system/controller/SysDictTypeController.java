@@ -124,7 +124,7 @@ public class SysDictTypeController extends BaseController {
             level.getChildren().addAll(dictDataList.stream().map(v -> {
                 Level l = new Level();
                 l.setLabel(v.getDictLabel());
-                l.setValue(v.getDictCode());
+                l.setValue(Long.valueOf(v.getDictValue()));
                 return l;
             }).collect(Collectors.toList()));
             return level;

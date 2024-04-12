@@ -2,6 +2,7 @@ package com.liu.system.mapper.relation;
 
 import com.liu.system.dao.SysRole;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -29,7 +30,7 @@ public interface SysUserAndRoleMapper {
      * @param newRoleId 新的ID
      * @param userId    用户ID
      */
-    void update(Long oldRoleId, Long newRoleId, Long userId);
+    void update(@Param("oldRoleId") Long oldRoleId, @Param("newRoleId") Long newRoleId, @Param("userId") Long userId);
 
     /**
      * 添加数据
@@ -37,12 +38,13 @@ public interface SysUserAndRoleMapper {
      * @param roleId 角色ID
      * @param userId 用户ID
      */
-    void add(Long roleId, Long userId);
+    void add(@Param("roleId") Long roleId, @Param("userId") Long userId);
 
     /**
      * 移除
+     *
      * @param roleId 角色ID
      * @param userId 用户ID
      */
-    void delete(Long roleId, Long userId);
+    void delete(@Param("roleId") Long roleId, @Param("userId") Long userId);
 }
