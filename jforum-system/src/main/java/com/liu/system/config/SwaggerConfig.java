@@ -52,6 +52,25 @@ public class SwaggerConfig {
     }
 
     @Bean
+    public GroupedOpenApi sysApi() {
+        String[] paths = {"/sys/**"};
+        String[] packagedToMatch = {"com.liu.system"};
+        return GroupedOpenApi.builder().group("系统管理模块")
+                .pathsToMatch(paths)
+                .addOperationCustomizer((operation, handlerMethod) -> operation.addParametersItem(
+                        new HeaderParameter()
+                                .name("authorization")
+                                .example("token_xxx")
+                                .description("网关JWT")
+                                .in(String.valueOf(ParameterIn.HEADER))
+                                .schema(new StringSchema()
+                                        ._default("xxx")
+                                        .name("authorization")
+                                        .description("权限校验"))))
+                .packagesToScan(packagedToMatch).build();
+    }
+
+    @Bean
     public GroupedOpenApi toolsApi() {
         String[] paths = {"/tools/**"};
         String[] packagedToMatch = {"com.liu.generator"};

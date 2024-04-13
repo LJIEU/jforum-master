@@ -107,6 +107,19 @@ public class SysDictDataController extends BaseController {
         return R.success(dataVoList);
     }
 
+    /**
+     * 根据 dictType 获取 字典列表
+     */
+    @Operation(summary = "获取所有启用的字典数据")
+    @GetMapping("/all")
+    public R<List<DictDataVo>> getDictAll() {
+        SysDictData dictData = new SysDictData();
+        dictData.setStatus("0");
+        List<SysDictData> dictDataList = sysdictdataService.selectSysDictDataList(dictData);
+        List<DictDataVo> dataVoList = dictDataList.stream().map(this::dictToDV).collect(Collectors.toList());
+        return R.success(dataVoList);
+    }
+
 
     /**
      * 新增 字典数据
