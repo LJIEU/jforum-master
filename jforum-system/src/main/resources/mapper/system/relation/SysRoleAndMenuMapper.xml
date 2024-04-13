@@ -48,18 +48,6 @@
         insert into sys_role_menu(`role_id`, `menu_id`)
         values (#{roleId}, #{menuId})
     </insert>
-    <update id="update">
-        update `sys_role_menu`
-        set menu_id = #{newMenuId}
-        where `role_id` = #{roleId}
-          and `menu_id` = #{oldMenuId}
-    </update>
-    <delete id="delete">
-        delete
-        from `sys_role_menu`
-        where `role_id` = #{roleId}
-          and `menu_id` = #{oldMenuId}
-    </delete>
 
     <select id="selectMenuListByRoleId" resultMap="SysMenuMapperResult">
         SELECT m.*

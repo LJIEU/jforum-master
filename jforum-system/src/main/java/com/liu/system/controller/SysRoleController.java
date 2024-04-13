@@ -4,7 +4,6 @@ import com.github.pagehelper.PageInfo;
 import com.liu.core.controller.BaseController;
 import com.liu.core.result.R;
 import com.liu.core.utils.ExcelUtil;
-import com.liu.core.utils.SecurityUtils;
 import com.liu.system.dao.SysMenu;
 import com.liu.system.dao.SysRole;
 import com.liu.system.service.SysRoleService;
@@ -16,7 +15,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,7 +77,6 @@ public class SysRoleController extends BaseController {
             roleVo.setSort(v.getRoleSort());
             roleVo.setCreateTime(v.getCreateTime());
             roleVo.setUpdateTime(v.getUpdateTime());
-            roleVo.setRemark(v.getRemark());
             return roleVo;
         }).collect(Collectors.toList());
         // 获取分页数据
@@ -90,7 +87,7 @@ public class SysRoleController extends BaseController {
         long total = pageInfo.getTotal();
         // 当前页面的总记录数
         int size = pageInfo.getSize();
-        Map<String, Object> map = new HashMap<>(3);
+        Map<String, Object> map = new HashMap<>();
         // 整理数据
         map.put("list", collect);
         map.put("total", total);
@@ -178,13 +175,10 @@ public class SysRoleController extends BaseController {
      */
     @Operation(summary = "分配菜单")
     @PutMapping("/{roleId}/assignMenus")
-//    @Log(describe = "赋权操作", operatorType = OperatorType.MANAGE)
-//    @PreAuthorize("@authority.hasPermission('system:role:add,system:menu:add,system:menu:update,system:menu:delete')")
     public R<String> assignMenus(
             @PathVariable("roleId") Long roleId,
-            @RequestParam("menusIds") Long[] menusIds, HttpServletRequest request) {
-        String username = SecurityUtils.getCurrentUser(request);
-        roleAndMenuService.assignMenus(roleId, menusIds, username);
+            @RequestParam("menusIds") Long[] menusIds) {
+        roleAndMenuService.assignMenus(roleId, menusIds);
         return R.success();
     }
 

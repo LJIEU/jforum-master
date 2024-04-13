@@ -5,7 +5,6 @@ import cn.hutool.core.util.ObjUtil;
 import com.github.pagehelper.PageInfo;
 import com.liu.core.controller.BaseController;
 import com.liu.core.converter.TreeConverter;
-import com.liu.core.excption.user.UserNotExistsException;
 import com.liu.core.result.R;
 import com.liu.core.utils.ExcelUtil;
 import com.liu.core.utils.SecurityUtils;
@@ -107,16 +106,15 @@ public class SysMenuController extends BaseController {
             return R.fail("用户不存在~");
         }
         List<SysRole> roleByUserId = SpringUtils.getBean(SysUserAndRoleService.class).getRoleByUserId(user.getUserId());
-        Set<RoutesVo> routes = new HashSet<>();
+        List<RoutesVo> routes = new ArrayList<>();
         SysRoleAndMenuService roleAndMenuService = SpringUtils.getBean(SysRoleAndMenuService.class);
         for (SysRole sysRole : roleByUserId) {
             List<SysMenu> menus = roleAndMenuService.selectMenuListByRoleId(sysRole.getRoleId()).stream()
                     .filter(v -> "M".equals(v.getMenuType()) || "C".equals(v.getMenuType())).collect(Collectors.toList());
-
             for (SysMenu menu : menus) {
                 RoutesVo routesVo = new RoutesVo();
-                routesVo.setPid(menu.getParentId());
                 routesVo.setId(menu.getMenuId());
+                routesVo.setPid(menu.getParentId());
                 routesVo.setName(menu.getQuery());
                 routesVo.setPath(menu.getPath());
                 routesVo.setComponent(menu.getComponent());
@@ -135,11 +133,10 @@ public class SysMenuController extends BaseController {
                 routes.add(routesVo);
             }
         }
-        List<RoutesVo> routesVos = routes.stream().toList();
 
         // 整理 树型结构
         RoutesVoConverter converter = new RoutesVoConverter();
-        List<RoutesVo> tree = TreeUtils.convertTree(routesVos, converter);
+        List<RoutesVo> tree = TreeUtils.convertTree(routes, converter);
         return R.success(tree);
     }
 
@@ -162,21 +159,7 @@ public class SysMenuController extends BaseController {
      */
     @Operation(summary = "获取层级结构")
     @GetMapping("/tree")
-    public R<Object> treeLevel(HttpServletRequest request) {
-        SysUser user = SpringUtils.getBean(SysUserService.class).getItemByUserName(SecurityUtils.getCurrentUser(request));
-        if (user == null) {
-            throw new UserNotExistsException();
-        }
-        // 获取用户 角色 ==》 权限
-        Set<Long> menuIds = new HashSet<>();
-        List<SysRole> roleList = SpringUtils.getBean(SysUserAndRoleService.class).getRoleByUserId(user.getUserId());
-        SysRoleAndMenuService roleAndMenuService = SpringUtils.getBean(SysRoleAndMenuService.class);
-        for (SysRole role : roleList) {
-            List<SysMenu> menus = roleAndMenuService.selectMenuListByRoleId(role.getRoleId());
-            for (SysMenu menu : menus) {
-                menuIds.add(menu.getMenuId());
-            }
-        }
+    public R<Object> treeLevel() {
         List<SysMenu> menus = sysmenuService.selectSysMenuList(null);
         // 整理 树型结构
 //        LevelConverter<SysMenu, MenuLevel> converter = new MenuLevelConverter();
@@ -184,24 +167,21 @@ public class SysMenuController extends BaseController {
 //        List<MenuLevel> menuLevels = levelUtils.buildTree(menus, converter);
 //        System.out.println(JSONUtil.toJsonStr(menuLevels));
         // 将其转换为 Level
-        List<MenuLevel> levelList = menus.stream().map(
-                        v -> menuToLevel(new MenuLevel(), v, !menuIds.contains(v.getMenuId())))
-                .collect(Collectors.toList());
+        List<MenuLevel> levelList = menus.stream().map(v -> menuToLevel(new MenuLevel(), v)).collect(Collectors.toList());
 
         // UserList ==》 Tree结构
         List<MenuLevel> tree = menus.stream().filter(v -> v.getParentId() == 0L).map(v -> {
             return deep(menus, v, new ArrayList<>(), levelList,
-                    menuToLevel(new MenuLevel(), v, !menuIds.contains(v.getMenuId())), new ArrayList<>());
+                    menuToLevel(new MenuLevel(), v), new ArrayList<>());
         }).collect(Collectors.toList());
 
         return R.success(tree);
     }
 
-    private MenuLevel menuToLevel(MenuLevel level, SysMenu menu, Boolean disabled) {
+    private MenuLevel menuToLevel(MenuLevel level, SysMenu menu) {
         level.setValue(menu.getMenuId());
         level.setLabel(menu.getMenuName());
         level.setChildren(new ArrayList<>());
-        level.setDisabled(disabled);
         return level;
     }
 
@@ -279,9 +259,6 @@ public class SysMenuController extends BaseController {
     @PostMapping("/add")
     public R<Integer> add(@RequestBody MenuVo menuVo, HttpServletRequest request) {
         SysMenu sysMenu = menuVoToMenu(menuVo);
-        if ("C".equalsIgnoreCase(menuVo.getType())) {
-            sysMenu.setComponent("Layout");
-        }
         sysMenu.setCreateBy(SecurityUtils.getCurrentUser(request));
         return R.success(sysmenuService.insert(sysMenu));
     }
@@ -342,7 +319,7 @@ public class SysMenuController extends BaseController {
         sysMenu.setPath(menuVo.getPath());
         sysMenu.setComponent(menuVo.getComponent());
         sysMenu.setQuery(menuVo.getRouting());
-        sysMenu.setIsCache(menuVo.getAlwaysShow() == 1 ? 1 : 0);
+        sysMenu.setIsCache(menuVo.getKeepAlive() == 1 ? 1 : 0);
         sysMenu.setMenuType(menuVo.getType());
         sysMenu.setVisible(menuVo.getVisible() == 0 ? "0" : "1");
         sysMenu.setStatus(menuVo.getStatus());

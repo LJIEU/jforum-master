@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
  * @author JIE
  * @since 2024-04-03
  */
-@Tag(name = "用户管理模块")
+@Tag(name = "用户")
 @RestController
 @RequestMapping("/sys/user")
 public class SysUserController extends BaseController {
@@ -214,7 +214,10 @@ public class SysUserController extends BaseController {
         sysuserService.update(sysUser);
         // 更新 角色列表
         List<Long> roleIds = userVo.getRoleIds();
-        userAndRoleService.update(sysUser.getUserId(), roleIds, SecurityUtils.getCurrentUser(request));
+        if (CollUtil.isEmpty(roleIds)) {
+            return R.success();
+        }
+        userAndRoleService.update(sysUser.getUserId(), roleIds);
         return R.success();
     }
 
