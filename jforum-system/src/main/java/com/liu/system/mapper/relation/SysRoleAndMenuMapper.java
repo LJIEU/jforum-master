@@ -3,6 +3,7 @@ package com.liu.system.mapper.relation;
 import com.liu.system.dao.SysMenu;
 import com.liu.system.dao.SysRole;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -38,5 +39,25 @@ public interface SysRoleAndMenuMapper {
      * @param roleId 角色ID
      * @param menuId 菜单ID
      */
-    void insert(Long roleId, Long menuId);
+    void insert(@Param("roleId") Long roleId, @Param("menuId") Long menuId);
+
+    /**
+     * 更新数据
+     *
+     * @param roleId    角色ID
+     * @param oldMenuId 原菜单ID
+     * @param newMenuId 新菜单ID
+     */
+    void update(@Param("roleId") Long roleId,
+                @Param("oldMenuId") Long oldMenuId,
+                @Param("newMenuId") Long newMenuId);
+
+    /**
+     * 删除数据
+     *
+     * @param roleId    角色ID
+     * @param oldMenuId 原菜单ID
+     */
+    void delete(@Param("roleId") Long roleId,
+                @Param("oldMenuId") Long oldMenuId);
 }

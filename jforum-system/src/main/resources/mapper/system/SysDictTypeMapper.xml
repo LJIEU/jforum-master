@@ -90,8 +90,7 @@
     </update>
 
     <delete id="deleteById" parameterType="String">
-            update sys_dict_type set is_delete = 1
-            where dict_id = #{dictIds};
+        delete from `sys_dict_type` where dict_id = #{dictId}
     </delete>
 
     <select id="selectSysDictTypeList" parameterType="com.liu.system.dao.SysDictType"
@@ -104,7 +103,6 @@
         <include refid="selectSysDictTypeVo"/>
         <where>
             dict_id = #{dictId}
-                and is_delete = 0
         </where>
     </select>
 </mapper>

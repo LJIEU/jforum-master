@@ -22,8 +22,7 @@ public class SysDictTypeServiceImpl implements SysDictTypeService {
     private SysDictTypeMapper sysdicttypeMapper;
 
     @Override
-    public List<SysDictType> selectSysDictTypeList(SysDictType sysdicttype)
-    {
+    public List<SysDictType> selectSysDictTypeList(SysDictType sysdicttype) {
         return sysdicttypeMapper.selectSysDictTypeList(sysdicttype);
     }
 
@@ -34,21 +33,24 @@ public class SysDictTypeServiceImpl implements SysDictTypeService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public int insert(SysDictType sysdicttype)
-    {
+    public int insert(SysDictType sysdicttype) {
         return sysdicttypeMapper.insert(sysdicttype);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public int update(SysDictType sysdicttype)
-    {
+    public int update(SysDictType sysdicttype) {
         return sysdicttypeMapper.update(sysdicttype);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public int delete(Long[] dictIds) {
-        return sysdicttypeMapper.deleteById(dictIds);
+        int count = 0;
+        for (Long dictId : dictIds) {
+            sysdicttypeMapper.deleteById(dictId);
+            count++;
+        }
+        return count;
     }
 }

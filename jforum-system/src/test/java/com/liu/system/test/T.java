@@ -1,5 +1,6 @@
 package com.liu.system.test;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.json.JSONUtil;
 import com.liu.core.config.redis.RedisCache;
 import com.liu.core.converter.LevelConverter;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -134,5 +136,75 @@ public class T {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+
+    public enum Operation {
+        ADD,
+        MODIFY,
+        DELETE,
+        ADD_AND_MODIFY,
+        MODIFY_AND_DELETE
+    }
+
+    //    @Test
+    public static void main(String[] args) /*menuUpdate()*/ {
+        List<Long> currentUserMenus = List.of(1L, 2L, 3L, 4L);
+        List<Long> requiredMenus = List.of(1L, 2L, 5L);
+        List<Long> dbRoleMenus = new ArrayList<>();
+
+        // 1.从 赋权者 中 筛选出 可添加的权限 以赋权者为准 就是两个集合的交集
+        requiredMenus = CollUtil.intersection(currentUserMenus, requiredMenus).stream().toList();
+        System.out.println(requiredMenus);
+        if (requiredMenus == null || CollUtil.isEmpty(requiredMenus)) {
+            System.out.println("赋值为空!请检查是否拥有权限~~");
+            return;
+        }
+
+        // 情况一  db角色列表为空 ==> 直接添加
+//        if (CollUtil.isEmpty(dbRoleMenus)) {
+//            System.out.println("直接添加数据:" + requiredMenus);
+//        }
+
+        // 情况二  db角色列表有值[2,3,4]   [1,2] ==> [1,2] ==》 修改
+        dbRoleMenus = List.of(1L, 4L, 3L);
+//        ToolUtils.multiple(dbRoleMenus, requiredMenus, null);
+/*        int minLength = Math.min(dbRoleMenus.size(), requiredMenus.size());
+
+        for (int i = 0; i < minLength; i++) {
+            if (!dbRoleMenus.get(i).equals(requiredMenus.get(i))) {
+                System.out.println("修改:" + dbRoleMenus.get(i) + "--->" + requiredMenus.get(i));
+            }
+        }
+
+        // 处理多余的元素
+        for (int i = minLength; i < dbRoleMenus.size(); i++) {
+            System.out.println("删除:" + dbRoleMenus.get(i));
+        }
+
+        // 处理缺失的元素
+        for (int i = minLength; i < requiredMenus.size(); i++) {
+            System.out.println("添加:" + requiredMenus.get(i));
+        }*/
+/*
+        // 如果源数据 <= 需要赋值的数据  添加+修改
+        if (dbRoleMenus.size() <= requiredMenus.size()) {
+            for (int i = 0; i < requiredMenus.size(); i++) {
+                if (i > dbRoleMenus.size() - 1) {
+                    System.out.println("添加:" + requiredMenus.get(i));
+                } else if (!dbRoleMenus.get(i).equals(requiredMenus.get(i))) {
+                    System.out.println("修改:" + dbRoleMenus.get(i) + "--->" + requiredMenus.get(i));
+                }
+            } // 源数据 > 需要赋值的数据  删除+修改
+        } else {
+            for (int i = 0; i < dbRoleMenus.size(); i++) {
+                if (i > requiredMenus.size() - 1) {
+                    System.out.println("删除:" + dbRoleMenus.get(i));
+                } else if (!dbRoleMenus.get(i).equals(requiredMenus.get(i))) {
+                    System.out.println("修改:" + dbRoleMenus.get(i) + "--->" + requiredMenus.get(i));
+                }
+            }
+        }
+*/
     }
 }

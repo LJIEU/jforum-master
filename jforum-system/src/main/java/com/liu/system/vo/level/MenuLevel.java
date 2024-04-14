@@ -16,4 +16,8 @@ public class MenuLevel {
     private Long value;
     private String label;
     private List<MenuLevel> children;
+    /**
+     * 不可选择 true不可选  false可选
+     */
+    private Boolean disabled;
 }

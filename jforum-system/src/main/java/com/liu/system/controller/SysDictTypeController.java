@@ -9,6 +9,7 @@ import com.liu.system.dao.SysDictData;
 import com.liu.system.dao.SysDictType;
 import com.liu.system.service.SysDictDataService;
 import com.liu.system.service.SysDictTypeService;
+import com.liu.system.vo.DictTypeVo;
 import com.liu.system.vo.level.Level;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -17,6 +18,7 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -136,30 +138,32 @@ public class SysDictTypeController extends BaseController {
     /**
      * 新增 字典类型
      */
-    @Operation(summary = "新增")
+    @Operation(summary = "新增字典类型")
     @PostMapping("/add")
-    public R<Integer> add(@RequestBody SysDictType sysdicttype, HttpServletRequest request) {
-        sysdicttype.setCreateBy(SecurityUtils.getCurrentUser(request));
-        return R.success(sysdicttypeService.insert(sysdicttype));
+    public R<Integer> add(@Valid @RequestBody DictTypeVo dictTypeVo, HttpServletRequest request) {
+        SysDictType dictType = voToDictType(dictTypeVo);
+        dictType.setCreateBy(SecurityUtils.getCurrentUser(request));
+        return R.success(sysdicttypeService.insert(dictType));
     }
 
 
     /**
      * 修改 字典类型
      */
-    @Operation(summary = "修改")
+    @Operation(summary = "修改字典类型")
     @PutMapping("/update")
-    public R<Integer> update(@RequestBody SysDictType params, HttpServletRequest request) {
-        params.setUpdateBy(SecurityUtils.getCurrentUser(request));
-        SysDictType sysDictType = sysdicttypeService.selectSysDictTypeByDictId(params.getDictId());
+    public R<Integer> update(@RequestBody DictTypeVo dictTypeVo, HttpServletRequest request) {
+        SysDictType dictType = voToDictType(dictTypeVo);
+        dictType.setUpdateBy(SecurityUtils.getCurrentUser(request));
+        SysDictType sysDictType = sysdicttypeService.selectSysDictTypeByDictId(dictType.getDictId());
         if (StringUtils.isNotBlank(sysDictType.getDictType()) &&
-                sysDictType.getDictType().equals(params.getDictType())) {
+                sysDictType.getDictType().equals(dictType.getDictType())) {
             // 如果 改变了 dict_type 那 字典数据的 dict_type 也要更改
             SysDictDataService dictDataService = SpringUtils.getBean(SysDictDataService.class);
-            dictDataService.updateAllDictType(sysDictType.getDictType(), params.getDictType());
+            dictDataService.updateAllDictType(sysDictType.getDictType(), dictType.getDictType());
         }
         // 进行修改
-        sysdicttypeService.update(params);
+        sysdicttypeService.update(dictType);
         return R.success();
     }
 
@@ -168,11 +172,20 @@ public class SysDictTypeController extends BaseController {
      * 删除 字典类型
      * /delete/1,2,3
      */
-    @Operation(summary = "删除")
+    @Operation(summary = "删除字典类型")
     @DeleteMapping("/delete/{dictIds}")
     public R<Integer> delete(@PathVariable("dictIds") Long[] dictIds) {
         return R.success(sysdicttypeService.delete(dictIds));
     }
 
+    private SysDictType voToDictType(DictTypeVo vo) {
+        SysDictType sysDictType = new SysDictType();
+        sysDictType.setDictId(vo.getId());
+        sysDictType.setDictName(vo.getName());
+        sysDictType.setDictType(vo.getCode());
+        sysDictType.setStatus(String.valueOf(vo.getStatus()));
+        sysDictType.setRemark(vo.getRemark());
+        return sysDictType;
+    }
 
 }

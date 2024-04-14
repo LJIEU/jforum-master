@@ -2,7 +2,6 @@ package com.liu.system.mapper;
 
 import com.liu.system.dao.SysDictType;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -51,8 +50,8 @@ public interface SysDictTypeMapper {
     /**
      * 批量删除 字典类型
      *
-     * @param dictIds 字典ID列表
+     * @param dictId 字典ID
      * @return 删除情况
      */
-    int deleteById(@Param("dictIds") Long[] dictIds);
+    int deleteById(Long dictId);
 }

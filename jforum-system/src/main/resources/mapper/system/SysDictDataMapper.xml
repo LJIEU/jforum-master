@@ -18,7 +18,6 @@
         <result property="createTime" column="create_time"/>
         <result property="updateBy" column="update_by"/>
         <result property="updateTime" column="update_time"/>
-        <result property="isDelete" column="is_delete"/>
         <result property="remark" column="remark"/>
     </resultMap>
 
@@ -59,9 +58,6 @@
             <if test="createBy != null and createBy.length() > 0">
                 create_by,
             </if>
-            <if test="isDelete != null">
-                is_delete,
-            </if>
             <if test="remark != null and remark.length() > 0">
                 remark,
             </if>
@@ -98,9 +94,6 @@
             </if>
             <if test="createBy != null and createBy.length() > 0">
                 #{createBy},
-            </if>
-            <if test="isDelete != null">
-                #{isDelete},
             </if>
             <if test="remark != null and remark.length() > 0">
                 #{remark},
@@ -151,10 +144,8 @@
         where dict_type = #{oldDictType}
     </update>
 
-    <delete id="deleteById" parameterType="String">
-        update sys_dict_data
-        set is_delete = 1
-        where dict_code = #{dictCode};
+    <delete id="deleteById">
+        delete from sys_dict_data where dict_code = #{dictCode}
     </delete>
 
     <select id="selectSysDictDataList" parameterType="com.liu.system.dao.SysDictData"
@@ -164,14 +155,12 @@
             <if test="dictType != null and dictType.length() > 0">
                 `dict_type` = #{dictType}
             </if>
-            and `is_delete` = '0'
         </where>
     </select>
     <select id="selectSysDictDataByDictCode" resultType="com.liu.system.dao.SysDictData">
         <include refid="selectSysDictDataVo"/>
         <where>
             dict_code = #{dictCode}
-            and is_delete = 0
         </where>
     </select>
 </mapper>

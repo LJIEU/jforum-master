@@ -3,6 +3,7 @@ package com.liu.system.controller;
 import com.liu.core.controller.BaseController;
 import com.liu.core.result.R;
 import com.liu.core.utils.ExcelUtil;
+import com.liu.core.utils.SecurityUtils;
 import com.liu.system.dao.SysDictData;
 import com.liu.system.service.SysDictDataService;
 import com.liu.system.vo.DictDataVo;
@@ -11,7 +12,9 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -103,7 +106,20 @@ public class SysDictDataController extends BaseController {
         SysDictData dictData = new SysDictData();
         dictData.setDictType(dictType);
         List<SysDictData> dictDataList = sysdictdataService.selectSysDictDataList(dictData);
-        List<DictDataVo> dataVoList = dictDataList.stream().map(this::dictToDV).collect(Collectors.toList());
+        List<DictDataVo> dataVoList = dictDataList.stream().map(this::dictToVo).collect(Collectors.toList());
+        return R.success(dataVoList);
+    }
+
+    /**
+     * 根据 dictType 获取 字典列表
+     */
+    @Operation(summary = "获取所有启用的字典数据")
+    @GetMapping("/all")
+    public R<List<DictDataVo>> getDictAll() {
+        SysDictData dictData = new SysDictData();
+        dictData.setStatus("0");
+        List<SysDictData> dictDataList = sysdictdataService.selectSysDictDataList(dictData);
+        List<DictDataVo> dataVoList = dictDataList.stream().map(this::dictToVo).collect(Collectors.toList());
         return R.success(dataVoList);
     }
 
@@ -111,20 +127,24 @@ public class SysDictDataController extends BaseController {
     /**
      * 新增 字典数据
      */
-    @Operation(summary = "新增")
+    @Operation(summary = "新增字典数据")
     @PostMapping("/add")
-    public R<Integer> add(@RequestBody SysDictData sysdictdata) {
-        return R.success(sysdictdataService.insert(sysdictdata));
+    public R<Integer> add(@Valid @RequestBody DictDataVo dictDataVo, HttpServletRequest request) {
+        SysDictData dictData = voToDictData(dictDataVo);
+        dictData.setCreateBy(SecurityUtils.getCurrentUser(request));
+        return R.success(sysdictdataService.insert(dictData));
     }
 
 
     /**
      * 修改 字典数据
      */
-    @Operation(summary = "修改")
+    @Operation(summary = "修改字典数据")
     @PutMapping("/update")
-    public R<Integer> update(@RequestBody SysDictData sysdictdata) {
-        return R.success(sysdictdataService.update(sysdictdata));
+    public R<Integer> update(@Valid @RequestBody DictDataVo dictDataVo, HttpServletRequest request) {
+        SysDictData dictData = voToDictData(dictDataVo);
+        dictData.setUpdateBy(SecurityUtils.getCurrentUser(request));
+        return R.success(sysdictdataService.update(dictData));
     }
 
 
@@ -132,14 +152,14 @@ public class SysDictDataController extends BaseController {
      * 删除 字典数据
      * /delete/1,2,3
      */
-    @Operation(summary = "删除")
+    @Operation(summary = "删除字典数据")
     @DeleteMapping("/delete/{dictCodes}")
     public R<Integer> delete(@PathVariable("dictCodes") Long[] dictCodes) {
         return R.success(sysdictdataService.delete(dictCodes));
     }
 
 
-    private DictDataVo dictToDV(SysDictData dictData) {
+    private DictDataVo dictToVo(SysDictData dictData) {
         DictDataVo dictVo = new DictDataVo();
         dictVo.setId(dictData.getDictCode());
         dictVo.setName(dictData.getDictLabel());
@@ -152,5 +172,21 @@ public class SysDictDataController extends BaseController {
         dictVo.setRemark(dictData.getRemark());
         return dictVo;
     }
+
+    private SysDictData voToDictData(DictDataVo vo) {
+        SysDictData sysDictData = new SysDictData();
+        sysDictData.setDictCode(vo.getId());
+        sysDictData.setDictLabel(vo.getName());
+        sysDictData.setDictValue(vo.getValue());
+        sysDictData.setDictType(vo.getTypeCode());
+        sysDictData.setCssClass(vo.getCss());
+        sysDictData.setListClass(vo.getTheme());
+//        sysDictData.setIsDefault();
+        sysDictData.setSort(vo.getSort());
+        sysDictData.setStatus(String.valueOf(vo.getStatus()));
+        sysDictData.setRemark(vo.getRemark());
+        return sysDictData;
+    }
+
 
 }
