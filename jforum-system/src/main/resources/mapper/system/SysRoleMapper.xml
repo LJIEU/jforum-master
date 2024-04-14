@@ -153,7 +153,7 @@
         <where>
             and is_delete = 0
             <if test="roleName != null and roleName.length() > 0">
-                <bind name="roleName" value="roleName + '%'"/>
+                <bind name="roleName" value="'%' + roleName + '%'"/>
                 and role_name like #{roleName}
             </if>
             <if test="roleKey != null and roleKey.length() > 0">

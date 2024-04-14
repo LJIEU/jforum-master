@@ -197,7 +197,7 @@
         <include refid="selectSysMenuVo"/>
         <where>
             <if test="menuName != null and menuName.length() > 0">
-                <bind name="menuName" value="menuName + '%'"/>
+                <bind name="menuName" value="'%'+menuName + '%'"/>
                 and menu_name like #{menuName}
             </if>
             and is_delete = '0'

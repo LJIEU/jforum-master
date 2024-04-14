@@ -55,4 +55,12 @@ public interface SysDeptMapper {
      * @return 删除情况
      */
     int deleteById(@Param("deptIds") Long[] deptIds);
+
+
+    /**
+     * 根据 部门名称 查询 部门ID
+     *
+     * @param deptName 部门名称
+     */
+    Long selectSysDeptByDeptName(String deptName);
 }

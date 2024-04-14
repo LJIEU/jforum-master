@@ -203,12 +203,12 @@
         <include refid="selectSysUserVo"/>
         <where>
             <if test="userName != null and userName.length() > 0">
-                <bind name="userName" value="userName + '%'"/>
+                <bind name="userName" value="'%'+userName + '%'"/>
                 and user_name like #{userName}
             </if>
             <if test="nickName != null and nickName.length() > 0">
                 <bind name="nickName" value="nickName + '%'"/>
-                and nick_name like #{nickName}
+                or nick_name like #{nickName}
             </if>
             <if test="phone != null and phone.length() > 0">
                 <bind name="phone" value="phone + '%'"/>

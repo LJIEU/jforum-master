@@ -172,4 +172,9 @@
             and is_delete = 0
         </where>
     </select>
+    <select id="selectSysDeptByDeptName" resultType="java.lang.Long">
+        select `dept_id`
+        from `sys_dept`
+        where `dept_name` = #{deptName}
+    </select>
 </mapper>

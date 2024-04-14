@@ -1,5 +1,6 @@
 package com.liu.system.controller;
 
+import cn.hutool.core.util.StrUtil;
 import com.github.pagehelper.PageInfo;
 import com.liu.core.controller.BaseController;
 import com.liu.core.result.R;
@@ -58,6 +59,7 @@ public class SysRoleController extends BaseController {
             @Parameter(name = "pageSize", description = "页大小", example = "10"),
             @Parameter(name = "sortRules", description = "排序规则"),
             @Parameter(name = "isDesc", description = "是否逆序排序"),
+            @Parameter(name = "keywords", description = "关键词搜索[角色名称]"),
             @Parameter(name = "sysrole", description = "实体参数")
     })
     @GetMapping("/list")
@@ -66,9 +68,16 @@ public class SysRoleController extends BaseController {
             @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize,
             @RequestParam(value = "sortRules", defaultValue = "role_id") String sortRules,
             @RequestParam(value = "isDesc", defaultValue = "false") Boolean isDesc,
+            @RequestParam(value = "keywords", required = false) String keywords,
             SysRole sysrole) {
         startPage(pageNum, pageSize, sortRules, isDesc);
         // 获取到数据 进行整理[当前页码,页记录数,总页数,查询总条数,数据]
+        if (StrUtil.isNotEmpty(keywords)) {
+            if (sysrole == null) {
+                sysrole = new SysRole();
+            }
+            sysrole.setRoleName(keywords);
+        }
         List<SysRole> list = sysroleService.selectSysRoleList(sysrole);
         List<RoleVo> collect = list.stream().map(v -> {
             RoleVo roleVo = new RoleVo();

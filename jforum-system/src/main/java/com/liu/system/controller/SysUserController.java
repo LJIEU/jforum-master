@@ -10,6 +10,7 @@ import com.liu.core.controller.BaseController;
 import com.liu.core.result.R;
 import com.liu.core.utils.ExcelUtil;
 import com.liu.core.utils.SecurityUtils;
+import com.liu.system.config.excel.handler.UserWriteHandler;
 import com.liu.system.constants.UserConstants;
 import com.liu.system.dao.SysMenu;
 import com.liu.system.dao.SysRole;
@@ -123,14 +124,79 @@ public class SysUserController extends BaseController {
     /**
      * 导出数据 Excel格式
      */
+    @SuppressWarnings("all")
     @Operation(summary = "导出数据 Excel格式")
+    @Parameters({
+            @Parameter(name = "pageNum", description = "当前页", example = "1"),
+            @Parameter(name = "pageSize", description = "页大小", example = "10"),
+            @Parameter(name = "deptId", description = "部门ID"),
+            @Parameter(name = "status", description = "状态"),
+            @Parameter(name = "sortRules", description = "排序规则"),
+            @Parameter(name = "isDesc", description = "是否逆序排序"),
+            @Parameter(name = "startTime", description = "开始时间"),
+            @Parameter(name = "endTime", description = "结束时间"),
+            @Parameter(name = "keywords", description = "关键词")
+    })
     @GetMapping("/export")
-    public void export(HttpServletResponse response, SysUser sysuser) {
-        // 忽略字段
-        Set<String> excludeColumnFiledNames = new HashSet<>();
-        List<SysUser> list = sysuserService.selectSysUserList(sysuser);
+    public void export(
+            @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
+            @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize,
+            @RequestParam(value = "deptId", required = false) Long deptId,
+            @RequestParam(value = "status", required = false) Long status,
+            @RequestParam(value = "sortRules", defaultValue = "user_id") String sortRules,
+            @RequestParam(value = "startTime", required = false) @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
+                    Date startTime,
+            @RequestParam(value = "endTime", required = false) @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
+                    Date endTime,
+            @RequestParam(value = "isDesc", defaultValue = "false") Boolean isDesc,
+            @RequestParam(value = "keywords", required = false) String keywords, HttpServletResponse response) {
+        startPage(pageNum, pageSize, sortRules, isDesc);
+        SysUser user = new SysUser();
+        if (deptId != null && deptId != 0) {
+            user.setDeptId(deptId);
+        }
+        if (status != null) {
+            user.setStatus(String.valueOf(status));
+        }
+        if (StrUtil.isNotEmpty(keywords)) {
+            user.setUserName(keywords);
+            user.setNickName(keywords);
+        }
+        HashMap<String, Object> param = new HashMap<>(2);
+        param.put("startTime", startTime);
+        param.put("endTime", endTime);
+        user.setParams(param);
+        // 获取到数据 进行整理[当前页码,页记录数,总页数,查询总条数,数据]
+        List<SysUser> list = sysuserService.selectSysUserList(user);
+
+        // 忽略字段  @ExcelIgnore 也可以完成
+//        Set<String> excludeColumnFiledNames = new HashSet<>();
         ExcelUtil<SysUser> util = new ExcelUtil<>(SysUser.class);
-        util.exportExcel(response, list, "用户信息数据", excludeColumnFiledNames);
+        util.exportExcel(response, list, "用户信息数据");
+    }
+
+    @Operation(summary = "用户导入模板")
+    @GetMapping("/template")
+    public void template(HttpServletResponse response) {
+        List<List<String>> initHead = new ArrayList<>();
+        List<List<Object>> initList = new ArrayList<>();
+
+        // 头部信息
+        String[] headers = {"用户ID", "部门", "用户账号", "用户昵称", "用户类型\n(00系统用户)",
+                "用户邮箱", "手机号码", "用户性别", "头像地址", "账号状态", "备注"};
+        for (String header : headers) {
+            List<String> head = new ArrayList<>();
+            head.add(header);
+            initHead.add(head);
+        }
+        // 数据
+        String[] initData = {"不需要填写自动生成!", "部门 请根据提示填写", "xxx", "xxx", "xxx",
+                "xxx@qq.com", "xxx", "性别 请根据提示填写", "http://xxx", "状态 请根据提示填写", "用户模板样式"};
+
+        List<Object> data = Arrays.asList(initData);
+        initList.add(data);
+        ExcelUtil.exportExcelTemplate(response, "用户", new UserWriteHandler(), UserWriteHandler.style(),
+                initHead, initList);
     }
 
     @Operation(summary = "获取当前登录的用户信息")
@@ -185,7 +251,7 @@ public class SysUserController extends BaseController {
     /**
      * 新增 用户信息
      */
-    @Operation(summary = "新增")
+    @Operation(summary = "新增用户")
     @PostMapping("/add")
     public R<Integer> add(@Valid @RequestBody UserVo userVo, HttpServletRequest request) {
         SysUser sysUser = userVoToSys(userVo);
@@ -206,7 +272,7 @@ public class SysUserController extends BaseController {
     /**
      * 修改 用户信息
      */
-    @Operation(summary = "修改")
+    @Operation(summary = "修改用户")
     @PutMapping("/update")
     public R<Integer> update(@Valid @RequestBody UserVo userVo, HttpServletRequest request) {
         SysUser sysUser = userVoToSys(userVo);
@@ -257,7 +323,7 @@ public class SysUserController extends BaseController {
      * 删除 用户信息
      * /delete/1,2,3
      */
-    @Operation(summary = "删除")
+    @Operation(summary = "删除用户")
     @DeleteMapping("/delete/{userIds}")
     public R<Integer> delete(@PathVariable("userIds") Long[] userIds) {
         return R.success(sysuserService.delete(userIds));

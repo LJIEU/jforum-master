@@ -1,7 +1,14 @@
 package com.liu.core.model;
 
+import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.alibaba.excel.annotation.write.style.ColumnWidth;
+import com.alibaba.excel.annotation.write.style.HeadFontStyle;
+import com.alibaba.excel.annotation.write.style.HeadRowHeight;
+import com.alibaba.excel.annotation.write.style.HeadStyle;
+import com.alibaba.excel.enums.BooleanEnum;
+import com.alibaba.excel.enums.poi.HorizontalAlignmentEnum;
+import com.alibaba.excel.enums.poi.VerticalAlignmentEnum;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.liu.core.converter.IsDeleteConverter;
@@ -21,6 +28,14 @@ import java.util.Map;
  * @version 1.0
  * @since 2024/03/30 17:07
  */
+@HeadFontStyle(fontHeightInPoints = 12, bold = BooleanEnum.TRUE)
+@HeadRowHeight(value = -1)
+@HeadStyle(shrinkToFit = BooleanEnum.TRUE,
+        horizontalAlignment = HorizontalAlignmentEnum.CENTER,
+        verticalAlignment = VerticalAlignmentEnum.CENTER,
+        // 使用 换行符
+        wrapped = BooleanEnum.TRUE
+)
 @Data
 public class BaseEntity implements Serializable {
     /**
@@ -94,5 +109,6 @@ public class BaseEntity implements Serializable {
      * 请求参数
      */
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    @ExcelIgnore // 导出时忽略此字段
     private Map<String, Object> params;
 }

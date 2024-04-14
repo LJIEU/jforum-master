@@ -1,8 +1,13 @@
 package com.liu.system.dao;
 
+import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
+import com.alibaba.excel.annotation.write.style.ColumnWidth;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.liu.core.model.BaseEntity;
+import com.liu.system.config.excel.converter.DeptExcelConverter;
+import com.liu.system.config.excel.converter.SexExcelConverter;
+import com.liu.system.config.excel.converter.StatusExcelConverter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -30,7 +35,8 @@ public class SysUser extends BaseEntity {
      * 部门ID
      */
     @Schema(description = "部门ID")
-    @ExcelProperty(value = "部门ID")
+    @ColumnWidth(value = 14)
+    @ExcelProperty(value = "部门", converter = DeptExcelConverter.class)
     private Long deptId;
     /**
      * 用户账号
@@ -48,7 +54,8 @@ public class SysUser extends BaseEntity {
      * 用户类型（00系统用户）
      */
     @Schema(description = "用户类型（00系统用户）")
-    @ExcelProperty(value = "用户类型（00系统用户）")
+    @ColumnWidth(value = 17)
+    @ExcelProperty(value = "用户类型（00系统用户）\n")
     private String userType;
     /**
      * 用户邮箱
@@ -65,8 +72,8 @@ public class SysUser extends BaseEntity {
     /**
      * 用户性别（0男 1女 2未知）
      */
-    @Schema(description = "用户性别（0男 1女 2未知）")
-    @ExcelProperty(value = "用户性别（0男 1女 2未知）")
+    @Schema(description = "用户性别（0男 1女 2未知  实际情况根据数据字典来定）")
+    @ExcelProperty(value = "用户性别", converter = SexExcelConverter.class)
     private String sex;
     /**
      * 头像地址
@@ -79,12 +86,13 @@ public class SysUser extends BaseEntity {
      */
     @Schema(description = "密码")
     @ExcelProperty(value = "密码")
+    @ExcelIgnore
     private String password;
     /**
      * 帐号状态（0正常 1停用）
      */
     @Schema(description = "帐号状态（0正常 1停用）")
-    @ExcelProperty(value = "帐号状态（0正常 1停用）")
+    @ExcelProperty(value = "帐号状态", converter = StatusExcelConverter.class)
     private String status;
     /**
      * 最后登录IP
@@ -98,6 +106,7 @@ public class SysUser extends BaseEntity {
     @Schema(description = "最后登录时间")
     @ExcelProperty(value = "最后登录时间")
     @JsonFormat(pattern = "yyyy-MM-dd")
+    @ColumnWidth(20)
     private Date loginDate;
 
 
@@ -220,25 +229,25 @@ public class SysUser extends BaseEntity {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("userId" , getUserId())
-                .append("deptId" , getDeptId())
-                .append("userName" , getUserName())
-                .append("nickName" , getNickName())
-                .append("userType" , getUserType())
-                .append("email" , getEmail())
-                .append("phone" , getPhone())
-                .append("sex" , getSex())
-                .append("avatar" , getAvatar())
-                .append("password" , getPassword())
-                .append("status" , getStatus())
-                .append("isDelete" , getIsDelete())
-                .append("loginIp" , getLoginIp())
-                .append("loginDate" , getLoginDate())
-                .append("createBy" , getCreateBy())
-                .append("createTime" , getCreateTime())
-                .append("updateBy" , getUpdateBy())
-                .append("updateTime" , getUpdateTime())
-                .append("remark" , getRemark())
+                .append("userId", getUserId())
+                .append("deptId", getDeptId())
+                .append("userName", getUserName())
+                .append("nickName", getNickName())
+                .append("userType", getUserType())
+                .append("email", getEmail())
+                .append("phone", getPhone())
+                .append("sex", getSex())
+                .append("avatar", getAvatar())
+                .append("password", getPassword())
+                .append("status", getStatus())
+                .append("isDelete", getIsDelete())
+                .append("loginIp", getLoginIp())
+                .append("loginDate", getLoginDate())
+                .append("createBy", getCreateBy())
+                .append("createTime", getCreateTime())
+                .append("updateBy", getUpdateBy())
+                .append("updateTime", getUpdateTime())
+                .append("remark", getRemark())
                 .toString();
     }
 }

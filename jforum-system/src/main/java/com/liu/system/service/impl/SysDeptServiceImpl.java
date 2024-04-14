@@ -22,8 +22,7 @@ public class SysDeptServiceImpl implements SysDeptService {
     private SysDeptMapper sysdeptMapper;
 
     @Override
-    public List<SysDept> selectSysDeptList(SysDept sysdept)
-    {
+    public List<SysDept> selectSysDeptList(SysDept sysdept) {
         return sysdeptMapper.selectSysDeptList(sysdept);
     }
 
@@ -34,15 +33,13 @@ public class SysDeptServiceImpl implements SysDeptService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public int insert(SysDept sysdept)
-    {
+    public int insert(SysDept sysdept) {
         return sysdeptMapper.insert(sysdept);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public int update(SysDept sysdept)
-    {
+    public int update(SysDept sysdept) {
         return sysdeptMapper.update(sysdept);
     }
 
@@ -50,5 +47,10 @@ public class SysDeptServiceImpl implements SysDeptService {
     @Transactional(rollbackFor = Exception.class)
     public int delete(Long[] deptIds) {
         return sysdeptMapper.deleteById(deptIds);
+    }
+
+    @Override
+    public Long selectSysDeptByDeptName(String deptName) {
+        return sysdeptMapper.selectSysDeptByDeptName(deptName);
     }
 }

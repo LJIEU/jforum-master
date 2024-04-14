@@ -2,9 +2,11 @@ package com.liu.system.test;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.json.JSONUtil;
+import com.alibaba.excel.EasyExcel;
 import com.liu.core.config.redis.RedisCache;
 import com.liu.core.converter.LevelConverter;
 import com.liu.core.utils.LevelUtils;
+import com.liu.system.config.excel.handler.UserWriteHandler;
 import com.liu.system.converter.level.MenuLevelConverter;
 import com.liu.system.dao.SysMenu;
 import com.liu.system.dao.SysUser;
@@ -19,6 +21,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -147,8 +150,8 @@ public class T {
         MODIFY_AND_DELETE
     }
 
-    //    @Test
-    public static void main(String[] args) /*menuUpdate()*/ {
+    @Test
+    public /*static void main(String[] args)*/ void menuUpdate() {
         List<Long> currentUserMenus = List.of(1L, 2L, 3L, 4L);
         List<Long> requiredMenus = List.of(1L, 2L, 5L);
         List<Long> dbRoleMenus = new ArrayList<>();
@@ -206,5 +209,98 @@ public class T {
             }
         }
 */
+    }
+
+    @Test
+    public void widthAndHeightWrite() {
+        String fileName = "./test" + System.currentTimeMillis() + ".xlsx";
+        // 这里 需要指定写用哪个class去写，然后写到第一个sheet，名字为模板 然后文件流会自动关闭
+        EasyExcel.write(fileName)
+                .registerWriteHandler(new UserWriteHandler())
+                .registerWriteHandler(UserWriteHandler.style())
+                .head(head())
+                .sheet("模板").doWrite(dataList());
+    }
+
+    private List<List<String>> head() {
+        List<List<String>> list = new ArrayList<>();
+        List<String> head0 = new ArrayList<>();
+        List<String> head1 = new ArrayList<>();
+        List<String> head2 = new ArrayList<>();
+        List<String> head3 = new ArrayList<>();
+        List<String> head4 = new ArrayList<>();
+        List<String> head5 = new ArrayList<>();
+        List<String> head6 = new ArrayList<>();
+        List<String> head7 = new ArrayList<>();
+        List<String> head8 = new ArrayList<>();
+        List<String> head9 = new ArrayList<>();
+        List<String> head10 = new ArrayList<>();
+        head0.add("用户ID");
+        head1.add("部门");
+        head2.add("用户账号");
+        head3.add("用户昵称");
+        head4.add("用户类型\n(00系统用户)");
+        head5.add("用户邮箱");
+        head6.add("手机号码");
+        head7.add("用户性别");
+        head8.add("头像地址");
+        head9.add("账号状态");
+        head10.add("备注");
+        list.add(head0);
+        list.add(head1);
+        list.add(head2);
+        list.add(head3);
+        list.add(head4);
+        list.add(head5);
+        list.add(head6);
+        list.add(head7);
+        list.add(head8);
+        list.add(head9);
+        list.add(head10);
+        return list;
+    }
+
+    private List<List<Object>> dataList() {
+        List<List<Object>> list = new ArrayList<>();
+        List<Object> data = new ArrayList<>();
+        data.add("不需要填写自动生成!");
+        data.add("部门 请根据提示填写");
+        data.add("xxx");
+        data.add("xxx");
+        data.add("xxx");
+        data.add("xxx@qq.com");
+        data.add("xxx");
+        data.add("性别 请根据提示填写");
+        data.add("http://xxx");
+        data.add("状态 请根据提示填写");
+        data.add("用户模板样式");
+        list.add(data);
+        return list;
+    }
+
+
+    private List<SysUser> userTemple() {
+        List<SysUser> list = new ArrayList<SysUser>();
+        SysUser sysUser = new SysUser();
+        sysUser.setUserId(-1L);
+        sysUser.setDeptId(-1L);
+        sysUser.setUserName("xxx");
+        sysUser.setNickName("xxx");
+        sysUser.setUserType("00");
+        sysUser.setEmail("xxxx@qq.com");
+        sysUser.setPhone("xxxxx");
+        sysUser.setSex("0");
+        sysUser.setAvatar("http://xxxx");
+        sysUser.setStatus("0");
+        sysUser.setLoginIp("xxx.xxx.xxx.xxx");
+        sysUser.setCreateBy("xxx");
+//        LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+//        sysUser.setCreateTime();
+        sysUser.setUserType("xxx");
+        sysUser.setUpdateTime(new Date());
+        sysUser.setRemark("用户模板样式");
+        sysUser.setIsDelete(0);
+        list.add(sysUser);
+        return list;
     }
 }

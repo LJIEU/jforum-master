@@ -26,7 +26,7 @@ public interface SysDeptService {
      * @param deptId 部门ID
      * @return 返回部门信息
      */
-        SysDept selectSysDeptByDeptId(Long deptId);
+    SysDept selectSysDeptByDeptId(Long deptId);
 
     /**
      * 新增 部门
@@ -51,4 +51,12 @@ public interface SysDeptService {
      * @return 删除情况
      */
     int delete(Long[] deptIds);
+
+    /**
+     * 根据 部门名称 查询 部门ID
+     *
+     * @param deptName 部门名称
+     * @return 返回 部门ID
+     */
+    Long selectSysDeptByDeptName(String deptName);
 }
