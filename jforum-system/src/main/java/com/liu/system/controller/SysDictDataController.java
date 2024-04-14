@@ -1,10 +1,13 @@
 package com.liu.system.controller;
 
+import cn.hutool.core.util.StrUtil;
+import com.github.pagehelper.PageInfo;
 import com.liu.core.controller.BaseController;
 import com.liu.core.result.R;
 import com.liu.core.utils.ExcelUtil;
 import com.liu.core.utils.SecurityUtils;
 import com.liu.system.dao.SysDictData;
+import com.liu.system.dao.SysDictType;
 import com.liu.system.service.SysDictDataService;
 import com.liu.system.vo.DictDataVo;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,9 +21,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -53,20 +54,35 @@ public class SysDictDataController extends BaseController {
             @Parameter(name = "pageSize", description = "页大小", example = "10"),
             @Parameter(name = "sortRules", description = "排序规则"),
             @Parameter(name = "isDesc", description = "是否逆序排序"),
+            @Parameter(name = "typeCode", description = "类型编码"),
+            @Parameter(name = "name", description = "字典数据名称"),
             @Parameter(name = "sysdictdata", description = "实体参数")
     })
     @GetMapping("/list")
-    public R<List<SysDictData>> list(
+    public R<Map<String, Object>> list(
             @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
             @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize,
             @RequestParam(value = "sortRules", defaultValue = "dict_code") String sortRules,
             @RequestParam(value = "isDesc", defaultValue = "false") Boolean isDesc,
+            @RequestParam(value = "typeCode", required = false) String typeCode,
+            @RequestParam(value = "name", required = false) String name,
             SysDictData sysdictdata) {
         startPage(pageNum, pageSize, sortRules, isDesc);
         // 获取到数据 进行整理[当前页码,页记录数,总页数,查询总条数,数据]
-        List<SysDictData> list = sysdictdataService.selectSysDictDataList(sysdictdata);
-        clearPage();
-        return R.success(list);
+        SysDictData dictData = new SysDictData();
+        if (StrUtil.isNotEmpty(typeCode)) {
+            dictData.setDictType(typeCode);
+        }
+        if (StrUtil.isNotEmpty(name)) {
+            dictData.setDictLabel(name);
+        }
+        List<SysDictData> list = sysdictdataService.selectSysDictDataList(dictData);
+        List<DictDataVo> voList = list.stream().map(this::dictToVo).collect(Collectors.toList());
+        PageInfo<SysDictType> pageInfo = new PageInfo<>();
+        HashMap<String, Object> map = new HashMap<>(2);
+        map.put("list", voList);
+        map.put("total", pageInfo.getTotal());
+        return R.success(map);
     }
 
 
@@ -89,10 +105,10 @@ public class SysDictDataController extends BaseController {
      */
     @Operation(summary = "根据ID获取详细信息")
     @GetMapping("/{dictCode}")
-    public R<SysDictData> getInfo(
+    public R<DictDataVo> getInfo(
             @Parameter(name = "dictCode", description = "ID", in = ParameterIn.PATH)
             @PathVariable("dictCode") Long dictCode) {
-        return R.success(sysdictdataService.selectSysDictDataByDictCode(dictCode));
+        return R.success(dictToVo(sysdictdataService.selectSysDictDataByDictCode(dictCode)));
     }
 
     /**

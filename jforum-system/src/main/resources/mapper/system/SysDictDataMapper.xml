@@ -145,7 +145,9 @@
     </update>
 
     <delete id="deleteById">
-        delete from sys_dict_data where dict_code = #{dictCode}
+        delete
+        from sys_dict_data
+        where dict_code = #{dictCode}
     </delete>
 
     <select id="selectSysDictDataList" parameterType="com.liu.system.dao.SysDictData"
@@ -153,7 +155,11 @@
         <include refid="selectSysDictDataVo"/>
         <where>
             <if test="dictType != null and dictType.length() > 0">
-                `dict_type` = #{dictType}
+                and `dict_type` like concat(#{dictType},'%')
+            </if>
+            <if test="dictLabel != null and dictLabel.length() > 0">
+                <bind name="dictLabel" value="dictLabel + '%'"/>
+                and `dict_label` like #{dictLabel}
             </if>
         </where>
     </select>

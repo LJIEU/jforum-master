@@ -1,5 +1,7 @@
 package com.liu.system.controller;
 
+import cn.hutool.core.util.StrUtil;
+import com.github.pagehelper.PageInfo;
 import com.liu.core.controller.BaseController;
 import com.liu.core.result.R;
 import com.liu.core.utils.ExcelUtil;
@@ -23,10 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -42,6 +41,7 @@ public class SysDictTypeController extends BaseController {
 
     @Autowired
     private SysDictTypeService sysdicttypeService;
+
 
     /**
      * 查询 字典类型 列表
@@ -59,22 +59,33 @@ public class SysDictTypeController extends BaseController {
             @Parameter(name = "pageSize", description = "页大小", example = "10"),
             @Parameter(name = "sortRules", description = "排序规则"),
             @Parameter(name = "isDesc", description = "是否逆序排序"),
+            @Parameter(name = "keywords", description = "关键词[字典类型、字典名称]"),
             @Parameter(name = "sysdicttype", description = "实体参数")
     })
     @GetMapping("/list")
-    public R<List<SysDictType>> list(
+    public R<Map<String, Object>> list(
             @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
             @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize,
             @RequestParam(value = "sortRules", defaultValue = "dict_id") String sortRules,
             @RequestParam(value = "isDesc", defaultValue = "false") Boolean isDesc,
+            @RequestParam(value = "keywords", required = false) String keywords,
             SysDictType sysdicttype) {
         startPage(pageNum, pageSize, sortRules, isDesc);
         // 获取到数据 进行整理[当前页码,页记录数,总页数,查询总条数,数据]
-        List<SysDictType> list = sysdicttypeService.selectSysDictTypeList(sysdicttype);
+        SysDictType dictType = new SysDictType();
+        if (StrUtil.isNotEmpty(keywords)) {
+            dictType.setDictName(keywords);
+            dictType.setDictType(keywords);
+        }
+        List<SysDictType> list = sysdicttypeService.selectSysDictTypeList(dictType);
+        List<DictTypeVo> voList = list.stream().map(this::dictTypeToVo).collect(Collectors.toList());
+        PageInfo<SysDictType> pageInfo = new PageInfo<>();
+        HashMap<String, Object> map = new HashMap<>(2);
+        map.put("list", voList);
+        map.put("total", pageInfo.getTotal());
         clearPage();
-        return R.success(list);
+        return R.success(map);
     }
-
 
     /**
      * 导出数据 Excel格式
@@ -96,10 +107,10 @@ public class SysDictTypeController extends BaseController {
      */
     @Operation(summary = "根据ID获取详细信息")
     @GetMapping("/{dictId}")
-    public R<SysDictType> getInfo(
+    public R<DictTypeVo> getInfo(
             @Parameter(name = "dictId", description = "ID", in = ParameterIn.PATH)
             @PathVariable("dictId") Long dictId) {
-        return R.success(sysdicttypeService.selectSysDictTypeByDictId(dictId));
+        return R.success(dictTypeToVo(sysdicttypeService.selectSysDictTypeByDictId(dictId)));
     }
 
     /**
@@ -153,17 +164,17 @@ public class SysDictTypeController extends BaseController {
     @Operation(summary = "修改字典类型")
     @PutMapping("/update")
     public R<Integer> update(@RequestBody DictTypeVo dictTypeVo, HttpServletRequest request) {
-        SysDictType dictType = voToDictType(dictTypeVo);
-        dictType.setUpdateBy(SecurityUtils.getCurrentUser(request));
-        SysDictType sysDictType = sysdicttypeService.selectSysDictTypeByDictId(dictType.getDictId());
-        if (StringUtils.isNotBlank(sysDictType.getDictType()) &&
-                sysDictType.getDictType().equals(dictType.getDictType())) {
+        SysDictType params = voToDictType(dictTypeVo);
+        params.setUpdateBy(SecurityUtils.getCurrentUser(request));
+        SysDictType dbDictType = sysdicttypeService.selectSysDictTypeByDictId(params.getDictId());
+        if (StringUtils.isNotBlank(dbDictType.getDictType()) &&
+                !dbDictType.getDictType().equals(params.getDictType())) {
             // 如果 改变了 dict_type 那 字典数据的 dict_type 也要更改
             SysDictDataService dictDataService = SpringUtils.getBean(SysDictDataService.class);
-            dictDataService.updateAllDictType(sysDictType.getDictType(), dictType.getDictType());
+            dictDataService.updateAllDictType(dbDictType.getDictType(), params.getDictType());
         }
         // 进行修改
-        sysdicttypeService.update(dictType);
+        sysdicttypeService.update(params);
         return R.success();
     }
 
@@ -186,6 +197,16 @@ public class SysDictTypeController extends BaseController {
         sysDictType.setStatus(String.valueOf(vo.getStatus()));
         sysDictType.setRemark(vo.getRemark());
         return sysDictType;
+    }
+
+    private DictTypeVo dictTypeToVo(SysDictType dictType) {
+        DictTypeVo dictTypeVo = new DictTypeVo();
+        dictTypeVo.setId(dictType.getDictId());
+        dictTypeVo.setName(dictType.getDictName());
+        dictTypeVo.setCode(dictType.getDictType());
+        dictTypeVo.setStatus(Integer.valueOf(dictType.getStatus()));
+        dictTypeVo.setRemark(dictType.getRemark());
+        return dictTypeVo;
     }
 
 }

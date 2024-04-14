@@ -5,15 +5,15 @@
 <!-- namespace等于mapper接口类的全限定名,这样实现对应 -->
 <mapper namespace="com.liu.system.mapper.SysDictTypeMapper">
     <resultMap id="SysDictTypeMapperResult" type="com.liu.system.dao.SysDictType">
-            <result property="dictId" column="dict_id"/>
-            <result property="dictName" column="dict_name"/>
-            <result property="dictType" column="dict_type"/>
-            <result property="status" column="status"/>
-            <result property="createBy" column="create_by"/>
-            <result property="createTime" column="create_time"/>
-            <result property="updateBy" column="update_by"/>
-            <result property="updateTime" column="update_time"/>
-            <result property="remark" column="remark"/>
+        <result property="dictId" column="dict_id"/>
+        <result property="dictName" column="dict_name"/>
+        <result property="dictType" column="dict_type"/>
+        <result property="status" column="status"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
     </resultMap>
 
     <sql id="selectSysDictTypeVo">
@@ -23,80 +23,89 @@
     <insert id="insert" parameterType="com.liu.system.dao.SysDictType">
         insert into sys_dict_type
         <trim prefix="(" suffix=")" suffixOverrides=",">
-                    <if test="dictId != null">
-                        dict_id,
-                    </if>
-                    <if test="dictName != null and dictName.length() > 0">
-                        dict_name,
-                    </if>
-                    <if test="dictType != null and dictType.length() > 0">
-                        dict_type,
-                    </if>
-                    <if test="status != null and status.length() > 0">
-                        status,
-                    </if>
-                    <if test="createBy != null and createBy.length() > 0">
-                        create_by,
-                    </if>
-                    <if test="remark != null and remark.length() > 0">
-                        remark,
-                    </if>
-                create_time
+            <if test="dictId != null">
+                dict_id,
+            </if>
+            <if test="dictName != null and dictName.length() > 0">
+                dict_name,
+            </if>
+            <if test="dictType != null and dictType.length() > 0">
+                dict_type,
+            </if>
+            <if test="status != null and status.length() > 0">
+                status,
+            </if>
+            <if test="createBy != null and createBy.length() > 0">
+                create_by,
+            </if>
+            <if test="remark != null and remark.length() > 0">
+                remark,
+            </if>
+            create_time
         </trim>
         values
         <trim prefix="(" suffix=")" suffixOverrides=",">
-                    <if test="dictId != null">
-                        #{dictId},
-                    </if>
-                    <if test="dictName != null and dictName.length() > 0">
-                        #{dictName},
-                    </if>
-                    <if test="dictType != null and dictType.length() > 0">
-                        #{dictType},
-                    </if>
-                    <if test="status != null and status.length() > 0">
-                        #{status},
-                    </if>
-                    <if test="createBy != null and createBy.length() > 0">
-                        #{createBy},
-                    </if>
-                    <if test="remark != null and remark.length() > 0">
-                        #{remark},
-                    </if>
-                sysdate()
+            <if test="dictId != null">
+                #{dictId},
+            </if>
+            <if test="dictName != null and dictName.length() > 0">
+                #{dictName},
+            </if>
+            <if test="dictType != null and dictType.length() > 0">
+                #{dictType},
+            </if>
+            <if test="status != null and status.length() > 0">
+                #{status},
+            </if>
+            <if test="createBy != null and createBy.length() > 0">
+                #{createBy},
+            </if>
+            <if test="remark != null and remark.length() > 0">
+                #{remark},
+            </if>
+            sysdate()
         </trim>
     </insert>
     <update id="update" parameterType="com.liu.system.dao.SysDictType">
         update sys_dict_type
         <trim prefix="set" suffixOverrides=",">
-                    <if test="dictName != null and dictName.length() > 0">
-                        dict_name = #{dictName},
-                    </if>
-                    <if test="dictType != null and dictType.length() > 0">
-                        dict_type = #{dictType},
-                    </if>
-                    <if test="status != null and status.length() > 0">
-                        status = #{status},
-                    </if>
-                    <if test="updateBy != null and updateBy.length() > 0">
-                        update_by = #{updateBy},
-                    </if>
-                    <if test="remark != null and remark.length() > 0">
-                        remark = #{remark},
-                    </if>
-                update_time = sysdate(),
+            <if test="dictName != null and dictName.length() > 0">
+                dict_name = #{dictName},
+            </if>
+            <if test="dictType != null and dictType.length() > 0">
+                dict_type = #{dictType},
+            </if>
+            <if test="status != null and status.length() > 0">
+                status = #{status},
+            </if>
+            <if test="updateBy != null and updateBy.length() > 0">
+                update_by = #{updateBy},
+            </if>
+            <if test="remark != null and remark.length() > 0">
+                remark = #{remark},
+            </if>
+            update_time = sysdate(),
         </trim>
         where dict_id = #{dictId}
     </update>
 
-    <delete id="deleteById" parameterType="String">
-        delete from `sys_dict_type` where dict_id = #{dictId}
+    <delete id="deleteById">
+        delete
+        from `sys_dict_type`
+        where `dict_id` = #{dictId}
     </delete>
 
     <select id="selectSysDictTypeList" parameterType="com.liu.system.dao.SysDictType"
             resultMap="SysDictTypeMapperResult">
         <include refid="selectSysDictTypeVo"/>
         <where>
+            <if test="dictType != null and dictType.length() > 0">
+                <bind name="dictType" value="'%'+ dictType + '%'"/>
+                and `dict_type` like #{dictType}
+            </if>
+            <if test="dictName != null and dictName.length() > 0">
+                or `dict_name` like concat('%',#{dictName},'%')
+            </if>
         </where>
     </select>
     <select id="selectSysDictTypeByDictId" resultType="com.liu.system.dao.SysDictType">
