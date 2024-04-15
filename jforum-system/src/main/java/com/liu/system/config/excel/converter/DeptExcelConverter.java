@@ -41,6 +41,9 @@ public class DeptExcelConverter implements Converter<Long> {
 
     @Override
     public WriteCellData<?> convertToExcelData(WriteConverterContext<Long> context) throws Exception {
+        if (context.getValue() == -1L) {
+            return new WriteCellData<>("部门 请根据提示填写!");
+        }
         // 查询 部门名称
         SysDept sysDept = deptService.selectSysDeptByDeptId(context.getValue());
         String deptName = "部门不存在!";

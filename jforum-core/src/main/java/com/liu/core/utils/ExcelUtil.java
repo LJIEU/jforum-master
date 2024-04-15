@@ -73,10 +73,8 @@ public class ExcelUtil<T> {
     public static void exportExcelTemplate(HttpServletResponse response, String title,
                                            WriteHandler writeHandler, HorizontalCellStyleStrategy cellStyleStrategy,
                                            List<List<String>> initHead, List<List<Object>> initList) {
-        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-        response.setCharacterEncoding("utf-8");
         String fileName = URLEncoder.encode(title, StandardCharsets.UTF_8).replaceAll("\\+", "%20");
-        response.setHeader("Content-Disposition", "attachment; filename*=UTF-8''" + fileName + ".xlsx");
+        responseSetting(response, fileName);
         try {
             EasyExcel.write(response.getOutputStream())
                     .sheet("模板").registerWriteHandler(writeHandler).
@@ -84,6 +82,26 @@ public class ExcelUtil<T> {
         } catch (IOException e) {
             log.error("导出Excel异常{}", e.getMessage());
         }
+    }
+
+    public static <T> void exportExcelTemplate(HttpServletResponse response, String title,
+                                               WriteHandler writeHandler, HorizontalCellStyleStrategy cellStyleStrategy,
+                                               Class<T> clazz, List<T> initList) {
+        responseSetting(response, title);
+        try {
+            EasyExcel.write(response.getOutputStream(), clazz)
+                    .sheet("模板").registerWriteHandler(writeHandler).
+                    registerWriteHandler(cellStyleStrategy).doWrite(initList);
+        } catch (IOException e) {
+            log.error("导出Excel异常{}", e.getMessage());
+        }
+    }
+
+    private static void responseSetting(HttpServletResponse response, String title) {
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setCharacterEncoding("utf-8");
+        String fileName = URLEncoder.encode(title, StandardCharsets.UTF_8).replaceAll("\\+", "%20");
+        response.setHeader("Content-Disposition", "attachment; filename*=UTF-8''" + fileName + ".xlsx");
     }
 
 }

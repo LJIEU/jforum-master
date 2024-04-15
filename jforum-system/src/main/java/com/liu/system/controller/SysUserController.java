@@ -4,6 +4,7 @@ package com.liu.system.controller;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.StrUtil;
+import com.alibaba.excel.EasyExcel;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.github.pagehelper.PageInfo;
 import com.liu.core.controller.BaseController;
@@ -11,7 +12,10 @@ import com.liu.core.result.R;
 import com.liu.core.utils.ExcelUtil;
 import com.liu.core.utils.SecurityUtils;
 import com.liu.system.config.excel.handler.UserWriteHandler;
+import com.liu.system.config.excel.listener.UserDataListener;
+import com.liu.system.config.excel.temple.UserTemple;
 import com.liu.system.constants.UserConstants;
+import com.liu.system.context.UserDataListenerHolder;
 import com.liu.system.dao.SysMenu;
 import com.liu.system.dao.SysRole;
 import com.liu.system.dao.SysUser;
@@ -30,7 +34,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.security.Principal;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -93,6 +99,8 @@ public class SysUserController extends BaseController {
         startPage(pageNum, pageSize, sortRules, isDesc);
         SysUser user = new SysUser();
         if (deptId != null && deptId != 0) {
+            // TODO 2024/4/15/23:33  如果是 父级部门[1] --> 其子部门[2,3,4] 则直接 查询其 子部门 和 父部门 ID ==> [1,2,3,4]
+            // 这里就不再是 setDeptID ==> 而是 dept_id in(1,2,3,4)
             user.setDeptId(deptId);
         }
         if (status != null) {
@@ -110,9 +118,8 @@ public class SysUserController extends BaseController {
 
         // 获取到数据 进行整理[当前页码,页记录数,总页数,查询总条数,数据]
         List<SysUser> list = sysuserService.selectSysUserList(user);
-        PageInfo<SysUser> pageInfo = new PageInfo<>();
+        PageInfo<SysUser> pageInfo = new PageInfo<>(list);
         long total = pageInfo.getTotal();
-        clearPage();
         List<UserVo> userVos = list.stream().map(this::sysToUserVo).collect(Collectors.toList());
         HashMap<String, Object> map = new HashMap<>(2);
         map.put("list", userVos);
@@ -178,7 +185,7 @@ public class SysUserController extends BaseController {
     @Operation(summary = "用户导入模板")
     @GetMapping("/template")
     public void template(HttpServletResponse response) {
-        List<List<String>> initHead = new ArrayList<>();
+/*        List<List<String>> initHead = new ArrayList<>();
         List<List<Object>> initList = new ArrayList<>();
 
         // 头部信息
@@ -194,9 +201,22 @@ public class SysUserController extends BaseController {
                 "xxx@qq.com", "xxx", "性别 请根据提示填写", "http://xxx", "状态 请根据提示填写", "用户模板样式"};
 
         List<Object> data = Arrays.asList(initData);
-        initList.add(data);
+        initList.add(data);*/
+        List<UserTemple> initList = new ArrayList<>();
+        UserTemple userTemple = new UserTemple();
+        userTemple.setUserId("不需要填写自动生成!!");
+        userTemple.setDeptId(-1L);
+        userTemple.setUserName("xxx");
+        userTemple.setNickName("xxx");
+        userTemple.setUserType("temple");
+        userTemple.setEmail("xxx");
+        userTemple.setPhone("xxx");
+        userTemple.setSex("temple");
+        userTemple.setAvatar("http://xxx");
+        userTemple.setStatus("temple");
+        initList.add(userTemple);
         ExcelUtil.exportExcelTemplate(response, "用户", new UserWriteHandler(), UserWriteHandler.style(),
-                initHead, initList);
+                UserTemple.class, initList);
     }
 
     @Operation(summary = "获取当前登录的用户信息")
@@ -245,6 +265,20 @@ public class SysUserController extends BaseController {
         UserVo userVo = sysToUserVo(sysUser);
         userVo.setRoleIds(sysRoleList);
         return R.success(userVo);
+    }
+
+
+    /**
+     * 文件上传
+     */
+    @Operation(summary = "文件上传")
+    @PostMapping("/upload")
+    @ResponseBody
+    public R<String> upload(@RequestParam("file") MultipartFile file) throws IOException {
+        EasyExcel.read(file.getInputStream(),
+                UserTemple.class,
+                new UserDataListener()).sheet("模板").doRead();
+        return R.success(UserDataListenerHolder.getContext());
     }
 
 

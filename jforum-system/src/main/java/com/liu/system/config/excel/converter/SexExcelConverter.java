@@ -53,6 +53,9 @@ public class SexExcelConverter implements Converter<String> {
     @Override
     public WriteCellData<?> convertToExcelData(WriteConverterContext<String> context) throws Exception {
         String sexValue = context.getValue();
+        if (sexValue.equals("temple")) {
+            return new WriteCellData<>("性别 请根据提示填写!");
+        }
         // 查询字典 转 文字
         SysDictData select = new SysDictData();
         select.setDictType("sys_user_sex");

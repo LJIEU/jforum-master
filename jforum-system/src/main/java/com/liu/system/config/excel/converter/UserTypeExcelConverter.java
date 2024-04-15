@@ -6,24 +6,23 @@ import com.alibaba.excel.converters.WriteConverterContext;
 import com.alibaba.excel.metadata.data.WriteCellData;
 
 /**
- * Description:
+ * Description: 用户类型
  *
  * @author 杰
  * @version 1.0
- * @since 2024/04/14 16:26
+ * @since 2024/04/15 17:26
  */
-public class StatusExcelConverter implements Converter<String> {
-
+public class UserTypeExcelConverter implements Converter<String> {
     @Override
     public String convertToJavaData(ReadConverterContext<?> context) throws Exception {
-        return "正常".equals(context.getReadCellData().getStringValue()) ? "0" : "1";
+        return "系统用户".equals(context.getReadCellData().getStringValue()) ? "00" : "01";
     }
 
     @Override
     public WriteCellData<?> convertToExcelData(WriteConverterContext<String> context) throws Exception {
         if (context.getValue().equals("temple")) {
-            return new WriteCellData<>("状态 请根据提示填写!");
+            return new WriteCellData<>("用户类型 请根据提示填写!");
         }
-        return new WriteCellData<>("0".equals(context.getValue()) ? "正常" : "停用");
+        return new WriteCellData<>("00".equals(context.getValue()) ? "系统用户" : "普通用户");
     }
 }

@@ -58,6 +58,12 @@ public class UserWriteHandler extends AbstractColumnWidthStyleStrategy implement
         DataValidation dataValidation = helper.createValidation(constraint, cellRangeAddressList);
         context.getWriteSheetHolder().getSheet().addValidationData(dataValidation);
 
+        // 用户类型
+        context.getWriteSheetHolder().getSheet().addValidationData(
+                helper.createValidation(helper.createExplicitListConstraint(new String[]{"系统用户", "普通用户"}),
+                        new CellRangeAddressList(1, 10000, 4, 4))
+        );
+
         // 性别
         context.getWriteSheetHolder().getSheet().addValidationData(
                 helper.createValidation(helper.createExplicitListConstraint(new String[]{"男", "女", "未知"}),

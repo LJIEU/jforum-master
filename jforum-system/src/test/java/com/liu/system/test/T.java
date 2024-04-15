@@ -7,6 +7,8 @@ import com.liu.core.config.redis.RedisCache;
 import com.liu.core.converter.LevelConverter;
 import com.liu.core.utils.LevelUtils;
 import com.liu.system.config.excel.handler.UserWriteHandler;
+import com.liu.system.config.excel.listener.UserDataListener;
+import com.liu.system.config.excel.temple.UserTemple;
 import com.liu.system.converter.level.MenuLevelConverter;
 import com.liu.system.dao.SysMenu;
 import com.liu.system.dao.SysUser;
@@ -215,11 +217,29 @@ public class T {
     public void widthAndHeightWrite() {
         String fileName = "./test" + System.currentTimeMillis() + ".xlsx";
         // 这里 需要指定写用哪个class去写，然后写到第一个sheet，名字为模板 然后文件流会自动关闭
-        EasyExcel.write(fileName)
+//        EasyExcel.write(fileName)
+//                .registerWriteHandler(new UserWriteHandler())
+//                .registerWriteHandler(UserWriteHandler.style())
+//                .head(head())
+//                .sheet("模板").doWrite(dataList());
+        List<UserTemple> initList = new ArrayList<>();
+        UserTemple userTemple = new UserTemple();
+        userTemple.setUserId("不需要填写自动生成!!");
+        userTemple.setDeptId(-1L);
+        userTemple.setUserName("xxx");
+        userTemple.setNickName("xxx");
+        userTemple.setUserType("temple");
+        userTemple.setEmail("xxx");
+        userTemple.setPhone("xxx");
+        userTemple.setSex("temple");
+        userTemple.setAvatar("http://xxx");
+        userTemple.setStatus("temple");
+        initList.add(userTemple);
+
+        EasyExcel.write(fileName, UserTemple.class)
                 .registerWriteHandler(new UserWriteHandler())
                 .registerWriteHandler(UserWriteHandler.style())
-                .head(head())
-                .sheet("模板").doWrite(dataList());
+                .sheet("模板").doWrite(initList);
     }
 
     private List<List<String>> head() {
@@ -278,6 +298,22 @@ public class T {
         return list;
     }
 
+    private List<Object> dataList2() {
+        List<Object> data = new ArrayList<>();
+        data.add("不需要填写自动生成!");
+        data.add("部门 请根据提示填写");
+        data.add("xxx");
+        data.add("xxx");
+        data.add("xxx");
+        data.add("xxx@qq.com");
+        data.add("xxx");
+        data.add("性别 请根据提示填写");
+        data.add("http://xxx");
+        data.add("状态 请根据提示填写");
+        data.add("用户模板样式");
+        return data;
+    }
+
 
     private List<SysUser> userTemple() {
         List<SysUser> list = new ArrayList<SysUser>();
@@ -302,5 +338,14 @@ public class T {
         sysUser.setIsDelete(0);
         list.add(sysUser);
         return list;
+    }
+
+
+    @Test
+    public void read() {
+        String fileName = "./test1713173549546.xlsx";
+        // 读取文件 并设置表头为 2行 排除 实例数据 .headRowNumber(2) 有BUG 设置后导致读取空值
+        EasyExcel.read(fileName, UserTemple.class, new UserDataListener())
+                .sheet("模板").doRead();
     }
 }
