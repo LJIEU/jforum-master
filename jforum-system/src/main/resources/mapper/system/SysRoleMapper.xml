@@ -176,4 +176,7 @@
             and is_delete = 0
         </where>
     </select>
+    <select id="getItem" resultType="java.lang.Long">
+        select `role_id` from sys_role where `role_name` = #{userName}
+    </select>
 </mapper>

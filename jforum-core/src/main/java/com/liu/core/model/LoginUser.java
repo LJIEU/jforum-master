@@ -71,6 +71,10 @@ public class LoginUser implements UserDetails {
      */
     private Set<String> permissions;
 
+    /**
+     * 当前登录用户 --》 角色
+     */
+    private String currRole;
 
     public LoginUser(Long userId, BaseUser user, Set<String> permissions) {
         this.userId = userId;
@@ -95,7 +99,6 @@ public class LoginUser implements UserDetails {
     public String getUsername() {
         return user.getUsername();
     }
-
     /**
      * 账户是否未过期  过期无法验证
      */
@@ -206,5 +209,13 @@ public class LoginUser implements UserDetails {
 
     public void setUser(BaseUser user) {
         this.user = user;
+    }
+
+    public String getCurrRole() {
+        return currRole;
+    }
+
+    public void setCurrRole(String currRole) {
+        this.currRole = currRole;
     }
 }

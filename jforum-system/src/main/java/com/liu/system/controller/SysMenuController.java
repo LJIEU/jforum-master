@@ -17,6 +17,7 @@ import com.liu.system.dao.SysMenu;
 import com.liu.system.dao.SysRole;
 import com.liu.system.dao.SysUser;
 import com.liu.system.service.SysMenuService;
+import com.liu.system.service.SysRoleService;
 import com.liu.system.service.SysUserService;
 import com.liu.system.service.relation.SysRoleAndMenuService;
 import com.liu.system.service.relation.SysUserAndRoleService;
@@ -106,37 +107,44 @@ public class SysMenuController extends BaseController {
         if (ObjUtil.isEmpty(user)) {
             return R.fail("用户不存在~");
         }
-        List<SysRole> roleByUserId = SpringUtils.getBean(SysUserAndRoleService.class).getRoleByUserId(user.getUserId());
+//        List<SysRole> roleByUserId = SpringUtils.getBean(SysUserAndRoleService.class).getRoleByUserId(user.getUserId());
+        Long roleId = SpringUtils.getBean(SysRoleService.class).getItem(SecurityUtils.currRoleName());
+        if (Objects.isNull(roleId)) {
+            throw new RuntimeException("角色未赋予!");
+        }
         Set<RoutesVo> routes = new HashSet<>();
         SysRoleAndMenuService roleAndMenuService = SpringUtils.getBean(SysRoleAndMenuService.class);
-        for (SysRole sysRole : roleByUserId) {
-            List<SysMenu> menus = roleAndMenuService.selectMenuListByRoleId(sysRole.getRoleId()).stream()
-                    .filter(v -> "M".equals(v.getMenuType()) || "C".equals(v.getMenuType())).collect(Collectors.toList());
-
-            for (SysMenu menu : menus) {
-                RoutesVo routesVo = new RoutesVo();
-                routesVo.setPid(menu.getParentId());
-                routesVo.setId(menu.getMenuId());
-                routesVo.setName(menu.getQuery());
-                routesVo.setPath(menu.getPath());
-                routesVo.setComponent(menu.getComponent());
-                // Meta 的设置
-                RoutesVo.Meta meta = new RoutesVo.Meta();
-                meta.setTitle(menu.getMenuName());
-                meta.setIcon(menu.getIcon());
-                meta.setHidden("1".equals(menu.getVisible()));
-                meta.setKeepAlive(menu.getIsCache() == 1);
-                meta.setBreadcrumb(false);
-                // 根据 菜单ID 获取对应的 角色列表
-                List<SysRole> sysRoleList = roleAndMenuService.selectRoleByMenuId(menu.getMenuId());
-                List<String> roleNameList = sysRoleList.stream().map(SysRole::getRoleKey).collect(Collectors.toList());
-                meta.setRoles(roleNameList);
-                routesVo.setMeta(meta);
-                routes.add(routesVo);
-            }
+        List<SysMenu> menus = roleAndMenuService.selectMenuListByRoleId(roleId).stream()
+                .filter(v -> "M".equals(v.getMenuType()) || "C".equals(v.getMenuType())).collect(Collectors.toList());
+        for (SysMenu menu : menus) {
+            RoutesVo routesVo = new RoutesVo();
+            routesVo.setPid(menu.getParentId());
+            routesVo.setId(menu.getMenuId());
+            routesVo.setName(menu.getQuery());
+            routesVo.setPath(menu.getPath());
+            routesVo.setComponent(menu.getComponent());
+            // Meta 的设置
+            RoutesVo.Meta meta = new RoutesVo.Meta();
+            meta.setTitle(menu.getMenuName());
+            meta.setIcon(menu.getIcon());
+            meta.setHidden("1".equals(menu.getVisible()));
+            meta.setKeepAlive(menu.getIsCache() == 1);
+            meta.setBreadcrumb(false);
+            // 根据 菜单ID 获取对应的 角色列表
+            List<SysRole> sysRoleList = roleAndMenuService.selectRoleByMenuId(menu.getMenuId());
+            List<String> roleNameList = sysRoleList.stream().map(SysRole::getRoleName).collect(Collectors.toList());
+            meta.setRoles(roleNameList);
+            routesVo.setMeta(meta);
+            routes.add(routesVo);
         }
         List<RoutesVo> routesVos = routes.stream().toList();
-
+        // 正序
+        routesVos = routesVos.stream().sorted(new Comparator<RoutesVo>() {
+            @Override
+            public int compare(RoutesVo o1, RoutesVo o2) {
+                return Math.toIntExact(o1.getId() - o2.getId());
+            }
+        }).toList();
         // 整理 树型结构
         RoutesVoConverter converter = new RoutesVoConverter();
         List<RoutesVo> tree = TreeUtils.convertTree(routesVos, converter);
@@ -282,8 +290,15 @@ public class SysMenuController extends BaseController {
         if ("C".equalsIgnoreCase(menuVo.getType())) {
             sysMenu.setComponent("Layout");
         }
-        sysMenu.setCreateBy(SecurityUtils.getCurrentUser(request));
-        return R.success(sysmenuService.insert(sysMenu));
+        String username = SecurityUtils.getCurrentUser(request);
+        SysUser user = SpringUtils.getBean(SysUserService.class).getItemByUserName(username);
+        if (user == null) {
+            throw new UserNotExistsException();
+        }
+        // 新增菜单
+        sysMenu.setCreateBy(username);
+        sysmenuService.insert(sysMenu);
+        return R.success();
     }
 
 
@@ -342,7 +357,7 @@ public class SysMenuController extends BaseController {
         sysMenu.setPath(menuVo.getPath());
         sysMenu.setComponent(menuVo.getComponent());
         sysMenu.setQuery(menuVo.getRouting());
-        sysMenu.setIsCache(menuVo.getAlwaysShow() == 1 ? 1 : 0);
+        sysMenu.setIsCache(menuVo.getAlwaysShow() == null || menuVo.getAlwaysShow() == 1 ? 1 : 0);
         sysMenu.setMenuType(menuVo.getType());
         sysMenu.setVisible(menuVo.getVisible() == 0 ? "0" : "1");
         sysMenu.setStatus(menuVo.getStatus());

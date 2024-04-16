@@ -66,4 +66,9 @@ public class SysRoleServiceImpl implements SysRoleService {
         }
     }
 
+    @Override
+    public Long getItem(String roleName) {
+        return sysroleMapper.getItem(roleName);
+    }
+
 }

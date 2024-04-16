@@ -1,11 +1,11 @@
 package com.liu.security.service;
 
+import com.liu.core.config.redis.RedisCache;
 import com.liu.core.constant.CacheConstants;
 import com.liu.core.constant.Constants;
 import com.liu.core.model.LoginUser;
 import com.liu.core.utils.AddressUtils;
 import com.liu.core.utils.IpUtils;
-import com.liu.core.config.redis.RedisCache;
 import eu.bitwalker.useragentutils.UserAgent;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -84,6 +84,7 @@ public class JwtTokenService {
         claims.put(Constants.LOGIN_USER_KEY, token);
         claims.put(Constants.LOGIN_USER_NAME, loginUser.getUsername());
         claims.put(Constants.LOGIN_OS, loginUser.getOs());
+        claims.put(Constants.LOGIN_CURR_ROLE, loginUser.getCurrRole());
         return Jwts.builder()
                 .setClaims(claims)
                 .signWith(SignatureAlgorithm.HS512, key).compact();
@@ -99,7 +100,7 @@ public class JwtTokenService {
         loginUser.setLoginTime(System.currentTimeMillis());
         loginUser.setExpireTime(loginUser.getLoginTime() + expireTime * MINUTE);
         // 根据UUID将当前登录用户缓存
-        String userKey = getTokenKey(loginUser.getUsername(), loginUser.getToken(), loginUser.getOs());
+        String userKey = getTokenKey(loginUser.getUsername(), loginUser.getToken(), loginUser.getOs(), loginUser.getCurrRole());
         // 判断缓存中是否存在值
         String existKey = redisCache.existValue(CacheConstants.LOGIN_TOKEN_KEY + ":" + loginUser.getUsername()
                 + ":*");
@@ -123,7 +124,8 @@ public class JwtTokenService {
                 String uuid = (String) claims.get(Constants.LOGIN_USER_KEY);
                 String username = (String) claims.get(Constants.LOGIN_USER_NAME);
                 String os = (String) claims.get(Constants.LOGIN_OS);
-                String userKey = getTokenKey(username, uuid, os);
+                String currRole = (String) claims.get(Constants.LOGIN_CURR_ROLE);
+                String userKey = getTokenKey(username, uuid, os, currRole);
                 return (LoginUser) redisCache.getCacheObject(userKey);
             } catch (Exception e) {
                 log.error("获取用户信息异常 {}.", e.getMessage());
@@ -138,10 +140,10 @@ public class JwtTokenService {
      * @param username 用户名
      * @param uuid     UUID
      */
-    private String getTokenKey(String username, String uuid, String os) {
+    private String getTokenKey(String username, String uuid, String os, String currRole) {
         // 2024/2/19/12:33 后期再识别设备登录 一个系统一个Token...
         return CacheConstants.LOGIN_TOKEN_KEY + ":" + username + ":"
-                + os + ":" + uuid;
+                + os + ":" + uuid + ":" + currRole;
     }
 
     /**

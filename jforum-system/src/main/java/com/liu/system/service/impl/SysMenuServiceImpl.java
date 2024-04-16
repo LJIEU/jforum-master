@@ -1,9 +1,13 @@
 package com.liu.system.service.impl;
 
 import cn.hutool.core.util.StrUtil;
+import com.liu.core.utils.SecurityUtils;
+import com.liu.core.utils.SpringUtils;
 import com.liu.system.dao.SysMenu;
 import com.liu.system.mapper.SysMenuMapper;
 import com.liu.system.service.SysMenuService;
+import com.liu.system.service.SysRoleService;
+import com.liu.system.service.relation.SysRoleAndMenuService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,8 +38,23 @@ public class SysMenuServiceImpl implements SysMenuService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public int insert(SysMenu sysmenu) {
-        return sysmenuMapper.insert(sysmenu);
+    public int insert(SysMenu sysMenu) {
+        sysmenuMapper.insert(sysMenu);
+        // 获取菜单ID
+        SysMenu menu = sysmenuMapper.getItem(sysMenu.getMenuName());
+        if (menu == null) {
+            throw new RuntimeException("未找到菜单~");
+        }
+        // 并且给当前登录用户的角色 赋予菜单权限
+        SysRoleAndMenuService roleAndMenuService = SpringUtils.getBean(SysRoleAndMenuService.class);
+        String currRoleName = SecurityUtils.currRoleName();
+        Long roleId = SpringUtils.getBean(SysRoleService.class).getItem(currRoleName);
+        if (roleId == null) {
+            throw new RuntimeException("角色不存在!");
+        }
+        // 2024/4/16/15:17 查询当前用户的角色ID 然后将该菜单 与该角色ID 关联起来
+        roleAndMenuService.insert(menu.getMenuId(), roleId);
+        return 0;
     }
 
     @Override
@@ -61,9 +80,14 @@ public class SysMenuServiceImpl implements SysMenuService {
         if ("1".equals(status) || "0".equals(status)) {
             sysMenu.setStatus(status);
         }
-        if (StrUtil.isNotEmpty(keywords)&& !"undefined".equals(keywords)) {
+        if (StrUtil.isNotEmpty(keywords) && !"undefined".equals(keywords)) {
             sysMenu.setMenuName(keywords);
         }
         return sysmenuMapper.selectSysMenuList(sysMenu);
+    }
+
+    @Override
+    public SysMenu getItem(String menuName) {
+        return sysmenuMapper.getItem(menuName);
     }
 }

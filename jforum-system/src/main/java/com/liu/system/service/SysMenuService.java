@@ -60,4 +60,6 @@ public interface SysMenuService {
      * @return 菜单集合
      */
     List<SysMenu> selectSysMenuListByStatusOrKeywords(String status, String keywords);
+
+    SysMenu getItem(String menuName);
 }

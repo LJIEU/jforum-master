@@ -210,4 +210,10 @@
             and is_delete = 0
         </where>
     </select>
+    <select id="getItem" resultType="com.liu.system.dao.SysMenu">
+        <include refid="selectSysMenuVo"/>
+        <where>
+            menu_name = #{menuName} and is_delete = 0
+        </where>
+    </select>
 </mapper>

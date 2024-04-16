@@ -60,4 +60,11 @@ public interface SysRoleService {
      */
     void updateStatus(Long roleId, String status);
 
+    /**
+     * 根据 角色名称 获取 角色ID
+     *
+     * @param roleName 角色名称
+     * @return 返回 ID
+     */
+    Long getItem(String roleName);
 }

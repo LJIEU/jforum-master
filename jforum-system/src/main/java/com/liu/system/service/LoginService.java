@@ -11,11 +11,14 @@ import com.liu.core.model.LoginUser;
 import com.liu.core.utils.IpUtils;
 import com.liu.core.utils.MessageUtils;
 import com.liu.core.utils.SecurityUtils;
+import com.liu.core.utils.SpringUtils;
 import com.liu.security.context.AuthenticationContextHolder;
 import com.liu.security.service.JwtTokenService;
 import com.liu.system.constants.UserConstants;
+import com.liu.system.dao.SysRole;
 import com.liu.system.dao.SysUser;
 import com.liu.system.factory.AsyncFactory;
+import com.liu.system.service.relation.SysUserAndRoleService;
 import com.liu.system.vo.RegisterBody;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +26,12 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * Description:
@@ -89,11 +95,22 @@ public class LoginService {
         BaseUser baseUser = new BaseUser();
         baseUser.setUsername(username);
         loginUser.setUser(baseUser);
+        // 设置当前登录角色 默认 最高权限
+        SysUser user = SpringUtils.getBean(SysUserService.class).getItemByUserName(username);
+        List<SysRole> roleList = SpringUtils.getBean(SysUserAndRoleService.class).getRoleByUserId(user.getUserId());
+        if (roleList.size() == 0) {
+            loginUser.setCurrRole("游客");
+        } else {
+            loginUser.setCurrRole(roleList.get(0).getRoleName());
+        }
         recordLoginInfo(loginUser.getUserId());
         // 生成token
         return tokenService.createToken(loginUser);
     }
 
+    public List<SysRole> check(String username, String password, String captchaCode, String uuid) {
+        return null;
+    }
 
     /**
      * 记录登录信息
@@ -205,5 +222,24 @@ public class LoginService {
             }
         }
         return message;
+    }
+
+    /**
+     * 切换角色
+     *
+     * @param roleId        角色ID
+     * @param userId        用户ID
+     */
+    public String switchRole(Long roleId, Long userId) {
+        List<SysRole> roleList = SpringUtils.getBean(SysUserAndRoleService.class).getRoleByUserId(userId);
+        for (SysRole role : roleList) {
+            if (Objects.equals(role.getRoleId(), roleId)) {
+                Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+                LoginUser loginUser = (LoginUser) authentication.getPrincipal();
+                loginUser.setCurrRole(role.getRoleName());
+                return tokenService.createToken(loginUser);
+            }
+        }
+        return null;
     }
 }

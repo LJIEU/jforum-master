@@ -8,6 +8,7 @@ import com.alibaba.excel.EasyExcel;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.github.pagehelper.PageInfo;
 import com.liu.core.controller.BaseController;
+import com.liu.core.model.LoginUser;
 import com.liu.core.result.R;
 import com.liu.core.utils.ExcelUtil;
 import com.liu.core.utils.SecurityUtils;
@@ -33,11 +34,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.security.Principal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -219,15 +221,20 @@ public class SysUserController extends BaseController {
                 UserTemple.class, initList);
     }
 
+
     @Operation(summary = "获取当前登录的用户信息")
     @GetMapping("/me")
-    public R<UserInfo> getMe(Principal principal) {
-        String username = principal.getName();
+    public R<UserInfo> getMe(HttpServletRequest request) {
+//        String username = principal.getName();
+        String username = SecurityUtils.getCurrentUser(request);
         SysUser sysUser = sysuserService.getItemByUserName(username);
         if (sysUser == null) {
             return R.fail("无有效信息");
         }
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authentication.getPrincipal();
         UserInfo userInfo = new UserInfo();
+        userInfo.setCurrRole(loginUser.getCurrRole());
         userInfo.setUserId(sysUser.getUserId());
         userInfo.setUsername(sysUser.getUserName());
         userInfo.setNickname(sysUser.getNickName());

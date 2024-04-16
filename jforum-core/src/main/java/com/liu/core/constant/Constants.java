@@ -45,6 +45,11 @@ public interface Constants {
     String LOGIN_OS = "os";
 
     /**
+     * 令牌参数4
+     */
+    String LOGIN_CURR_ROLE = "curr_role";
+
+    /**
      * 按需加上需要支持自动类型的类名前缀 范围越小越安全
      */
     String[] JSON_WHITELIST_STR = {"org.springframework", "com.liu"};

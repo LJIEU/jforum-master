@@ -1,21 +1,24 @@
 package com.liu.system.controller;
 
+import com.liu.core.excption.user.UserNotExistsException;
 import com.liu.core.result.R;
+import com.liu.core.utils.SpringUtils;
+import com.liu.system.dao.SysUser;
 import com.liu.system.service.LoginService;
 import com.liu.system.service.SysConfigService;
+import com.liu.system.service.SysUserService;
 import com.liu.system.vo.LoginBody;
 import com.liu.system.vo.RegisterBody;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Description: 登录
@@ -40,7 +43,24 @@ public class SysLoginController {
     public R<Map<String, Object>> login(@RequestBody LoginBody loginBody) {
         // 生成令牌
         String token = loginService.login(loginBody.getUsername(), loginBody.getPassword(), loginBody.getCaptchaCode(), loginBody.getUuid());
-        HashMap<String, Object> map = new HashMap<>();
+        HashMap<String, Object> map = new HashMap<>(1);
+        map.put("token", token);
+        return R.success(map);
+    }
+
+
+    @Operation(summary = "切换角色")
+    @PostMapping("/switch/{roleId}")
+    public R<Map<String, Object>> switchRole(@PathVariable("roleId") Long roleId, HttpServletRequest request) {
+        SysUser user = SpringUtils.getBean(SysUserService.class).getItemByUserName(request.getUserPrincipal().getName());
+        if (user == null) {
+            throw new UserNotExistsException();
+        }
+        if (Objects.isNull(roleId) || roleId == null) {
+            throw new RuntimeException("角色ID不存在!");
+        }
+        String token = loginService.switchRole(roleId, user.getUserId());
+        HashMap<String, Object> map = new HashMap<>(1);
         map.put("token", token);
         return R.success(map);
     }

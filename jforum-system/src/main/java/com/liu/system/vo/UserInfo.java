@@ -21,6 +21,7 @@ public class UserInfo {
     private String nickname;
     private Long deptId;
     private String avatar;
+    private String currRole;
     private List<String> roles;
     private Set<String> perms;
     /*链式编程 和 构造器原理*/

@@ -54,4 +54,6 @@ public interface SysMenuMapper {
      * @return 删除情况
      */
     int deleteById(Long menuId);
+
+    SysMenu getItem(String menuName);
 }

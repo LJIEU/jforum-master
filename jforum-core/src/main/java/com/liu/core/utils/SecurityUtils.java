@@ -1,6 +1,9 @@
 package com.liu.core.utils;
 
+import com.liu.core.model.LoginUser;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 /**
@@ -21,6 +24,15 @@ public class SecurityUtils {
     public static String encryptPassword(String password) {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         return passwordEncoder.encode(password);
+    }
+
+    /**
+     * 获取当前登录用户的 角色名称
+     */
+    public static String currRoleName() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authentication.getPrincipal();
+        return loginUser.getCurrRole();
     }
 
     /**
