@@ -34,6 +34,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -70,7 +71,7 @@ public class SysUserController extends BaseController {
      * @param pageSize  页记录数
      * @param sortRules 排序规则
      * @param isDesc    是否逆序
-     * @param sysuser   用户信息对象
+     * @param keywords  关键词查询 目前只支持 nickName username
      * @return 返回 分页 查询结果
      */
     @Operation(summary = "分页查询")
@@ -246,10 +247,13 @@ public class SysUserController extends BaseController {
         userInfo.setRoles(roles);
         // 获取 Perms 权限标识
         Set<String> perms = new HashSet<>();
+        String currRoleName = SecurityUtils.currRoleName();
         for (SysRole sysRole : roleList) {
-            List<SysMenu> menus = roleAndMenuService.selectMenuListByRoleId(sysRole.getRoleId());
-            for (SysMenu menu : menus) {
-                perms.add(menu.getPerms());
+            if (sysRole.getRoleName().equals(currRoleName)) {
+                List<SysMenu> menus = roleAndMenuService.selectMenuListByRoleId(sysRole.getRoleId());
+                for (SysMenu menu : menus) {
+                    perms.add(menu.getPerms());
+                }
             }
         }
         userInfo.setPerms(perms);
@@ -281,6 +285,7 @@ public class SysUserController extends BaseController {
     @Operation(summary = "文件上传")
     @PostMapping("/upload")
     @ResponseBody
+    @PreAuthorize("@authority.hasPermission('sys:user:add')")
     public R<String> upload(@RequestParam("file") MultipartFile file) throws IOException {
         EasyExcel.read(file.getInputStream(),
                 UserTemple.class,
@@ -294,6 +299,7 @@ public class SysUserController extends BaseController {
      */
     @Operation(summary = "新增用户")
     @PostMapping("/add")
+    @PreAuthorize("@authority.hasPermission('sys:user:add')")
     public R<Integer> add(@Valid @RequestBody UserVo userVo, HttpServletRequest request) {
         SysUser sysUser = userVoToSys(userVo);
         sysUser.setCreateBy(SecurityUtils.getCurrentUser(request));
@@ -315,6 +321,7 @@ public class SysUserController extends BaseController {
      */
     @Operation(summary = "修改用户")
     @PutMapping("/update")
+    @PreAuthorize("@authority.hasPermission('sys:user:edit')")
     public R<Integer> update(@Valid @RequestBody UserVo userVo, HttpServletRequest request) {
         SysUser sysUser = userVoToSys(userVo);
         sysUser.setUpdateBy(SecurityUtils.getCurrentUser(request));
@@ -330,6 +337,7 @@ public class SysUserController extends BaseController {
      */
     @Operation(summary = "修改用户状态")
     @PatchMapping("/update/status/{userId}")
+    @PreAuthorize("@authority.hasPermission('sys:user:edit')")
     public R<Integer> update(@PathVariable("userId") Long userId,
                              @RequestParam("status") Integer status, HttpServletRequest request) {
         SysUser sysUser = sysuserService.selectSysUserByUserId(userId);
@@ -344,6 +352,7 @@ public class SysUserController extends BaseController {
      */
     @Operation(summary = "修改用户密码")
     @PatchMapping("/update/pwd/{userId}")
+    @PreAuthorize("@authority.hasPermission('sys:user:reset_pwd')")
     public R<Integer> update(@PathVariable("userId") Long userId,
                              @RequestParam("password") String password, HttpServletRequest request) {
         SysUser sysUser = sysuserService.selectSysUserByUserId(userId);
@@ -366,6 +375,7 @@ public class SysUserController extends BaseController {
      */
     @Operation(summary = "删除用户")
     @DeleteMapping("/delete/{userIds}")
+    @PreAuthorize("@authority.hasPermission('sys:user:delete')")
     public R<Integer> delete(@PathVariable("userIds") Long[] userIds) {
         return R.success(sysuserService.delete(userIds));
     }

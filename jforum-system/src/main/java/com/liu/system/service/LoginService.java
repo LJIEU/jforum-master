@@ -15,9 +15,11 @@ import com.liu.core.utils.SpringUtils;
 import com.liu.security.context.AuthenticationContextHolder;
 import com.liu.security.service.JwtTokenService;
 import com.liu.system.constants.UserConstants;
+import com.liu.system.dao.SysMenu;
 import com.liu.system.dao.SysRole;
 import com.liu.system.dao.SysUser;
 import com.liu.system.factory.AsyncFactory;
+import com.liu.system.service.relation.SysRoleAndMenuService;
 import com.liu.system.service.relation.SysUserAndRoleService;
 import com.liu.system.vo.RegisterBody;
 import org.apache.commons.lang3.StringUtils;
@@ -29,9 +31,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Description:
@@ -102,15 +102,31 @@ public class LoginService {
             loginUser.setCurrRole("游客");
         } else {
             loginUser.setCurrRole(roleList.get(0).getRoleName());
+            // 获取该角色的权限
+            loginUser.setPermissions(getPermissions(roleList.get(0).getRoleId()));
         }
+
+
         recordLoginInfo(loginUser.getUserId());
         // 生成token
         return tokenService.createToken(loginUser);
     }
 
-    public List<SysRole> check(String username, String password, String captchaCode, String uuid) {
-        return null;
+    /**
+     * 获取 权限标识
+     *
+     * @param roleId 角色ID
+     * @return 返回权限标识列表
+     */
+    private Set<String> getPermissions(Long roleId) {
+        Set<String> permissions = new HashSet<>();
+        List<SysMenu> menus = SpringUtils.getBean(SysRoleAndMenuService.class).selectMenuListByRoleId(roleId);
+        for (SysMenu menu : menus) {
+            permissions.add(menu.getPerms());
+        }
+        return permissions;
     }
+
 
     /**
      * 记录登录信息
@@ -227,8 +243,8 @@ public class LoginService {
     /**
      * 切换角色
      *
-     * @param roleId        角色ID
-     * @param userId        用户ID
+     * @param roleId 角色ID
+     * @param userId 用户ID
      */
     public String switchRole(Long roleId, Long userId) {
         List<SysRole> roleList = SpringUtils.getBean(SysUserAndRoleService.class).getRoleByUserId(userId);
@@ -237,6 +253,8 @@ public class LoginService {
                 Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
                 LoginUser loginUser = (LoginUser) authentication.getPrincipal();
                 loginUser.setCurrRole(role.getRoleName());
+                // 切换角色  --> 权限列表变换
+                loginUser.setPermissions(getPermissions(roleId));
                 return tokenService.createToken(loginUser);
             }
         }

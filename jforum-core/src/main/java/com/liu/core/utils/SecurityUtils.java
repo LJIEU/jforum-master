@@ -39,8 +39,8 @@ public class SecurityUtils {
      * 获取 当前登录用户的 用户名
      */
     public static String getCurrentUser(HttpServletRequest request) {
-        // TODO 2024/4/10/17:08 记住后续要将这个关闭 这个只是为了测试
-        String username = "JIE123";
+        //  2024/4/10/17:08 记住后续要将这个关闭 这个只是为了测试
+        String username = "";
         try {
             username = request.getUserPrincipal().getName();
         } catch (Exception ignored) {
