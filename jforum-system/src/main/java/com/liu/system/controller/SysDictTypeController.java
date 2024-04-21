@@ -7,12 +7,12 @@ import com.liu.core.result.R;
 import com.liu.core.utils.ExcelUtil;
 import com.liu.core.utils.SecurityUtils;
 import com.liu.core.utils.SpringUtils;
-import com.liu.system.dao.SysDictData;
-import com.liu.system.dao.SysDictType;
-import com.liu.system.service.SysDictDataService;
-import com.liu.system.service.SysDictTypeService;
-import com.liu.system.vo.DictTypeVo;
-import com.liu.system.vo.level.Level;
+import com.liu.db.entity.SysDictData;
+import com.liu.db.entity.SysDictType;
+import com.liu.db.service.SysDictDataService;
+import com.liu.db.service.SysDictTypeService;
+import com.liu.db.vo.DictTypeVo;
+import com.liu.db.vo.level.Level;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -153,7 +153,7 @@ public class SysDictTypeController extends BaseController {
     @PostMapping("/add")
     public R<Integer> add(@Valid @RequestBody DictTypeVo dictTypeVo, HttpServletRequest request) {
         SysDictType dictType = voToDictType(dictTypeVo);
-        dictType.setCreateBy(SecurityUtils.getCurrentUser(request));
+        dictType.setCreateBy(SecurityUtils.currentUsername(request));
         return R.success(sysdicttypeService.insert(dictType));
     }
 
@@ -165,7 +165,7 @@ public class SysDictTypeController extends BaseController {
     @PutMapping("/update")
     public R<Integer> update(@RequestBody DictTypeVo dictTypeVo, HttpServletRequest request) {
         SysDictType params = voToDictType(dictTypeVo);
-        params.setUpdateBy(SecurityUtils.getCurrentUser(request));
+        params.setUpdateBy(SecurityUtils.currentUsername(request));
         SysDictType dbDictType = sysdicttypeService.selectSysDictTypeByDictId(params.getDictId());
         if (StringUtils.isNotBlank(dbDictType.getDictType()) &&
                 !dbDictType.getDictType().equals(params.getDictType())) {

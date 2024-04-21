@@ -11,19 +11,19 @@ import com.liu.core.utils.ExcelUtil;
 import com.liu.core.utils.SecurityUtils;
 import com.liu.core.utils.SpringUtils;
 import com.liu.core.utils.TreeUtils;
-import com.liu.system.converter.tree.MenuVoConverter;
-import com.liu.system.converter.tree.RoutesVoConverter;
-import com.liu.system.dao.SysMenu;
-import com.liu.system.dao.SysRole;
-import com.liu.system.dao.SysUser;
-import com.liu.system.service.SysMenuService;
-import com.liu.system.service.SysRoleService;
-import com.liu.system.service.SysUserService;
-import com.liu.system.service.relation.SysRoleAndMenuService;
-import com.liu.system.service.relation.SysUserAndRoleService;
-import com.liu.system.vo.MenuVo;
-import com.liu.system.vo.RoutesVo;
-import com.liu.system.vo.level.MenuLevel;
+import com.liu.db.converter.tree.MenuVoConverter;
+import com.liu.db.converter.tree.RoutesVoConverter;
+import com.liu.db.entity.SysMenu;
+import com.liu.db.entity.SysRole;
+import com.liu.db.entity.SysUser;
+import com.liu.db.service.SysMenuService;
+import com.liu.db.service.SysRoleService;
+import com.liu.db.service.SysUserService;
+import com.liu.db.service.relation.SysRoleAndMenuService;
+import com.liu.db.service.relation.SysUserAndRoleService;
+import com.liu.db.vo.MenuVo;
+import com.liu.db.vo.RoutesVo;
+import com.liu.db.vo.level.MenuLevel;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -103,7 +103,7 @@ public class SysMenuController extends BaseController {
     @Operation(summary = "获取路由", description = "获取该登录用户的所有路由列表")
     public R<List<RoutesVo>> routes(HttpServletRequest request) {
         // 获取用户信息
-        SysUser user = SpringUtils.getBean(SysUserService.class).getItemByUserName(SecurityUtils.getCurrentUser(request));
+        SysUser user = SpringUtils.getBean(SysUserService.class).getItemByUserName(SecurityUtils.currentUsername(request));
         if (ObjUtil.isEmpty(user)) {
             return R.fail("用户不存在~");
         }
@@ -172,7 +172,7 @@ public class SysMenuController extends BaseController {
     @Operation(summary = "获取层级结构")
     @GetMapping("/tree")
     public R<Object> treeLevel(HttpServletRequest request) {
-        SysUser user = SpringUtils.getBean(SysUserService.class).getItemByUserName(SecurityUtils.getCurrentUser(request));
+        SysUser user = SpringUtils.getBean(SysUserService.class).getItemByUserName(SecurityUtils.currentUsername(request));
         if (user == null) {
             throw new UserNotExistsException();
         }
@@ -291,7 +291,7 @@ public class SysMenuController extends BaseController {
         if ("C".equalsIgnoreCase(menuVo.getType())) {
             sysMenu.setComponent("Layout");
         }
-        String username = SecurityUtils.getCurrentUser(request);
+        String username = SecurityUtils.currentUsername(request);
         SysUser user = SpringUtils.getBean(SysUserService.class).getItemByUserName(username);
         if (user == null) {
             throw new UserNotExistsException();
@@ -310,7 +310,7 @@ public class SysMenuController extends BaseController {
     @PutMapping("/update")
     public R<Integer> update(@RequestBody MenuVo menuVo, HttpServletRequest request) {
         SysMenu sysMenu = menuVoToMenu(menuVo);
-        sysMenu.setUpdateBy(SecurityUtils.getCurrentUser(request));
+        sysMenu.setUpdateBy(SecurityUtils.currentUsername(request));
         return R.success(sysmenuService.update(sysMenu));
     }
 
@@ -332,7 +332,7 @@ public class SysMenuController extends BaseController {
             return R.fail("菜单不存在!");
         }
         sysMenu.setVisible(visible);
-        sysMenu.setUpdateBy(SecurityUtils.getCurrentUser(request));
+        sysMenu.setUpdateBy(SecurityUtils.currentUsername(request));
         return R.success(sysmenuService.update(sysMenu));
     }
 

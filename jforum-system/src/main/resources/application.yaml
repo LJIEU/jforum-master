@@ -54,7 +54,7 @@ spring:
 # Mybatis 配置
 mybatis:
   # 搜索指定包 别名
-  type-aliases-package: com.liu.**.dao
+  type-aliases-package: com.liu.**.entity
   # 配置 Mapper 扫描 查询所有 mapper.xml 映射文件
   mapper-locations: classpath*:mapper/**/*.xml
   # 加载全局配置文件

@@ -1,9 +1,9 @@
 package com.liu.security.config;
 
+import com.liu.core.utils.SpringUtils;
 import com.liu.security.component.JwtAuthenticationTokenFilter;
 import com.liu.security.component.RestAccessDeniedHandler;
 import com.liu.security.component.ResultAuthenticationEntryPoint;
-import com.liu.security.service.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,8 +40,8 @@ public class SecurityConfig {
     /**
      * 自定义用户认证逻辑
      */
-    @Autowired
-    private UserDetailsServiceImpl userDetailsService;
+//    @Autowired
+//    private UserDetailsServiceImpl userDetailsService;
 
     /**
      * 认证失败处理类
@@ -74,7 +74,7 @@ public class SecurityConfig {
         // 创建一个用户认证提供者
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         // 设置用户相关信息，可以从数据库中读取、或者缓存、或者配置文件
-        authProvider.setUserDetailsService(userDetailsService);
+        authProvider.setUserDetailsService(SpringUtils.getBean("userDetailsService"));
         // 设置加密机制，用于对用户进行身份验证
         authProvider.setPasswordEncoder(bCryptPasswordEncoder());
         return authProvider;
@@ -132,14 +132,14 @@ public class SecurityConfig {
                                         // 静态资源
                                         "/**.htm", "/**.html", "/**.css", "/**.js",
                                         // 登录 和 注册 相关
-                                        "/captcha/**", "*/login", "*/register",
+                                        "/captcha/**", "/*/login", "/*/register",
                                         // swagger 相关
                                         "/swagger-ui/**", "/swagger-resources/**", "/webjars/**", "/*/api-docs/**",
                                         // Druid 控制台
                                         "/druid/**",
                                         // camunda 工作流   modeler流程部署    modeler表单部署
                                         "/camunda/**", "/engine-res/**", "/forms/**"
-                                ).anonymous()
+                                ).permitAll()
                                 // 除了上面的请求 其他所有请求都需要鉴权认证
                                 .anyRequest().authenticated())
                         // 退出

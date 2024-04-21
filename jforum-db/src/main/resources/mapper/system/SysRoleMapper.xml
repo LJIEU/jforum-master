@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace等于mapper接口类的全限定名,这样实现对应 -->
+<mapper namespace="com.liu.db.mapper.SysRoleMapper">
+    <resultMap id="SysRoleMapperResult" type="com.liu.db.entity.SysRole">
+        <result property="roleId" column="role_id"/>
+        <result property="roleName" column="role_name"/>
+        <result property="roleKey" column="role_key"/>
+        <result property="roleSort" column="role_sort"/>
+        <result property="dataScope" column="data_scope"/>
+        <result property="menuCheckStrictly" column="menu_check_strictly"/>
+        <result property="deptCheckStrictly" column="dept_check_strictly"/>
+        <result property="status" column="status"/>
+        <result property="isDelete" column="is_delete"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+    <sql id="selectSysRoleVo">
+        select *
+        from sys_role
+    </sql>
+    <insert id="insert" parameterType="com.liu.db.entity.SysRole">
+        insert into sys_role
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="roleId != null">
+                role_id,
+            </if>
+            <if test="roleName != null and roleName.length() > 0">
+                role_name,
+            </if>
+            <if test="roleKey != null and roleKey.length() > 0">
+                role_key,
+            </if>
+            <if test="roleSort != null">
+                role_sort,
+            </if>
+            <if test="dataScope != null and dataScope.length() > 0">
+                data_scope,
+            </if>
+            <if test="menuCheckStrictly != null">
+                menu_check_strictly,
+            </if>
+            <if test="deptCheckStrictly != null">
+                dept_check_strictly,
+            </if>
+            <if test="status != null and status.length() > 0">
+                status,
+            </if>
+            <if test="isDelete != null and isDelete.length() > 0">
+                is_delete,
+            </if>
+            <if test="createBy != null and createBy.length() > 0">
+                create_by,
+            </if>
+            <if test="remark != null and remark.length() > 0">
+                remark,
+            </if>
+            create_time
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="roleId != null">
+                #{roleId},
+            </if>
+            <if test="roleName != null and roleName.length() > 0">
+                #{roleName},
+            </if>
+            <if test="roleKey != null and roleKey.length() > 0">
+                #{roleKey},
+            </if>
+            <if test="roleSort != null">
+                #{roleSort},
+            </if>
+            <if test="dataScope != null and dataScope.length() > 0">
+                #{dataScope},
+            </if>
+            <if test="menuCheckStrictly != null">
+                #{menuCheckStrictly},
+            </if>
+            <if test="deptCheckStrictly != null">
+                #{deptCheckStrictly},
+            </if>
+            <if test="status != null and status.length() > 0">
+                #{status},
+            </if>
+            <if test="isDelete != null and isDelete.length() > 0">
+                #{isDelete},
+            </if>
+            <if test="createBy != null and createBy.length() > 0">
+                #{createBy},
+            </if>
+            <if test="remark != null and remark.length() > 0">
+                #{remark},
+            </if>
+            sysdate()
+        </trim>
+    </insert>
+    <update id="update" parameterType="com.liu.db.entity.SysRole">
+        update sys_role
+        <trim prefix="set" suffixOverrides=",">
+            <if test="roleName != null and roleName.length() > 0">
+                role_name = #{roleName},
+            </if>
+            <if test="roleKey != null and roleKey.length() > 0">
+                role_key = #{roleKey},
+            </if>
+            <if test="roleSort != null">
+                role_sort = #{roleSort},
+            </if>
+            <if test="dataScope != null and dataScope.length() > 0">
+                data_scope = #{dataScope},
+            </if>
+            <if test="menuCheckStrictly != null">
+                menu_check_strictly = #{menuCheckStrictly},
+            </if>
+            <if test="deptCheckStrictly != null">
+                dept_check_strictly = #{deptCheckStrictly},
+            </if>
+            <if test="status != null and status.length() > 0">
+                status = #{status},
+            </if>
+            <if test="updateBy != null and updateBy.length() > 0">
+                update_by = #{updateBy},
+            </if>
+            <if test="remark != null and remark.length() > 0">
+                remark = #{remark},
+            </if>
+            update_time = sysdate(),
+        </trim>
+        where role_id = #{roleId}
+    </update>
+    <update id="updateStatus">
+        update sys_role
+        set `status` = #{status}
+        where role_id = #{roleId}
+    </update>
+
+    <delete id="deleteById" parameterType="Long">
+        update sys_role
+        set is_delete = 1
+        where role_id = #{roleId};
+    </delete>
+
+    <select id="selectSysRoleList" parameterType="com.liu.db.entity.SysRole"
+            resultMap="SysRoleMapperResult">
+        <include refid="selectSysRoleVo"/>
+        <where>
+            and is_delete = 0
+            <if test="roleName != null and roleName.length() > 0">
+                <bind name="roleName" value="'%' + roleName + '%'"/>
+                and role_name like #{roleName}
+            </if>
+            <if test="roleKey != null and roleKey.length() > 0">
+                <bind name="roleKey" value="roleKey + '%'"/>
+                and role_key like #{roleKey}
+            </if>
+            <if test="roleSort != null">
+                and role_sort = #{roleSort}
+            </if>
+            <if test="status != null and status.length() > 0">
+                <bind name="status" value="status + '%'"/>
+                and status like #{status}
+            </if>
+        </where>
+    </select>
+    <select id="selectSysRoleByRoleId" resultType="com.liu.db.entity.SysRole">
+        <include refid="selectSysRoleVo"/>
+        <where>
+            role_id = #{roleId}
+            and is_delete = 0
+        </where>
+    </select>
+    <select id="getItem" resultType="java.lang.Long">
+        select `role_id` from sys_role where `role_name` = #{userName}
+    </select>
+</mapper>

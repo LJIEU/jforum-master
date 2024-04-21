@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace等于mapper接口类的全限定名,这样实现对应 -->
+<mapper namespace="com.liu.db.mapper.SysOperateLogMapper">
+    <resultMap id="SysOperateLogMapperResult" type="com.liu.db.entity.SysOperateLog">
+            <result property="operateId" column="operate_id"/>
+            <result property="username" column="username"/>
+            <result property="businessType" column="business_type"/>
+            <result property="operatorType" column="operator_type"/>
+            <result property="ip" column="ip"/>
+            <result property="operateLocation" column="operate_location"/>
+            <result property="moduleName" column="module_name"/>
+            <result property="className" column="class_name"/>
+            <result property="methodName" column="method_name"/>
+            <result property="describe" column="describe"/>
+            <result property="requestMethod" column="request_method"/>
+            <result property="requestUrl" column="request_url"/>
+            <result property="operateParam" column="operate_param"/>
+            <result property="jsonResult" column="json_result"/>
+            <result property="costTime" column="cost_time"/>
+            <result property="status" column="status"/>
+            <result property="errorMessage" column="error_message"/>
+            <result property="isDelete" column="is_delete"/>
+            <result property="createTime" column="create_time"/>
+            <result property="createBy" column="create_by"/>
+            <result property="remark" column="remark"/>
+    </resultMap>
+
+    <sql id="selectSysOperateLogVo">
+        select *
+        from sys_operate_log
+    </sql>
+    <insert id="insert" parameterType="com.liu.db.entity.SysOperateLog">
+        insert into sys_operate_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+                    <if test="operateId != null">
+                        operate_id,
+                    </if>
+                    <if test="username != null and username.length() > 0">
+                        username,
+                    </if>
+                    <if test="businessType != null">
+                        business_type,
+                    </if>
+                    <if test="operatorType != null">
+                        operator_type,
+                    </if>
+                    <if test="ip != null and ip.length() > 0">
+                        ip,
+                    </if>
+                    <if test="operateLocation != null and operateLocation.length() > 0">
+                        operate_location,
+                    </if>
+                    <if test="moduleName != null and moduleName.length() > 0">
+                        module_name,
+                    </if>
+                    <if test="className != null and className.length() > 0">
+                        class_name,
+                    </if>
+                    <if test="methodName != null and methodName.length() > 0">
+                        method_name,
+                    </if>
+                    <if test="describe != null and describe.length() > 0">
+                        describe,
+                    </if>
+                    <if test="requestMethod != null and requestMethod.length() > 0">
+                        request_method,
+                    </if>
+                    <if test="requestUrl != null and requestUrl.length() > 0">
+                        request_url,
+                    </if>
+                    <if test="operateParam != null and operateParam.length() > 0">
+                        operate_param,
+                    </if>
+                    <if test="jsonResult != null and jsonResult.length() > 0">
+                        json_result,
+                    </if>
+                    <if test="costTime != null">
+                        cost_time,
+                    </if>
+                    <if test="status != null">
+                        status,
+                    </if>
+                    <if test="errorMessage != null and errorMessage.length() > 0">
+                        error_message,
+                    </if>
+                    <if test="isDelete != null and isDelete.length() > 0">
+                        is_delete,
+                    </if>
+                    <if test="createBy != null and createBy.length() > 0">
+                        create_by,
+                    </if>
+                    <if test="remark != null and remark.length() > 0">
+                        remark,
+                    </if>
+                create_time
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+                    <if test="operateId != null">
+                        #{operateId},
+                    </if>
+                    <if test="username != null and username.length() > 0">
+                        #{username},
+                    </if>
+                    <if test="businessType != null">
+                        #{businessType},
+                    </if>
+                    <if test="operatorType != null">
+                        #{operatorType},
+                    </if>
+                    <if test="ip != null and ip.length() > 0">
+                        #{ip},
+                    </if>
+                    <if test="operateLocation != null and operateLocation.length() > 0">
+                        #{operateLocation},
+                    </if>
+                    <if test="moduleName != null and moduleName.length() > 0">
+                        #{moduleName},
+                    </if>
+                    <if test="className != null and className.length() > 0">
+                        #{className},
+                    </if>
+                    <if test="methodName != null and methodName.length() > 0">
+                        #{methodName},
+                    </if>
+                    <if test="describe != null and describe.length() > 0">
+                        #{describe},
+                    </if>
+                    <if test="requestMethod != null and requestMethod.length() > 0">
+                        #{requestMethod},
+                    </if>
+                    <if test="requestUrl != null and requestUrl.length() > 0">
+                        #{requestUrl},
+                    </if>
+                    <if test="operateParam != null and operateParam.length() > 0">
+                        #{operateParam},
+                    </if>
+                    <if test="jsonResult != null and jsonResult.length() > 0">
+                        #{jsonResult},
+                    </if>
+                    <if test="costTime != null">
+                        #{costTime},
+                    </if>
+                    <if test="status != null">
+                        #{status},
+                    </if>
+                    <if test="errorMessage != null and errorMessage.length() > 0">
+                        #{errorMessage},
+                    </if>
+                    <if test="isDelete != null and isDelete.length() > 0">
+                        #{isDelete},
+                    </if>
+                    <if test="createBy != null and createBy.length() > 0">
+                        #{createBy},
+                    </if>
+                    <if test="remark != null and remark.length() > 0">
+                        #{remark},
+                    </if>
+                sysdate()
+        </trim>
+    </insert>
+    <update id="update" parameterType="com.liu.db.entity.SysOperateLog">
+        update sys_operate_log
+        <trim prefix="set" suffixOverrides=",">
+                    <if test="username != null and username.length() > 0">
+                        username = #{username},
+                    </if>
+                    <if test="businessType != null">
+                        business_type = #{businessType},
+                    </if>
+                    <if test="operatorType != null">
+                        operator_type = #{operatorType},
+                    </if>
+                    <if test="ip != null and ip.length() > 0">
+                        ip = #{ip},
+                    </if>
+                    <if test="operateLocation != null and operateLocation.length() > 0">
+                        operate_location = #{operateLocation},
+                    </if>
+                    <if test="moduleName != null and moduleName.length() > 0">
+                        module_name = #{moduleName},
+                    </if>
+                    <if test="className != null and className.length() > 0">
+                        class_name = #{className},
+                    </if>
+                    <if test="methodName != null and methodName.length() > 0">
+                        method_name = #{methodName},
+                    </if>
+                    <if test="describe != null and describe.length() > 0">
+                        describe = #{describe},
+                    </if>
+                    <if test="requestMethod != null and requestMethod.length() > 0">
+                        request_method = #{requestMethod},
+                    </if>
+                    <if test="requestUrl != null and requestUrl.length() > 0">
+                        request_url = #{requestUrl},
+                    </if>
+                    <if test="operateParam != null and operateParam.length() > 0">
+                        operate_param = #{operateParam},
+                    </if>
+                    <if test="jsonResult != null and jsonResult.length() > 0">
+                        json_result = #{jsonResult},
+                    </if>
+                    <if test="costTime != null">
+                        cost_time = #{costTime},
+                    </if>
+                    <if test="status != null">
+                        status = #{status},
+                    </if>
+                    <if test="errorMessage != null and errorMessage.length() > 0">
+                        error_message = #{errorMessage},
+                    </if>
+                    <if test="remark != null and remark.length() > 0">
+                        remark = #{remark},
+                    </if>
+        </trim>
+        where operate_id = #{operateId}
+    </update>
+
+    <delete id="deleteById" parameterType="String">
+            update sys_operate_log set is_delete = 1
+            where operate_id = #{operateIds};
+    </delete>
+
+    <select id="selectSysOperateLogList" parameterType="com.liu.db.entity.SysOperateLog"
+            resultMap="SysOperateLogMapperResult">
+        <include refid="selectSysOperateLogVo"/>
+        <where>
+                    <if test="username != null and username.length() > 0">
+                        <bind name="username" value="username + '%'"/>
+                        and username like #{username}
+                    </if>
+                    <if test="requestUrl != null and requestUrl.length() > 0">
+                        <bind name="requestUrl" value="requestUrl + '%'"/>
+                        and request_url like #{requestUrl}
+                    </if>
+                    <if test="costTime != null">
+                        and cost_time = #{costTime}
+                    </if>
+                    <if test="status != null">
+                        and status = #{status}
+                    </if>
+        </where>
+    </select>
+    <select id="selectSysOperateLogByOperateId" resultType="com.liu.db.entity.SysOperateLog">
+        <include refid="selectSysOperateLogVo"/>
+        <where>
+            operate_id = #{operateId}
+                and is_delete = 0
+        </where>
+    </select>
+</mapper>

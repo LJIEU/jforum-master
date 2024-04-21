@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace等于mapper接口类的全限定名,这样实现对应 -->
+<mapper namespace="com.liu.db.mapper.SysConfigMapper">
+    <resultMap id="SysConfigMapperResult" type="com.liu.db.entity.SysConfig">
+        <result property="configId" column="config_id"/>
+        <result property="configName" column="config_name"/>
+        <result property="configKey" column="config_key"/>
+        <result property="configValue" column="config_value"/>
+        <result property="configType" column="config_type"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="isDelete" column="is_delete"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+    <sql id="selectSysConfigVo">
+        select *
+        from sys_config
+    </sql>
+    <insert id="insert" parameterType="com.liu.db.entity.SysConfig">
+        insert into sys_config
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="configId != null">
+                config_id,
+            </if>
+            <if test="configName != null and configName.length() > 0">
+                config_name,
+            </if>
+            <if test="configKey != null and configKey.length() > 0">
+                config_key,
+            </if>
+            <if test="configValue != null and configValue.length() > 0">
+                config_value,
+            </if>
+            <if test="configType != null and configType.length() > 0">
+                config_type,
+            </if>
+            <if test="createBy != null and createBy.length() > 0">
+                create_by,
+            </if>
+            <if test="isDelete != null">
+                is_delete,
+            </if>
+            <if test="remark != null and remark.length() > 0">
+                remark,
+            </if>
+            create_time
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="configId != null">
+                #{configId},
+            </if>
+            <if test="configName != null and configName.length() > 0">
+                #{configName},
+            </if>
+            <if test="configKey != null and configKey.length() > 0">
+                #{configKey},
+            </if>
+            <if test="configValue != null and configValue.length() > 0">
+                #{configValue},
+            </if>
+            <if test="configType != null and configType.length() > 0">
+                #{configType},
+            </if>
+            <if test="createBy != null and createBy.length() > 0">
+                #{createBy},
+            </if>
+            <if test="isDelete != null">
+                #{isDelete},
+            </if>
+            <if test="remark != null and remark.length() > 0">
+                #{remark},
+            </if>
+            sysdate()
+        </trim>
+    </insert>
+    <update id="update" parameterType="com.liu.db.entity.SysConfig">
+        update sys_config
+        <trim prefix="set" suffixOverrides=",">
+            <if test="configName != null and configName.length() > 0">
+                config_name = #{configName},
+            </if>
+            <if test="configKey != null and configKey.length() > 0">
+                config_key = #{configKey},
+            </if>
+            <if test="configValue != null and configValue.length() > 0">
+                config_value = #{configValue},
+            </if>
+            <if test="configType != null and configType.length() > 0">
+                config_type = #{configType},
+            </if>
+            <if test="updateBy != null and updateBy.length() > 0">
+                update_by = #{updateBy},
+            </if>
+            <if test="remark != null and remark.length() > 0">
+                remark = #{remark},
+            </if>
+            update_time = sysdate(),
+        </trim>
+        where config_id = #{configId}
+    </update>
+
+    <delete id="deleteById" parameterType="String">
+        update sys_config
+        set is_delete = 1
+        where config_id = #{configIds};
+    </delete>
+
+    <select id="selectSysConfigList" parameterType="com.liu.db.entity.SysConfig"
+            resultMap="SysConfigMapperResult">
+        <include refid="selectSysConfigVo"/>
+        <where>
+        </where>
+    </select>
+    <select id="selectSysConfigByConfigId" resultType="com.liu.db.entity.SysConfig">
+        <include refid="selectSysConfigVo"/>
+        <where>
+            config_id = #{configId}
+            and is_delete = 0
+        </where>
+    </select>
+    <select id="selectConfigByKey" resultType="java.lang.String">
+        select `config_value`
+        from `sys_config`
+        where `config_key` = #{key}
+    </select>
+</mapper>

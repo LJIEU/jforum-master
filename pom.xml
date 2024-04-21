@@ -9,6 +9,7 @@
         <module>jforum-generator</module>
         <module>jforum-security</module>
         <module>jforum-camunda</module>
+        <module>jforum-db</module>
     </modules>
 
     <groupId>com.liu</groupId>
@@ -81,6 +82,11 @@
             <dependency>
                 <groupId>com.liu</groupId>
                 <artifactId>jforum-camunda</artifactId>
+                <version>${jforum.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.liu</groupId>
+                <artifactId>jforum-db</artifactId>
                 <version>${jforum.version}</version>
             </dependency>
 

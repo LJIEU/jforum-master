@@ -15,16 +15,16 @@ import com.liu.core.utils.SecurityUtils;
 import com.liu.system.config.excel.handler.UserWriteHandler;
 import com.liu.system.config.excel.listener.UserDataListener;
 import com.liu.system.config.excel.temple.UserTemple;
-import com.liu.system.constants.UserConstants;
+import com.liu.core.constant.UserConstants;
 import com.liu.system.context.UserDataListenerHolder;
-import com.liu.system.dao.SysMenu;
-import com.liu.system.dao.SysRole;
-import com.liu.system.dao.SysUser;
-import com.liu.system.service.SysUserService;
-import com.liu.system.service.relation.SysRoleAndMenuService;
-import com.liu.system.service.relation.SysUserAndRoleService;
-import com.liu.system.vo.UserInfo;
-import com.liu.system.vo.UserVo;
+import com.liu.db.entity.SysMenu;
+import com.liu.db.entity.SysRole;
+import com.liu.db.entity.SysUser;
+import com.liu.db.service.SysUserService;
+import com.liu.db.service.relation.SysRoleAndMenuService;
+import com.liu.db.service.relation.SysUserAndRoleService;
+import com.liu.db.vo.UserInfo;
+import com.liu.db.vo.UserVo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -227,7 +227,7 @@ public class SysUserController extends BaseController {
     @GetMapping("/me")
     public R<UserInfo> getMe(HttpServletRequest request) {
 //        String username = principal.getName();
-        String username = SecurityUtils.getCurrentUser(request);
+        String username = SecurityUtils.currentUsername(request);
         SysUser sysUser = sysuserService.getItemByUserName(username);
         if (sysUser == null) {
             return R.fail("无有效信息");
@@ -302,7 +302,7 @@ public class SysUserController extends BaseController {
     @PreAuthorize("@authority.hasPermission('sys:user:add')")
     public R<Integer> add(@Valid @RequestBody UserVo userVo, HttpServletRequest request) {
         SysUser sysUser = userVoToSys(userVo);
-        sysUser.setCreateBy(SecurityUtils.getCurrentUser(request));
+        sysUser.setCreateBy(SecurityUtils.currentUsername(request));
         sysuserService.insert(sysUser);
         // 查询该用户
         Long userId = sysuserService.getItemByUserName(sysUser.getUserName()).getUserId();
@@ -324,11 +324,11 @@ public class SysUserController extends BaseController {
     @PreAuthorize("@authority.hasPermission('sys:user:edit')")
     public R<Integer> update(@Valid @RequestBody UserVo userVo, HttpServletRequest request) {
         SysUser sysUser = userVoToSys(userVo);
-        sysUser.setUpdateBy(SecurityUtils.getCurrentUser(request));
+        sysUser.setUpdateBy(SecurityUtils.currentUsername(request));
         sysuserService.update(sysUser);
         // 更新 角色列表
         List<Long> roleIds = userVo.getRoleIds();
-        userAndRoleService.update(sysUser.getUserId(), roleIds, SecurityUtils.getCurrentUser(request));
+        userAndRoleService.update(sysUser.getUserId(), roleIds, SecurityUtils.currentUsername(request));
         return R.success();
     }
 
@@ -342,7 +342,7 @@ public class SysUserController extends BaseController {
                              @RequestParam("status") Integer status, HttpServletRequest request) {
         SysUser sysUser = sysuserService.selectSysUserByUserId(userId);
         sysUser.setStatus(status == 0 ? "0" : "1");
-        sysUser.setUpdateBy(SecurityUtils.getCurrentUser(request));
+        sysUser.setUpdateBy(SecurityUtils.currentUsername(request));
         sysuserService.update(sysUser);
         return R.success();
     }
@@ -363,7 +363,7 @@ public class SysUserController extends BaseController {
             return R.fail("密码长度必须在5到20个字符之间");
         }
         SecurityUtils.encryptPassword(password);
-        sysUser.setUpdateBy(SecurityUtils.getCurrentUser(request));
+        sysUser.setUpdateBy(SecurityUtils.currentUsername(request));
         sysuserService.update(sysUser);
         return R.success();
     }

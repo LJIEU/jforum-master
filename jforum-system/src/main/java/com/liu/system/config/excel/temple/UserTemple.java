@@ -2,10 +2,10 @@ package com.liu.system.config.excel.temple;
 
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.alibaba.excel.annotation.write.style.ColumnWidth;
-import com.liu.system.config.excel.converter.DeptExcelConverter;
-import com.liu.system.config.excel.converter.SexExcelConverter;
-import com.liu.system.config.excel.converter.StatusExcelConverter;
-import com.liu.system.config.excel.converter.UserTypeExcelConverter;
+import com.liu.db.converter.excel.DeptExcelConverter;
+import com.liu.db.converter.excel.SexExcelConverter;
+import com.liu.db.converter.excel.StatusExcelConverter;
+import com.liu.db.converter.excel.UserTypeExcelConverter;
 import lombok.EqualsAndHashCode;
 
 /**

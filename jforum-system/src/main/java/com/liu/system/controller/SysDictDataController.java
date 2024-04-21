@@ -6,10 +6,10 @@ import com.liu.core.controller.BaseController;
 import com.liu.core.result.R;
 import com.liu.core.utils.ExcelUtil;
 import com.liu.core.utils.SecurityUtils;
-import com.liu.system.dao.SysDictData;
-import com.liu.system.dao.SysDictType;
-import com.liu.system.service.SysDictDataService;
-import com.liu.system.vo.DictDataVo;
+import com.liu.db.entity.SysDictData;
+import com.liu.db.entity.SysDictType;
+import com.liu.db.service.SysDictDataService;
+import com.liu.db.vo.DictDataVo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -147,7 +147,7 @@ public class SysDictDataController extends BaseController {
     @PostMapping("/add")
     public R<Integer> add(@Valid @RequestBody DictDataVo dictDataVo, HttpServletRequest request) {
         SysDictData dictData = voToDictData(dictDataVo);
-        dictData.setCreateBy(SecurityUtils.getCurrentUser(request));
+        dictData.setCreateBy(SecurityUtils.currentUsername(request));
         return R.success(sysdictdataService.insert(dictData));
     }
 
@@ -159,7 +159,7 @@ public class SysDictDataController extends BaseController {
     @PutMapping("/update")
     public R<Integer> update(@Valid @RequestBody DictDataVo dictDataVo, HttpServletRequest request) {
         SysDictData dictData = voToDictData(dictDataVo);
-        dictData.setUpdateBy(SecurityUtils.getCurrentUser(request));
+        dictData.setUpdateBy(SecurityUtils.currentUsername(request));
         return R.success(sysdictdataService.update(dictData));
     }
 

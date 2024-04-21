@@ -5,7 +5,7 @@ import com.liu.core.annotation.Log;
 import com.liu.core.aspect.BaseLogAspect;
 import com.liu.core.manager.AsyncManager;
 import com.liu.core.model.BaseOperateLog;
-import com.liu.system.dao.SysOperateLog;
+import com.liu.db.entity.SysOperateLog;
 import com.liu.system.factory.AsyncFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;

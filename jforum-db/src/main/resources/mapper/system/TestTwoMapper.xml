@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace等于mapper接口类的全限定名,这样实现对应 -->
+<mapper namespace="com.liu.db.mapper.TestTwoMapper">
+    <resultMap id="TestTwoMapperResult" type="com.liu.db.entity.TestTwo">
+        <result property="twoId" column="two_id"/>
+        <result property="twoName" column="two_name"/>
+        <result property="pid" column="pid"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="isDelete" column="is_delete"/>
+    </resultMap>
+
+    <sql id="selectTestTwoVo">
+        select *
+        from test_two
+    </sql>
+    <insert id="insert" parameterType="com.liu.db.entity.TestTwo">
+        insert into test_two
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="twoId != null">
+                two_id,
+            </if>
+            <if test="twoName != null and twoName.length() > 0">
+                two_name,
+            </if>
+            <if test="pid != null">
+                pid,
+            </if>
+            <if test="createBy != null and createBy.length() > 0">
+                create_by,
+            </if>
+            <if test="isDelete != null">
+                is_delete,
+            </if>
+            create_time
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="twoId != null">
+                #{twoId},
+            </if>
+            <if test="twoName != null and twoName.length() > 0">
+                #{twoName},
+            </if>
+            <if test="pid != null">
+                #{pid},
+            </if>
+            <if test="createBy != null and createBy.length() > 0">
+                #{createBy},
+            </if>
+            <if test="isDelete != null">
+                #{isDelete},
+            </if>
+            sysdate()
+        </trim>
+    </insert>
+    <update id="update" parameterType="com.liu.db.entity.TestTwo">
+        update test_two
+        <trim prefix="set" suffixOverrides=",">
+            <if test="twoName != null and twoName.length() > 0">
+                two_name = #{twoName},
+            </if>
+            <if test="pid != null">
+                pid = #{pid},
+            </if>
+            <if test="updateBy != null and updateBy.length() > 0">
+                update_by = #{updateBy},
+            </if>
+            update_time = sysdate(),
+        </trim>
+        where two_id = #{twoId}
+    </update>
+
+    <delete id="deleteById" parameterType="String">
+        update test_two set is_delete = 1
+        where two_id = #{twoIds};
+    </delete>
+
+    <select id="selectTestTwoList" parameterType="com.liu.db.entity.TestTwo"
+            resultMap="TestTwoMapperResult">
+        <include refid="selectTestTwoVo"/>
+        <where>
+            <if test="pid != null">
+                and pid = #{pid}
+            </if>
+        </where>
+    </select>
+    <select id="selectTestTwoByTwoId" resultType="com.liu.db.entity.TestTwo">
+        <include refid="selectTestTwoVo"/>
+        <where>
+            two_id = #{twoId}
+            and is_delete = 0
+        </where>
+    </select>
+</mapper>

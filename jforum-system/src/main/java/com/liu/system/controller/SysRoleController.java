@@ -6,12 +6,12 @@ import com.liu.core.controller.BaseController;
 import com.liu.core.result.R;
 import com.liu.core.utils.ExcelUtil;
 import com.liu.core.utils.SecurityUtils;
-import com.liu.system.dao.SysMenu;
-import com.liu.system.dao.SysRole;
-import com.liu.system.service.SysRoleService;
-import com.liu.system.service.relation.SysRoleAndMenuService;
-import com.liu.system.vo.RoleVo;
-import com.liu.system.vo.level.Level;
+import com.liu.db.entity.SysMenu;
+import com.liu.db.entity.SysRole;
+import com.liu.db.service.SysRoleService;
+import com.liu.db.service.relation.SysRoleAndMenuService;
+import com.liu.db.vo.RoleVo;
+import com.liu.db.vo.level.Level;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -192,7 +192,7 @@ public class SysRoleController extends BaseController {
     public R<String> assignMenus(
             @PathVariable("roleId") Long roleId,
             @RequestParam("menusIds") Long[] menusIds, HttpServletRequest request) {
-        String username = SecurityUtils.getCurrentUser(request);
+        String username = SecurityUtils.currentUsername(request);
         roleAndMenuService.assignMenus(roleId, menusIds, username);
         return R.success();
     }

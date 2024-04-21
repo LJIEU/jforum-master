@@ -11,8 +11,8 @@ import com.liu.core.utils.SpringUtils;
 import com.liu.core.utils.XssUtils;
 import com.liu.system.config.excel.temple.UserTemple;
 import com.liu.system.context.UserDataListenerHolder;
-import com.liu.system.dao.SysUser;
-import com.liu.system.service.SysUserService;
+import com.liu.db.entity.SysUser;
+import com.liu.db.service.SysUserService;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;

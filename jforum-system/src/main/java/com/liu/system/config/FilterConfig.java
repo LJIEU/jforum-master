@@ -58,7 +58,7 @@ public class FilterConfig {
         initParameters.put("ignorePath", excludes);
         initParameters.put("isIncludeRichText", "true");
         filterRegistration.setInitParameters(initParameters);
-        filterRegistration.addUrlPatterns("/*");
+        filterRegistration.addUrlPatterns("/**");
         filterRegistration.setName("xssFilter");
         // 优先级更高
         filterRegistration.setOrder(XSS);
@@ -69,7 +69,7 @@ public class FilterConfig {
     public FilterRegistrationBean<RepeatableFilter> repeatableFilterRegistrationBean() {
         FilterRegistrationBean<RepeatableFilter> registrationBean = new FilterRegistrationBean<>();
         registrationBean.setFilter(new RepeatableFilter());
-        registrationBean.addUrlPatterns("/*");
+        registrationBean.addUrlPatterns("/**");
         registrationBean.setName("repeatableFilter");
         registrationBean.setOrder(REPEATABLE);
         return registrationBean;
@@ -79,7 +79,7 @@ public class FilterConfig {
     public FilterRegistrationBean<JwtAuthenticationTokenFilter> jwtFilterRegistrationBean() {
         FilterRegistrationBean<JwtAuthenticationTokenFilter> registrationBean = new FilterRegistrationBean<>();
         registrationBean.setFilter(new JwtAuthenticationTokenFilter());
-        registrationBean.addUrlPatterns("/*");
+        registrationBean.addUrlPatterns("/**");
         registrationBean.setName("jwtAuthenticationToken");
         registrationBean.setOrder(JWT_AUTH);
         return registrationBean;
