@@ -1,8 +1,9 @@
 package com.liu.system;
 
 import com.liu.generator.GenProperties;
-import lombok.extern.slf4j.Slf4j;
 import org.mybatis.spring.annotation.MapperScan;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -28,8 +29,9 @@ import java.net.UnknownHostException;
         "com.liu.camunda.*",
         "com.liu.security.*"})
 @SpringBootApplication(exclude = {/*SecurityAutoConfiguration.class*/})
-@Slf4j
 public class SystemApplication {
+    public static final Logger log = LoggerFactory.getLogger(SystemApplication.class);
+
     public static void main(String[] args) throws UnknownHostException {
         ConfigurableApplicationContext application = SpringApplication.run(SystemApplication.class, args);
         Environment env = application.getEnvironment();

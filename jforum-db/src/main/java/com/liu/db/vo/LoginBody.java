@@ -3,7 +3,6 @@ package com.liu.db.vo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
-import lombok.Data;
 
 /**
  * Description: 登录参数
@@ -13,7 +12,6 @@ import lombok.Data;
  * @since 2024/04/03 20:24
  */
 @Schema(name = "登录参数")
-@Data
 public class LoginBody {
 
     /**
@@ -39,4 +37,37 @@ public class LoginBody {
      * 唯一标识
      */
     private String uuid;
+
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getCaptchaCode() {
+        return captchaCode;
+    }
+
+    public void setCaptchaCode(String captchaCode) {
+        this.captchaCode = captchaCode;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
 }

@@ -7,12 +7,13 @@ import com.liu.core.excption.ServiceException;
 import com.liu.core.result.R;
 import com.liu.db.entity.SysUser;
 import jakarta.annotation.Resource;
-import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.engine.repository.Deployment;
 import org.camunda.bpm.model.bpmn.BpmnModelInstance;
 import org.camunda.bpm.model.bpmn.instance.Definitions;
 import org.camunda.bpm.model.bpmn.instance.UserTask;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
@@ -24,9 +25,10 @@ import java.util.Collection;
  * @version 1.0
  * @since 2024/04/21 17:07
  */
-@Slf4j
 @Service
 public class ProcessDefinitionServiceImpl implements ProcessDefinitionService {
+    public static final Logger log = LoggerFactory.getLogger(ProcessDefinitionServiceImpl.class);
+
 
     @Resource
     private RepositoryService repositoryService;

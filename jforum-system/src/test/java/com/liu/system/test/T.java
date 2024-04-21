@@ -6,17 +6,16 @@ import com.alibaba.excel.EasyExcel;
 import com.liu.core.config.redis.RedisCache;
 import com.liu.core.converter.LevelConverter;
 import com.liu.core.utils.LevelUtils;
-import com.liu.system.config.excel.handler.UserWriteHandler;
-import com.liu.system.config.excel.listener.UserDataListener;
-import com.liu.system.config.excel.temple.UserTemple;
 import com.liu.db.converter.level.MenuLevelConverter;
 import com.liu.db.entity.SysMenu;
 import com.liu.db.entity.SysUser;
 import com.liu.db.service.SysMenuService;
 import com.liu.db.service.SysUserService;
 import com.liu.db.vo.level.MenuLevel;
+import com.liu.system.config.excel.handler.UserWriteHandler;
+import com.liu.system.config.excel.listener.UserDataListener;
+import com.liu.system.config.excel.temple.UserTemple;
 import jakarta.annotation.Resource;
-import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -60,7 +59,6 @@ public class T {
     // 故意设置 2个 导致线程一直阻塞
     CountDownLatch countDownLatch = new CountDownLatch(2);
 
-    @SneakyThrows
     @Test
     public void logic() {
         new Thread(() -> {
@@ -110,7 +108,11 @@ public class T {
             }).start();
         }
 
-        countDownLatch.await();
+        try {
+            countDownLatch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     @Autowired

@@ -2,6 +2,7 @@ package com.liu.generator.controller;
 
 import cn.hutool.json.JSONUtil;
 import com.liu.core.controller.BaseController;
+import com.liu.core.excption.ServiceException;
 import com.liu.core.result.R;
 import com.liu.generator.entity.GenTable;
 import com.liu.generator.service.GenTableColumnService;
@@ -14,7 +15,6 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import lombok.SneakyThrows;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
@@ -82,7 +83,6 @@ public class GenController extends BaseController {
      * 下载代码
      */
     @Operation(summary = "下载代码ZIP")
-    @SneakyThrows
     @GetMapping("/download/{ids}")
     public void download(HttpServletResponse response, @PathVariable("ids") String[] ids) {
         byte[] data = genTableService.downloadCode(ids);
@@ -93,7 +93,11 @@ public class GenController extends BaseController {
         response.addHeader("Content-Length", "" + data.length);
         // zip 格式
         response.setContentType("application/octet-stream;charset=UTF-8");
-        IOUtils.write(data, response.getOutputStream());
+        try {
+            IOUtils.write(data, response.getOutputStream());
+        } catch (IOException e) {
+            throw new ServiceException("代码生成Zip导出异常");
+        }
     }
 
 

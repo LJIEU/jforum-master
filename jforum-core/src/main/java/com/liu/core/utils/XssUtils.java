@@ -2,8 +2,9 @@ package com.liu.core.utils;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.StrUtil;
-import lombok.extern.slf4j.Slf4j;
 import org.owasp.validator.html.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,8 +18,9 @@ import java.util.Objects;
  * @version 1.0
  * @since 2024/04/04 16:09
  */
-@Slf4j
 public class XssUtils {
+    private static final Logger log = LoggerFactory.getLogger(XssUtils.class);
+
 
     /**
      * Antisamy文件名

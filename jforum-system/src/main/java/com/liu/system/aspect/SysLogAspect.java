@@ -7,9 +7,10 @@ import com.liu.core.manager.AsyncManager;
 import com.liu.core.model.BaseOperateLog;
 import com.liu.db.entity.SysOperateLog;
 import com.liu.system.factory.AsyncFactory;
-import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 
@@ -20,10 +21,11 @@ import org.springframework.stereotype.Component;
  * @version 1.0
  * @since 2024/03/30 13:56
  */
-@Slf4j
 @Aspect
 @Component
 public class SysLogAspect extends BaseLogAspect {
+    public static final Logger log = LoggerFactory.getLogger(SysLogAspect.class);
+
     @Override
     public BaseOperateLog handleLog(JoinPoint joinPoint, Log controllerLog, Exception e, Object jsonResult) {
         BaseOperateLog baseOperateLog = super.handleLog(joinPoint, controllerLog, e, jsonResult);

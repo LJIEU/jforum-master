@@ -10,10 +10,11 @@ import com.liu.db.entity.SysOperateLog;
 import com.liu.db.service.SysLoginLogService;
 import com.liu.db.service.SysOperateLogService;
 import eu.bitwalker.useragentutils.UserAgent;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.TimerTask;
 
@@ -24,8 +25,9 @@ import java.util.TimerTask;
  * @version 1.0
  * @since 2024/03/30 11:22
  */
-@Slf4j
 public class AsyncFactory {
+    public static final Logger log = LoggerFactory.getLogger(AsyncFactory.class);
+
 
     /**
      * 操作日志写入

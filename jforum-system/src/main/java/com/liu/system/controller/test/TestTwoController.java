@@ -48,17 +48,17 @@ public class TestTwoController extends BaseController {
      */
     @Operation(summary = "分页查询")
     @Parameters({
-            @Parameter(name = "pageNum" , description = "当前页" , example = "1"),
-            @Parameter(name = "pageSize" , description = "页大小" , example = "10"),
-            @Parameter(name = "sortRules" , description = "排序规则"),
-            @Parameter(name = "isDesc" , description = "是否逆序排序"),
+            @Parameter(name = "pageNum", description = "当前页", example = "1"),
+            @Parameter(name = "pageSize", description = "页大小", example = "10"),
+            @Parameter(name = "sortRules", description = "排序规则"),
+            @Parameter(name = "isDesc", description = "是否逆序排序"),
     })
     @GetMapping("/list")
     public R<List<TestTwo>> list(
-            @RequestParam(value = "pageNum" , defaultValue = "1") Integer pageNum,
-            @RequestParam(value = "pageSize" , defaultValue = "10") Integer pageSize,
-            @RequestParam(value = "sortRules" , defaultValue = "two_id") String sortRules,
-            @RequestParam(value = "isDesc" , defaultValue = "false") Boolean isDesc,
+            @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
+            @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize,
+            @RequestParam(value = "sortRules", defaultValue = "two_id") String sortRules,
+            @RequestParam(value = "isDesc", defaultValue = "false") Boolean isDesc,
             TestTwo testtwo) {
         startPage(pageNum, pageSize, sortRules, isDesc);
         // 获取到数据 进行整理[当前页码,页记录数,总页数,查询总条数,数据]
@@ -96,7 +96,7 @@ public class TestTwoController extends BaseController {
         excludeColumnFiledNames.add("remark");
         List<TestTwo> list = testtwoService.selectTestTwoList(testtwo);
         ExcelUtil<TestTwo> util = new ExcelUtil<>(TestTwo.class);
-        util.exportExcel(response, list, "测试数据" , excludeColumnFiledNames);
+        util.exportExcel(response, list, "测试数据", excludeColumnFiledNames);
     }
 
 
@@ -106,7 +106,7 @@ public class TestTwoController extends BaseController {
     @Operation(summary = "根据ID获取详细信息")
     @GetMapping("/{twoId}")
     public R<TestTwo> getInfo(
-            @Parameter(name = "twoId" , description = "ID" , in = ParameterIn.PATH)
+            @Parameter(name = "twoId", description = "ID", in = ParameterIn.PATH)
             @PathVariable("twoId") Long twoId) {
         return R.success(testtwoService.selectTestTwoByTwoId(twoId));
     }

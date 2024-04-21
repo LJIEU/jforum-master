@@ -3,8 +3,9 @@ package com.liu.core.excption;
 import com.liu.core.constant.HttpStatus;
 import com.liu.core.result.R;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.extern.slf4j.Slf4j;
 import org.mybatis.spring.MyBatisSystemException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -22,9 +23,10 @@ import java.util.Map;
  * @version 1.0
  * @since 2024/03/30 14:57
  */
-@Slf4j
+//@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @SuppressWarnings("rawtypes")
     @ExceptionHandler(Exception.class)

@@ -11,8 +11,9 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -31,9 +32,9 @@ import java.util.concurrent.TimeUnit;
  * @version 1.0
  * @since 2024/04/02 16:01
  */
-@Slf4j
 @Service
 public class JwtTokenService {
+    public static final Logger log = LoggerFactory.getLogger(JwtTokenService.class);
 
     /**
      * 令牌自定义标识

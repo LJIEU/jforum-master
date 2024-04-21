@@ -7,7 +7,7 @@ import com.liu.core.constant.enume.DataSourceType;
 import com.liu.core.result.R;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,10 +24,11 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @Tag(name = "扩展功能")
 @RequestMapping("/my_camunda/extend")
-@RequiredArgsConstructor
 @RestController
 public class ExtendController {
-    private final ExtendService extendService;
+
+    @Autowired
+    private ExtendService extendService;
 
 
     /**

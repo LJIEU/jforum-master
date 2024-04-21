@@ -1,7 +1,5 @@
 package com.liu.generator;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -12,8 +10,6 @@ import org.springframework.stereotype.Component;
  * @version 1.0
  * @since 2024/03/30 16:42
  */
-@Getter
-@Setter
 @Component
 @ConfigurationProperties(prefix = "gen")
 //@PropertySource(value = {"classpath:generator.yaml"})
@@ -44,5 +40,44 @@ public class GenProperties {
 //    @Value("${tablePrefix}")
     public String tablePrefix;
 
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+
+    public String getPackageName() {
+        return packageName;
+    }
+
+    public void setPackageName(String packageName) {
+        this.packageName = packageName;
+    }
+
+    public String getModuleName() {
+        return moduleName;
+    }
+
+    public void setModuleName(String moduleName) {
+        this.moduleName = moduleName;
+    }
+
+    public boolean isAutoRemovePre() {
+        return autoRemovePre;
+    }
+
+    public void setAutoRemovePre(boolean autoRemovePre) {
+        this.autoRemovePre = autoRemovePre;
+    }
+
+    public String getTablePrefix() {
+        return tablePrefix;
+    }
+
+    public void setTablePrefix(String tablePrefix) {
+        this.tablePrefix = tablePrefix;
+    }
 }
 

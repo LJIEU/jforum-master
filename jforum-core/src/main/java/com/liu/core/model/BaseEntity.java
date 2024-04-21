@@ -13,7 +13,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.liu.core.converter.IsDeleteConverter;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
 import java.io.Serial;
@@ -36,7 +35,6 @@ import java.util.Map;
         // 使用 换行符
         wrapped = BooleanEnum.TRUE
 )
-@Data
 public class BaseEntity implements Serializable {
     /**
      * 数据导出时 需要查看表中是否含右 基类这些字段 如果有没有的则进行 排除 避免导出空数据
@@ -111,4 +109,61 @@ public class BaseEntity implements Serializable {
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     @ExcelIgnore // 导出时忽略此字段
     private Map<String, Object> params;
+
+
+    public String getCreateBy() {
+        return createBy;
+    }
+
+    public void setCreateBy(String createBy) {
+        this.createBy = createBy;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public String getUpdateBy() {
+        return updateBy;
+    }
+
+    public void setUpdateBy(String updateBy) {
+        this.updateBy = updateBy;
+    }
+
+    public Date getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
+    public Integer getIsDelete() {
+        return isDelete;
+    }
+
+    public void setIsDelete(Integer isDelete) {
+        this.isDelete = isDelete;
+    }
+
+    public Map<String, Object> getParams() {
+        return params;
+    }
+
+    public void setParams(Map<String, Object> params) {
+        this.params = params;
+    }
 }

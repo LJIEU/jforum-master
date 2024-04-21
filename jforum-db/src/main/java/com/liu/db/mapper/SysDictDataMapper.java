@@ -57,6 +57,7 @@ public interface SysDictDataMapper {
 
     /**
      * 更新所有 dict_type
+     *
      * @param oldDictType 旧的字典类型
      * @param newDictType 新的
      */

@@ -13,7 +13,8 @@ import com.liu.db.entity.SysUser;
 import com.liu.db.mapper.relation.SysRoleAndMenuMapper;
 import com.liu.db.service.SysRoleService;
 import com.liu.db.service.SysUserService;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,9 +32,10 @@ import java.util.stream.Collectors;
  * @version 1.0
  * @since 2024/04/05 13:30
  */
-@Slf4j
 @Service
 public class SysRoleAndMenuService {
+    public static final Logger log = LoggerFactory.getLogger(SysRoleAndMenuService.class);
+
     @Autowired
     private SysRoleAndMenuMapper roleAndMenuMapper;
 

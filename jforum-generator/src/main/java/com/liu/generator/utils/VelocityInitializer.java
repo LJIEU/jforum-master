@@ -22,7 +22,7 @@ public class VelocityInitializer {
             Properties properties = new Properties();
 //        ClasspathResourceLoader
             // 加载 vm 文件
-            properties.setProperty("resource.loader.file.class" ,
+            properties.setProperty("resource.loader.file.class",
                     "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
             // 设置字符集
             properties.setProperty(Velocity.INPUT_ENCODING, Constants.UTF8);

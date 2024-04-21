@@ -1,8 +1,5 @@
 package com.liu.db.vo;
 
-import lombok.Data;
-import lombok.experimental.Accessors;
-
 import java.util.List;
 import java.util.Set;
 
@@ -13,8 +10,6 @@ import java.util.Set;
  * @version 1.0
  * @since 2024/04/04 23:55
  */
-@Accessors(chain = true)
-@Data
 public class UserInfo {
     private Long userId;
     private String username;
@@ -46,4 +41,69 @@ public class UserInfo {
     }
 
 */
+
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getNickname() {
+        return nickname;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public Long getDeptId() {
+        return deptId;
+    }
+
+    public void setDeptId(Long deptId) {
+        this.deptId = deptId;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
+    public String getCurrRole() {
+        return currRole;
+    }
+
+    public void setCurrRole(String currRole) {
+        this.currRole = currRole;
+    }
+
+    public List<String> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<String> roles) {
+        this.roles = roles;
+    }
+
+    public Set<String> getPerms() {
+        return perms;
+    }
+
+    public void setPerms(Set<String> perms) {
+        this.perms = perms;
+    }
 }

@@ -26,7 +26,7 @@ public interface TestTwoService {
      * @param twoId ID
      * @return 返回测试信息
      */
-        TestTwo selectTestTwoByTwoId(Long twoId);
+    TestTwo selectTestTwoByTwoId(Long twoId);
 
     /**
      * 新增 测试

@@ -4,7 +4,8 @@ import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.write.handler.WriteHandler;
 import com.alibaba.excel.write.style.HorizontalCellStyleStrategy;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -20,8 +21,8 @@ import java.util.Set;
  * @version 1.0
  * @since 2024/03/31 15:51
  */
-@Slf4j
 public class ExcelUtil<T> {
+    private static final Logger log = LoggerFactory.getLogger(ExcelUtil.class);
 
     /**
      * 实体对象

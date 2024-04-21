@@ -22,8 +22,7 @@ public class SysOperateLogServiceImpl implements SysOperateLogService {
     private SysOperateLogMapper sysoperatelogMapper;
 
     @Override
-    public List<SysOperateLog> selectSysOperateLogList(SysOperateLog sysoperatelog)
-    {
+    public List<SysOperateLog> selectSysOperateLogList(SysOperateLog sysoperatelog) {
         return sysoperatelogMapper.selectSysOperateLogList(sysoperatelog);
     }
 
@@ -34,15 +33,13 @@ public class SysOperateLogServiceImpl implements SysOperateLogService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public int insert(SysOperateLog sysoperatelog)
-    {
+    public int insert(SysOperateLog sysoperatelog) {
         return sysoperatelogMapper.insert(sysoperatelog);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public int update(SysOperateLog sysoperatelog)
-    {
+    public int update(SysOperateLog sysoperatelog) {
         return sysoperatelogMapper.update(sysoperatelog);
     }
 

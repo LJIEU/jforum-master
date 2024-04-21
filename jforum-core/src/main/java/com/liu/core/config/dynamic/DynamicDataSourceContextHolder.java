@@ -1,6 +1,7 @@
 package com.liu.core.config.dynamic;
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Description: 动态数据源切换处理
@@ -9,8 +10,9 @@ import lombok.extern.slf4j.Slf4j;
  * @version 1.0
  * @since 2024/04/04 15:12
  */
-@Slf4j
 public class DynamicDataSourceContextHolder {
+    private static final Logger log = LoggerFactory.getLogger(DynamicDataSourceContextHolder.class);
+
 
     /**
      * ThreadLocal 为每一个使用该变量的线程提供独立的变量副本

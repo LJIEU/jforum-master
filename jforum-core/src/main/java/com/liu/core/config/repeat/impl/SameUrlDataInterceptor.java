@@ -4,7 +4,8 @@ import com.liu.core.config.repeat.RepeatSubmit;
 import com.liu.core.config.repeat.RepeatSubmitInterceptor;
 import com.liu.core.utils.HttpUtils;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 /**
@@ -14,9 +15,10 @@ import org.springframework.stereotype.Component;
  * @version 1.0
  * @since 2024/04/04 13:59
  */
-@Slf4j
 @Component
 public class SameUrlDataInterceptor extends RepeatSubmitInterceptor {
+    private static final Logger log = LoggerFactory.getLogger(SameUrlDataInterceptor.class);
+
     @Override
     public boolean isRepeatSubmit(HttpServletRequest request, RepeatSubmit repeatSubmit) {
         // 判断是否是重复提交URL

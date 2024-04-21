@@ -128,7 +128,8 @@
                ORDINAL_POSITION                                                               as sort
         from information_schema.columns
         where TABLE_SCHEMA = (select database())
-          and TABLE_NAME = 'test_one' and IF(COLUMN_KEY = 'PRI', '1', '0') = '1'
+          and TABLE_NAME = 'test_one'
+          and IF(COLUMN_KEY = 'PRI', '1', '0') = '1'
         order by ORDINAL_POSITION;
     </select>
 

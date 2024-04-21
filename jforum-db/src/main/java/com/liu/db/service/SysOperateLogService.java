@@ -26,7 +26,7 @@ public interface SysOperateLogService {
      * @param operateId 操作ID
      * @return 返回操作日志信息
      */
-        SysOperateLog selectSysOperateLogByOperateId(Long operateId);
+    SysOperateLog selectSysOperateLogByOperateId(Long operateId);
 
     /**
      * 新增 操作日志

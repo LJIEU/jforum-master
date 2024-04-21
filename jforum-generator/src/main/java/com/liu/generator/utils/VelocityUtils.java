@@ -48,12 +48,12 @@ public class VelocityUtils {
             column.setCapJavaField(Character.toUpperCase(javaField.charAt(0)) + javaField.substring(1));
             // 添加 需要导入的类
             String columnType = column.getColumnType();
-            if (Arrays.asList("datetime" , "time").contains(columnType)) {
+            if (Arrays.asList("datetime", "time").contains(columnType)) {
                 // 时间类型
                 importList.add("java.util.Date");
                 // 需要设置时间格式
                 importList.add("com.fasterxml.jackson.annotation.JsonFormat");
-            } else if (Stream.of("tinyint" , "bigint" , "decimal" , "number").anyMatch(columnType::contains)) {
+            } else if (Stream.of("tinyint", "bigint", "decimal", "number").anyMatch(columnType::contains)) {
                 // 如果是浮点型 统一使用 BigDecimal
                 if (columnType.contains(",")) {
                     importList.add("java.math.BigDecimal");
@@ -61,7 +61,7 @@ public class VelocityUtils {
             }
             // 设置哪些可以查询 哪些不可以查询
             if (Objects.equals(column.getIsRequired(), "1") &&
-                    !Arrays.asList("is_delete" , "remark" , "note" , "password").contains(column.getColumnName())) {
+                    !Arrays.asList("is_delete", "remark", "note", "password").contains(column.getColumnName())) {
                 selectColumns.add(column);
             }
         }
@@ -72,24 +72,24 @@ public class VelocityUtils {
     private static VelocityContext getContext(GenTable genTable, GenProperties genProperties, String tableName, List<GenTableColumn> columns, HashSet<String> importList, List<GenTableColumn> selectColumns) {
         // 设置模板变量信息
         VelocityContext velocityContext = new VelocityContext();
-        velocityContext.put("packageName" , genProperties.getPackageName() + "." + genProperties.getModuleName());
-        velocityContext.put("importList" , importList);
-        velocityContext.put("tableDesc" , getTableDesc(genTable.getTableComment()));
-        velocityContext.put("tableName" , tableName);
-        velocityContext.put("template" , genTable.getTplCategory());
-        velocityContext.put("author" , genProperties.getAuthor());
-        velocityContext.put("functionName" , genTable.getFunctionName());
-        velocityContext.put("dateTime" , new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
-        velocityContext.put("ClassName" , getClassName(tableName, genProperties));
-        velocityContext.put("baseEntity" , "BaseEntity");
-        velocityContext.put("columns" , columns);
+        velocityContext.put("packageName", genProperties.getPackageName() + "." + genProperties.getModuleName());
+        velocityContext.put("importList", importList);
+        velocityContext.put("tableDesc", getTableDesc(genTable.getTableComment()));
+        velocityContext.put("tableName", tableName);
+        velocityContext.put("template", genTable.getTplCategory());
+        velocityContext.put("author", genProperties.getAuthor());
+        velocityContext.put("functionName", genTable.getFunctionName());
+        velocityContext.put("dateTime", new SimpleDateFormat("yyyy-MM-dd").format(new Date()));
+        velocityContext.put("ClassName", getClassName(tableName, genProperties));
+        velocityContext.put("baseEntity", "BaseEntity");
+        velocityContext.put("columns", columns);
         /*与基类缺少的部分*/
-        velocityContext.put("lackColumns" , getLackColumns(columns));
+        velocityContext.put("lackColumns", getLackColumns(columns));
         GenTableColumn pkColumn = columns.stream().filter(v -> Objects.equals(v.getIsPk(), "1"))
                 .findFirst().orElse(null);
-        velocityContext.put("pkColumn" , pkColumn);
-        velocityContext.put("selectColumns" , selectColumns);
-        velocityContext.put("sqlColumns" , columns.stream().map(GenTableColumn::getColumnName).collect(Collectors.toList()));
+        velocityContext.put("pkColumn", pkColumn);
+        velocityContext.put("selectColumns", selectColumns);
+        velocityContext.put("sqlColumns", columns.stream().map(GenTableColumn::getColumnName).collect(Collectors.toList()));
         // 建立 关联表
         if (genTable.getTplCategory().equalsIgnoreCase("sub")) {
             // 当前表的pk 和 关联表的pk
@@ -99,9 +99,9 @@ public class VelocityUtils {
             String relationName = getRelation(tableName, subTableName);
             // 表描述
             String relationDesc = genTable.getTableComment().concat(" 与 " + subTableName + " 关联表");
-            velocityContext.put("relationName" , relationName);
-            velocityContext.put("subPkName" , subPkName);
-            velocityContext.put("relationDesc" , relationDesc);
+            velocityContext.put("relationName", relationName);
+            velocityContext.put("subPkName", subPkName);
+            velocityContext.put("relationDesc", relationDesc);
         }
         return velocityContext;
     }
@@ -221,7 +221,7 @@ public class VelocityUtils {
         // 类名
         String className = getClassName(genTable.getTableName(), genProperties);
 
-        String javaPath = "main/java/" + StringUtils.replace(packageName, "." , "/")
+        String javaPath = "main/java/" + StringUtils.replace(packageName, ".", "/")
                 + "/" + moduleName;
         String mybatisPath = "main/resources/mapper/" + moduleName;
 

@@ -2,8 +2,9 @@ package com.liu.core.utils;
 
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -13,8 +14,9 @@ import org.apache.commons.lang3.StringUtils;
  * @version 1.0
  * @since 2024/03/30 11:13
  */
-@Slf4j
 public class AddressUtils {
+    private static final Logger log = LoggerFactory.getLogger(AddressUtils.class);
+
     // IP 地址查询
     public static final String IP_URL = "http://whois.pconline.com.cn/ipJson.jsp";
 

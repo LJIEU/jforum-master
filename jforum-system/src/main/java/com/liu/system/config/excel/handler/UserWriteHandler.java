@@ -14,9 +14,10 @@ import com.alibaba.excel.write.style.column.AbstractColumnWidthStyleStrategy;
 import com.liu.core.utils.SpringUtils;
 import com.liu.db.entity.SysDept;
 import com.liu.db.service.SysDeptService;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddressList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
 
 import java.util.HashMap;
@@ -30,8 +31,9 @@ import java.util.Map;
  * @version 1.0
  * @since 2024/04/14 17:29
  */
-@Slf4j
 public class UserWriteHandler extends AbstractColumnWidthStyleStrategy implements SheetWriteHandler {
+    public static final Logger log = LoggerFactory.getLogger(UserWriteHandler.class);
+
 
     private SysDeptService deptService = SpringUtils.getBean(SysDeptService.class);
 

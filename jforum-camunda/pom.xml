@@ -12,7 +12,15 @@
 
     <artifactId>jforum-camunda</artifactId>
     <version>1.0</version>
+    <packaging>jar</packaging>
     <description>流程模块</description>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <java.version>17</java.version>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+    </properties>
 
 
     <repositories>
@@ -32,7 +40,7 @@
             <groupId>com.liu</groupId>
             <artifactId>jforum-db</artifactId>
         </dependency>
-        
+
         <dependency>
             <groupId>org.camunda.bpm.springboot</groupId>
             <artifactId>camunda-bpm-spring-boot-starter-rest</artifactId>

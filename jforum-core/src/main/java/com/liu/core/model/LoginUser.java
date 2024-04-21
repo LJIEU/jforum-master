@@ -99,6 +99,7 @@ public class LoginUser implements UserDetails {
     public String getUsername() {
         return user.getUsername();
     }
+
     /**
      * 账户是否未过期  过期无法验证
      */

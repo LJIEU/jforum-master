@@ -7,12 +7,13 @@ import com.liu.core.constant.CacheConstants;
 import com.liu.core.excption.RepeatSubmitException;
 import com.liu.core.utils.ServletUtils;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -28,10 +29,11 @@ import java.util.concurrent.TimeUnit;
  * @version 1.0
  * @since 2024/04/04 13:53
  */
-@Slf4j
 @Aspect
 @Component
 public class RepeatSubmitAspect {
+    private static final Logger log = LoggerFactory.getLogger(RepeatSubmitAspect.class);
+
     private final String REPEAT_PARAMS = "repeat_params";
     private final String REPEAT_TIME = "repeat_time";
 

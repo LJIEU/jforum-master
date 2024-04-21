@@ -26,7 +26,7 @@ public interface SysDictDataService {
      * @param dictCode 字典编码
      * @return 返回字典数据信息
      */
-        SysDictData selectSysDictDataByDictCode(Long dictCode);
+    SysDictData selectSysDictDataByDictCode(Long dictCode);
 
     /**
      * 新增 字典数据
@@ -54,6 +54,7 @@ public interface SysDictDataService {
 
     /**
      * 更新所有 dict_type
+     *
      * @param oldDictType 旧的字典类型
      * @param newDictType 新的
      */

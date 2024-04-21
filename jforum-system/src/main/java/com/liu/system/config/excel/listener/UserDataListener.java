@@ -9,11 +9,12 @@ import com.alibaba.excel.util.ListUtils;
 import com.liu.core.utils.SecurityUtils;
 import com.liu.core.utils.SpringUtils;
 import com.liu.core.utils.XssUtils;
-import com.liu.system.config.excel.temple.UserTemple;
-import com.liu.system.context.UserDataListenerHolder;
 import com.liu.db.entity.SysUser;
 import com.liu.db.service.SysUserService;
-import lombok.extern.slf4j.Slf4j;
+import com.liu.system.config.excel.temple.UserTemple;
+import com.liu.system.context.UserDataListenerHolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
@@ -26,8 +27,9 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @version 1.0
  * @since 2024/04/15 14:12
  */
-@Slf4j
 public class UserDataListener implements ReadListener<UserTemple> {
+    public static final Logger log = LoggerFactory.getLogger(UserDataListener.class);
+
 
     public static final int BATCH_COUNT = 100;
     public static final AtomicInteger SUCCESS = new AtomicInteger(0);

@@ -6,7 +6,8 @@ import cn.hutool.json.JSONUtil;
 import com.liu.core.config.xxs.XssRequestWrapper;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpMethod;
 
 import java.io.IOException;
@@ -23,8 +24,9 @@ import java.util.regex.Pattern;
  * @version 1.0
  * @since 2024/04/04 16:12
  */
-@Slf4j
 public class XssFilter implements Filter {
+    private static final Logger log = LoggerFactory.getLogger(XssFilter.class);
+
     /**
      * 可放行的请求路径
      */

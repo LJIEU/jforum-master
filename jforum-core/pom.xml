@@ -6,12 +6,14 @@
         <groupId>com.liu</groupId>
         <artifactId>jforum-master</artifactId>
         <version>1.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>jforum-core</artifactId>
     <description>核心代码</description>
     <version>1.0</version>
+    <packaging>jar</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -104,8 +106,6 @@
             <groupId>org.owasp.antisamy</groupId>
             <artifactId>antisamy</artifactId>
         </dependency>
-
-
     </dependencies>
 
 </project>

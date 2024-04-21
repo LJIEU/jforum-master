@@ -26,7 +26,7 @@ public interface SysDictTypeService {
      * @param dictId 字典ID
      * @return 返回字典类型信息
      */
-        SysDictType selectSysDictTypeByDictId(Long dictId);
+    SysDictType selectSysDictTypeByDictId(Long dictId);
 
     /**
      * 新增 字典类型

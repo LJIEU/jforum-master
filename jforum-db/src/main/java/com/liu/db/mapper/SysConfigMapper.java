@@ -59,6 +59,7 @@ public interface SysConfigMapper {
 
     /**
      * 根据 config_key 查询 config_value
+     *
      * @param key 键
      * @return 值
      */

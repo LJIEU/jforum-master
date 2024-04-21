@@ -78,14 +78,14 @@ public class TestTwo extends BaseEntity {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("twoId" , getTwoId())
-                .append("twoName" , getTwoName())
-                .append("pid" , getPid())
-                .append("createBy" , getCreateBy())
-                .append("createTime" , getCreateTime())
-                .append("updateBy" , getUpdateBy())
-                .append("updateTime" , getUpdateTime())
-                .append("isDelete" , getIsDelete())
+                .append("twoId", getTwoId())
+                .append("twoName", getTwoName())
+                .append("pid", getPid())
+                .append("createBy", getCreateBy())
+                .append("createTime", getCreateTime())
+                .append("updateBy", getUpdateBy())
+                .append("updateTime", getUpdateTime())
+                .append("isDelete", getIsDelete())
                 .toString();
     }
 }

@@ -1,7 +1,8 @@
 package com.liu.core.manager;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -14,16 +15,23 @@ import java.util.concurrent.*;
  * @version 1.0
  * @since 2024/03/30 11:21
  */
-@Slf4j
 @Configuration
 public class ThreadPoolConfig {
-    // 核心线程池大小
+    private static final Logger log = LoggerFactory.getLogger(ThreadPoolConfig.class);
+
+    /**
+     * 核心线程池大小
+     */
     private final int corePoolSize = 50;
 
-    // 最大可创建的线程数
+    /**
+     * 最大可创建的线程数
+     */
     private final int maxPoolSize = 200;
 
-    // 队列最大长度
+    /**
+     * 队列最大长度
+     */
     private final int queueCapacity = 1000;
 
     /**

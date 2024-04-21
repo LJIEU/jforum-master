@@ -27,4 +27,20 @@ public class DefinitionVo {
     @Schema(description = "流程定义数据")
     @NotEmpty(message = "流程定义不能为空")
     private String processDefinition;
+
+    public String getProcessDefinitionKey() {
+        return processDefinitionKey;
+    }
+
+    public void setProcessDefinitionKey(String processDefinitionKey) {
+        this.processDefinitionKey = processDefinitionKey;
+    }
+
+    public String getProcessDefinition() {
+        return processDefinition;
+    }
+
+    public void setProcessDefinition(String processDefinition) {
+        this.processDefinition = processDefinition;
+    }
 }

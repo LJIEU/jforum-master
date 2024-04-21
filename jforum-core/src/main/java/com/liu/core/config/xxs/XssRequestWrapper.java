@@ -7,9 +7,10 @@ import jakarta.servlet.ReadListener;
 import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletRequestWrapper;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
@@ -28,8 +29,9 @@ import java.util.Map;
  * @version 1.0
  * @since 2024/04/04 16:11
  */
-@Slf4j
 public class XssRequestWrapper extends HttpServletRequestWrapper {
+    private static final Logger log = LoggerFactory.getLogger(XssRequestWrapper.class);
+
     private final List<String> ignoreParamValueList;
 
     public XssRequestWrapper(HttpServletRequest request, List<String> ignoreParamValueList) {

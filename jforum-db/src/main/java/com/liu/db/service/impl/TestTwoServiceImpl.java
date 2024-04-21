@@ -22,8 +22,7 @@ public class TestTwoServiceImpl implements TestTwoService {
     private TestTwoMapper testtwoMapper;
 
     @Override
-    public List<TestTwo> selectTestTwoList(TestTwo testtwo)
-    {
+    public List<TestTwo> selectTestTwoList(TestTwo testtwo) {
         return testtwoMapper.selectTestTwoList(testtwo);
     }
 
@@ -34,15 +33,13 @@ public class TestTwoServiceImpl implements TestTwoService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public int insert(TestTwo testtwo)
-    {
+    public int insert(TestTwo testtwo) {
         return testtwoMapper.insert(testtwo);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public int update(TestTwo testtwo)
-    {
+    public int update(TestTwo testtwo) {
         return testtwoMapper.update(testtwo);
     }
 

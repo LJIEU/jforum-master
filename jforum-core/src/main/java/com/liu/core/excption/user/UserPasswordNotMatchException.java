@@ -14,6 +14,6 @@ public class UserPasswordNotMatchException extends UserException {
     private static final long serialVersionUID = -5745201034303323569L;
 
     public UserPasswordNotMatchException() {
-        super("user.password.not.match" , null);
+        super("user.password.not.match", null);
     }
 }

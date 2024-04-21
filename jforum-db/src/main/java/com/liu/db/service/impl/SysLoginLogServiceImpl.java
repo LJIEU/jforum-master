@@ -22,8 +22,7 @@ public class SysLoginLogServiceImpl implements SysLoginLogService {
     private SysLoginLogMapper sysloginlogMapper;
 
     @Override
-    public List<SysLoginLog> selectSysLoginLogList(SysLoginLog sysloginlog)
-    {
+    public List<SysLoginLog> selectSysLoginLogList(SysLoginLog sysloginlog) {
         return sysloginlogMapper.selectSysLoginLogList(sysloginlog);
     }
 
@@ -34,15 +33,13 @@ public class SysLoginLogServiceImpl implements SysLoginLogService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public int insert(SysLoginLog sysloginlog)
-    {
+    public int insert(SysLoginLog sysloginlog) {
         return sysloginlogMapper.insert(sysloginlog);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public int update(SysLoginLog sysloginlog)
-    {
+    public int update(SysLoginLog sysloginlog) {
         return sysloginlogMapper.update(sysloginlog);
     }
 

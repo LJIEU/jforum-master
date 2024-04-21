@@ -77,7 +77,8 @@
     </update>
 
     <delete id="deleteById" parameterType="String">
-        update test_two set is_delete = 1
+        update test_two
+        set is_delete = 1
         where two_id = #{twoIds};
     </delete>
 

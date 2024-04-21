@@ -1,8 +1,9 @@
 package com.liu.core.utils;
 
 import jakarta.servlet.ServletRequest;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -18,8 +19,8 @@ import java.nio.charset.StandardCharsets;
  * @version 1.0
  * @since 2024/03/30 11:16
  */
-@Slf4j
 public class HttpUtils {
+    private static final Logger log = LoggerFactory.getLogger(HttpUtils.class);
 
     /**
      * 向指定 URL 发送 Get 方法请求

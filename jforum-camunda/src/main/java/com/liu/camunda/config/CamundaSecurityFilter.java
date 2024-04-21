@@ -2,8 +2,9 @@ package com.liu.camunda.config;
 
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.extern.slf4j.Slf4j;
 import org.camunda.bpm.engine.rest.security.auth.ProcessEngineAuthenticationFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 
@@ -17,8 +18,9 @@ import java.io.IOException;
  * @version 1.0
  * @since 2024/04/21 12:27
  */
-@Slf4j
 public class CamundaSecurityFilter implements Filter {
+    public static final Logger log = LoggerFactory.getLogger(CamundaSecurityFilter.class);
+
     @Bean
     public FilterRegistrationBean<ProcessEngineAuthenticationFilter> processEngineAuthenticationFilter() {
         FilterRegistrationBean<ProcessEngineAuthenticationFilter> processEngineAuthenticationFilterFilterRegistrationBean = new FilterRegistrationBean<>();

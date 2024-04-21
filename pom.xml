@@ -23,6 +23,7 @@
         <java.version>17</java.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
+        <lombok.version>1.18.30</lombok.version>
         <spring.boot.version>3.2.0</spring.boot.version>
         <camunda.spring.boot.starter.version>7.21.0</camunda.spring.boot.starter.version>
         <jforum.version>1.0</jforum.version>
@@ -220,6 +221,16 @@
                 <version>3.11.0</version>
                 <configuration>
                     <proc>none</proc>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
                 </configuration>
             </plugin>
         </plugins>

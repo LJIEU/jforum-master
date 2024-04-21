@@ -11,11 +11,12 @@ import com.liu.generator.mapper.GenTableMapper;
 import com.liu.generator.utils.VelocityInitializer;
 import com.liu.generator.utils.VelocityUtils;
 import com.liu.generator.vo.GenTableVo;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,9 +38,10 @@ import java.util.zip.ZipOutputStream;
  * @version 1.0
  * @since 2024/03/30 17:20
  */
-@Slf4j
 @Service
 public class GenTableService {
+    public static final Logger log = LoggerFactory.getLogger(GenTableService.class);
+
 
     @Autowired
     private GenTableMapper genTableMapper;
@@ -73,7 +75,7 @@ public class GenTableService {
         // 设置 分类 以及 关联表信息 采用默认
         String template = genTableVo.getTemplate();
         try {
-            if (!List.of(new String[]{"crud" , "tree" , "sub"}).contains(template)) {
+            if (!List.of(new String[]{"crud", "tree", "sub"}).contains(template)) {
                 template = "crud";
             }
         } catch (Exception e) {
@@ -186,7 +188,7 @@ public class GenTableService {
                     zip.flush();
                     zip.closeEntry();
                 } catch (IOException e) {
-                    log.error("渲染失败,表名:{} --> {}" , genTable.getTableName(), e);
+                    log.error("渲染失败,表名:{} --> {}", genTable.getTableName(), e);
                 }
             }
         }

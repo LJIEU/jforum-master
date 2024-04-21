@@ -8,7 +8,8 @@ import com.liu.core.utils.MessageUtils;
 import com.liu.core.utils.SpringUtils;
 import com.liu.db.service.SysUserService;
 import com.liu.security.context.AuthenticationContextHolder;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -23,9 +24,10 @@ import org.springframework.stereotype.Service;
  * @version 1.0
  * @since 2024/04/02 15:14
  */
-@Slf4j
 @Service("userDetailsService")
 public class UserDetailsServiceImpl implements UserDetailsService {
+    public static final Logger log = LoggerFactory.getLogger(UserDetailsServiceImpl.class);
+
     @SuppressWarnings("All")
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

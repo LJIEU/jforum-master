@@ -2,7 +2,8 @@ package com.liu.core.manager;
 
 import com.liu.core.constant.Constants;
 import com.liu.core.utils.SpringUtils;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.TimerTask;
 import java.util.concurrent.ScheduledExecutorService;
@@ -14,8 +15,8 @@ import java.util.concurrent.TimeUnit;
  * @description 异步任务管理器
  * @since 2024/02/15 11:23
  */
-@Slf4j
 public class AsyncManager {
+    private static final Logger log = LoggerFactory.getLogger(AsyncManager.class);
 
     /**
      * 异步操作任务调度线程池

@@ -22,8 +22,7 @@ public class ${ClassName}ServiceImpl implements ${ClassName}Service {
     private ${ClassName}Mapper $ClassName.toLowerCase()Mapper;
 
     @Override
-    public List<${ClassName}> select${ClassName}List(${ClassName} $ClassName.toLowerCase())
-    {
+    public List<${ClassName}> select${ClassName}List(${ClassName} $ClassName.toLowerCase()) {
         return $ClassName.toLowerCase()Mapper.select${ClassName}List($ClassName.toLowerCase());
     }
 
@@ -34,15 +33,13 @@ public class ${ClassName}ServiceImpl implements ${ClassName}Service {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public int insert(${ClassName} $ClassName.toLowerCase())
-    {
+    public int insert(${ClassName} $ClassName.toLowerCase()) {
         return $ClassName.toLowerCase()Mapper.insert($ClassName.toLowerCase());
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public int update(${ClassName} $ClassName.toLowerCase())
-    {
+    public int update(${ClassName} $ClassName.toLowerCase()) {
         return $ClassName.toLowerCase()Mapper.update($ClassName.toLowerCase());
     }
 

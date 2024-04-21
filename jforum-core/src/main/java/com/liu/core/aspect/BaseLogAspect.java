@@ -12,13 +12,14 @@ import com.liu.core.utils.ServletUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Before;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.NamedThreadLocal;
 import org.springframework.http.HttpMethod;
 import org.springframework.validation.BindingResult;
@@ -34,8 +35,9 @@ import java.util.Map;
  * @version 1.0
  * @since 2024/03/30 10:58
  */
-@Slf4j
 public class BaseLogAspect {
+    private static final Logger log = LoggerFactory.getLogger(BaseLogAspect.class);
+
     /**
      * 计算操作消耗时间
      */

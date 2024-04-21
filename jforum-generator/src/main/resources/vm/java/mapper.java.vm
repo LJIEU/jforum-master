@@ -30,7 +30,7 @@ public interface ${ClassName}Mapper {
      * @param ${pkColumn.javaField} ${tableDesc}ID
      * @return 返回${tableDesc}信息
      */
-    ${ClassName} select${ClassName}By${pkColumn.capJavaField}(${pkColumn.javaType} ${pkColumn.javaField});
+        ${ClassName} select${ClassName}By${pkColumn.capJavaField}(${pkColumn.javaType} ${pkColumn.javaField});
 
     /**
      * 新增 ${tableDesc}

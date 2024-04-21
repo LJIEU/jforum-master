@@ -13,7 +13,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,11 +26,11 @@ import org.springframework.web.bind.annotation.*;
  */
 @Tag(name = "扩展功能")
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/my_camunda/process-definition")
 public class ProcessDefinitionController {
 
-    private final ProcessDefinitionService processDefinitionService;
+    @Autowired
+    private ProcessDefinitionService processDefinitionService;
 
     /**
      * 发布流程定义

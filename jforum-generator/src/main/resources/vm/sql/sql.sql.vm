@@ -1,7 +1,7 @@
 create table `${relationName}`
 (
-    `id`     bigint(20) auto_increment comment 'ID',
+    `id`                     bigint(20) auto_increment comment 'ID',
     `${pkColumn.columnName}` bigint(20) comment '$pkColumn.javaField',
-    `${subPkName}` bigint(20) comment '${subPkName}',
+    `${subPkName}`           bigint(20) comment '${subPkName}',
     primary key (id)
 ) engine = innodb comment '${relationDesc}';

@@ -18,27 +18,27 @@ public class BaseException extends RuntimeException {
     /**
      * 所属模块
      */
-    private String module;
+    private final String module;
 
     /**
      * 错误码
      */
-    private String code;
+    private final String code;
 
     /**
      * 错误码对应的参数
      */
-    private Object[] args;
+    private final Object[] args;
 
     /**
      * 错误消息
      */
-    private String defaultMessage;
+    private final String defaultMessage;
 
     /**
      * 错误消息
      */
-    private String language;
+    private final String language;
 
 
     public BaseException(String module, String code, Object[] args, String defaultMessage, String language) {
