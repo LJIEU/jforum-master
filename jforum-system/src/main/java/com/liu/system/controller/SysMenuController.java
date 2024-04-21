@@ -143,7 +143,11 @@ public class SysMenuController extends BaseController {
         routesVos = routesVos.stream().sorted(new Comparator<RoutesVo>() {
             @Override
             public int compare(RoutesVo o1, RoutesVo o2) {
-                return Math.toIntExact(o1.getOrderNum() - o2.getOrderNum());
+                if (Objects.equals(o1.getOrderNum(), o2.getOrderNum())) {
+                    return Math.toIntExact(o1.getId() - o2.getId());
+                } else {
+                    return Math.toIntExact(o1.getOrderNum() - o2.getOrderNum());
+                }
             }
         }).toList();
         // 整理 树型结构

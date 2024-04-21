@@ -1,6 +1,7 @@
 package com.liu.db.vo;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Description:
@@ -20,8 +21,23 @@ public class RoutesVo {
 
     private Meta meta;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof RoutesVo routesVo)) {
+            return false;
+        }
+        return Objects.equals(getId(), routesVo.getId()) && Objects.equals(getPid(), routesVo.getPid()) && Objects.equals(getName(), routesVo.getName()) && Objects.equals(getPath(), routesVo.getPath()) && Objects.equals(getComponent(), routesVo.getComponent()) && Objects.equals(getOrderNum(), routesVo.getOrderNum()) && Objects.equals(getChildren(), routesVo.getChildren()) && Objects.equals(getMeta(), routesVo.getMeta());
+    }
 
     @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getPid(), getName(), getPath(), getComponent(), getOrderNum(), getChildren(), getMeta());
+    }
+
+    /*    @Override
     public boolean equals(Object o) {
         if (o == this) {
             return true;
@@ -158,7 +174,7 @@ public class RoutesVo {
         Object $meta = this.getMeta();
         result = result * 59 + ($meta == null ? 43 : $meta.hashCode());
         return result;
-    }
+    }*/
 
     public static class Meta {
         /**
