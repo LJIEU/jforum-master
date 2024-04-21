@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Description: 过滤器
@@ -118,8 +120,24 @@ public class XssFilter implements Filter {
             return false;
         } else {
             for (String ignorePath : ignorePathList) {
-                if (!StrUtil.isBlank(ignorePath) && servletPath.contains(ignorePath.trim())) {
-                    return true;
+                if (!StrUtil.isBlank(ignorePath)) {
+                    // /camunda/api/admin/auth/user/default/login/welcome
+                    // /camunda/**  进行匹配
+                    // 将带有 ** 的模式转换为正则表达式
+                    ignorePath = ignorePath.replaceAll("\\*\\*", ".*");
+                    // 将转换后的模式编译为正则表达式对象 即 /camunda/.*
+                    Pattern regexPattern = Pattern.compile(ignorePath);
+                    // 使用正则表达式匹配URL
+                    Matcher matcher = regexPattern.matcher(servletPath);
+                    // 匹配结果
+                    if (matcher.find()) {
+                        // 情况1 /camunda/api/admin/auth/user/default/login/welcome
+                        // 情况2 xxx/camunda/api/admin/auth/user/
+                        // 明显情况2不是想要的结果
+                        // 如果长度一样则说明 匹配成功
+                        String url = matcher.group(0);
+                        return url.length() == servletPath.length();
+                    }
                 }
             }
         }

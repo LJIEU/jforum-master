@@ -18,6 +18,7 @@ public class RoutesVo {
     private String name;
     private String path;
     private String component;
+    private Integer orderNum;
     private List<RoutesVo> children;
 
     private Meta meta;

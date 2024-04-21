@@ -7,7 +7,6 @@ import com.liu.security.service.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -125,15 +124,22 @@ public class SecurityConfig {
                         // 过滤请求
                         .authorizeHttpRequests(auth -> auth
                                 // 匿名访问
-                                .requestMatchers("/test/index","/**",
+                                .requestMatchers(
+                                        // 测试使用
+                                        "/test/index",
                                         "/test/test", "/test/test2", "/test/test3", "/test/test4", "/test/test5",
-                                        "/test/test8", "/test/test9/*","/gen/**",
-                                        "/captcha/**", "*/login", "*/register" ).permitAll()
-                                .requestMatchers(HttpMethod.GET, "/",
-                                        "/**.htm", "/**.html", "/**.css", "/**.js").anonymous()
-                                .requestMatchers("/swagger-ui/**",
-                                        "/swagger-resources/**", "/webjars/**", "/*/api-docs/**").anonymous()
-                                .requestMatchers("/druid/**").anonymous()
+                                        "/test/test8", "/test/test9/*", "/gen/**",
+                                        // 静态资源
+                                        "/**.htm", "/**.html", "/**.css", "/**.js",
+                                        // 登录 和 注册 相关
+                                        "/captcha/**", "*/login", "*/register",
+                                        // swagger 相关
+                                        "/swagger-ui/**", "/swagger-resources/**", "/webjars/**", "/*/api-docs/**",
+                                        // Druid 控制台
+                                        "/druid/**",
+                                        // camunda 工作流   modeler流程部署    modeler表单部署
+                                        "/camunda/**", "/engine-res/**", "/forms/**"
+                                ).anonymous()
                                 // 除了上面的请求 其他所有请求都需要鉴权认证
                                 .anyRequest().authenticated())
                         // 退出

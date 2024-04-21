@@ -120,3 +120,20 @@ token:
 # 验证码类型 math->数学计算 | char->字符验证
 captchaType: math
 #captchaType: char
+
+##### Camunda
+camunda:
+  bpm:
+    admin-user:
+      id: demo
+      password: demo
+    database:
+      type: mysql
+      schema-update: false # 进行手动创建数据库 true则是自动创建
+    webapp:
+      index-redirect-enabled: true
+    # 自动部署 resource 下的 Bpmn 文件
+    auto-deployment-enabled: false
+    history-level: full
+    filter:
+      create: All tasks

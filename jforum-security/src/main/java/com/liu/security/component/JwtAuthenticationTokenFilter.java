@@ -1,17 +1,16 @@
 package com.liu.security.component;
 
 import com.liu.core.model.LoginUser;
+import com.liu.core.utils.SpringUtils;
 import com.liu.security.service.JwtTokenService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -24,14 +23,12 @@ import java.io.IOException;
  * @since 2024/04/02 16:00
  */
 @Slf4j
-@Component
+//@Component
 public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
-
-    @Autowired
-    private JwtTokenService jwtTokenService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        JwtTokenService jwtTokenService = SpringUtils.getBean(JwtTokenService.class);
         // 获取当前登录用户信息 进行判断 验证Token是否过期
         LoginUser loginUser = jwtTokenService.getLoginUser(request);
         if (loginUser != null) {

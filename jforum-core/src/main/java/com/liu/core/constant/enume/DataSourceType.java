@@ -16,5 +16,9 @@ public enum DataSourceType {
     /**
      * 从库
      */
-    SLAVE
+    SLAVE,
+    /**
+     * Camunda 库
+     */
+    CAMUNDA
 }

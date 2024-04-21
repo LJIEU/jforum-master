@@ -24,6 +24,7 @@ import java.net.UnknownHostException;
 @MapperScan({"com.liu.**.mapper"})
 @ComponentScan({"com.liu.core.*",
         "com.liu.generator.*",
+        "com.liu.camunda.*",
         "com.liu.security.*"})
 @SpringBootApplication(exclude = {/*SecurityAutoConfiguration.class*/})
 @Slf4j
