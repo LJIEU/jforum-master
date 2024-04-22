@@ -89,7 +89,7 @@ public class FilterConfig {
     public FilterRegistrationBean<CamundaSecurityFilter> camundaSecurityRegistrationBean() {
         FilterRegistrationBean<CamundaSecurityFilter> registrationBean = new FilterRegistrationBean<>();
         registrationBean.setFilter(new CamundaSecurityFilter());
-        registrationBean.addUrlPatterns("/camunda/**", "/engine-res/**");
+        registrationBean.addUrlPatterns("/camunda/**", "/engine-rest/**");
         registrationBean.setName("camundaAuthentication");
         registrationBean.setOrder(CAMUNDA_AUTH);
         return registrationBean;

@@ -138,7 +138,7 @@ public class SecurityConfig {
                                         // Druid 控制台
                                         "/druid/**",
                                         // camunda 工作流   modeler流程部署    modeler表单部署
-                                        "/camunda/**", "/engine-res/**", "/forms/**"
+                                        "/camunda/**", "/engine-rest/**", "/forms/**"
                                 ).permitAll()
                                 // 除了上面的请求 其他所有请求都需要鉴权认证
                                 .anyRequest().authenticated())

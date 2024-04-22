@@ -1,4 +1,4 @@
-package com.liu.camunda.flow;
+package com.liu.camunda.controller.flow;
 
 import com.liu.camunda.service.ProcessDefinitionService;
 import com.liu.camunda.vo.DefinitionVo;
@@ -18,13 +18,13 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * Description: 流程定义
+ * Description: 流程部署
  *
  * @author 杰
  * @version 1.0
  * @since 2024/04/21 17:06
  */
-@Tag(name = "扩展功能")
+@Tag(name = "流程部署功能")
 @RestController
 @RequestMapping("/my_camunda/process-definition")
 public class ProcessDefinitionController {

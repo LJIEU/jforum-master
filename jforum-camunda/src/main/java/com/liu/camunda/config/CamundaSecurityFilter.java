@@ -27,7 +27,7 @@ public class CamundaSecurityFilter implements Filter {
         processEngineAuthenticationFilterFilterRegistrationBean.setName("camunda-auth");
         processEngineAuthenticationFilterFilterRegistrationBean.setFilter(new ProcessEngineAuthenticationFilter());
         processEngineAuthenticationFilterFilterRegistrationBean.addInitParameter("authentication-provider", "com.liu.camunda.config.CamundaAuthenticationProvider");
-        processEngineAuthenticationFilterFilterRegistrationBean.addUrlPatterns("/camunda/**", "/engine-res/**");
+        processEngineAuthenticationFilterFilterRegistrationBean.addUrlPatterns("/camunda/**", "/engine-rest/**");
         return processEngineAuthenticationFilterFilterRegistrationBean;
     }
 

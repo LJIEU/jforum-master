@@ -1,4 +1,4 @@
-package com.liu.camunda.flow;
+package com.liu.camunda.controller.flow;
 
 import com.liu.camunda.service.ExtendService;
 import com.liu.camunda.vo.SequentialAddVo;

@@ -35,8 +35,13 @@ public class ProcessDefinitionServiceImpl implements ProcessDefinitionService {
 
     @Override
     public R<String> deploy(SysUser user, DeployVo param) {
-        Deployment deploy = repositoryService.createDeployment().addClasspathResource(param.getResourcePath())
-                .name(param.getBpmnName()).tenantId(user.getUserId().toString()).deploy();
+        Deployment deploy = repositoryService.createDeployment()
+                // 根据 Bpmn 文件路径 部署 C:\Users\lj147\Desktop\jforum-master\jforum-system\src\main\resources\bpmn\post_flow.bpmn
+                .addClasspathResource(param.getResourcePath())
+                .name(param.getBpmnName())
+                // 租户信息
+//                .tenantId(user.getUserId().toString())
+                .deploy();
         if (deploy == null) {
             throw new ServiceException("部署失败!");
         }
