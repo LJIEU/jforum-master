@@ -107,7 +107,7 @@ knife4j:
 gen:
   author: JIE
   package-name: com.liu
-  module-name: system
+  module-name: db
   auto-remove-pre: true
   table-prefix: t_,s_
 

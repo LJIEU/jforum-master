@@ -157,7 +157,7 @@ public class VelocityUtils {
     public static List<String> getTemplateList() {
         List<String> templates = new ArrayList<String>();
         // 获取模板列表
-        templates.add("vm/java/dao.java.vm");
+        templates.add("vm/java/entity.java.vm");
         templates.add("vm/java/mapper.java.vm");
         templates.add("vm/java/service.java.vm");
         templates.add("vm/java/serviceImpl.java.vm");
@@ -225,7 +225,7 @@ public class VelocityUtils {
                 + "/" + moduleName;
         String mybatisPath = "main/resources/mapper/" + moduleName;
 
-        if (template.contains("dao.java.vm")) {
+        if (template.contains("entity.java.vm")) {
             fileName = javaPath + "/dao/" + className + ".java";
         } else if (template.contains("mapper.java.vm")) {
             fileName = javaPath + "/mapper/" + className + "Mapper.java";

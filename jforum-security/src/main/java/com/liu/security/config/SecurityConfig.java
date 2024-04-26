@@ -128,7 +128,9 @@ public class SecurityConfig {
                                         // 测试使用
                                         "/test/index",
                                         "/test/test", "/test/test2", "/test/test3", "/test/test4", "/test/test5",
-                                        "/test/test8", "/test/test9/*", "/gen/**",
+                                        "/test/test8", "/test/test9/*","/sys/post/**",
+                                        // 代码生成
+                                        "/tools/**",
                                         // 静态资源
                                         "/**.htm", "/**.html", "/**.css", "/**.js",
                                         // 登录 和 注册 相关

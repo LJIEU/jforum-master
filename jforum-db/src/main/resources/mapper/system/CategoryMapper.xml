@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace等于mapper接口类的全限定名,这样实现对应 -->
+<mapper namespace="com.liu.db.mapper.CategoryMapper">
+    <resultMap id="CategoryMapperResult" type="com.liu.db.entity.Category">
+        <result property="categoryId" column="category_id"/>
+        <result property="name" column="name"/>
+        <result property="pid" column="pid"/>
+        <result property="sort" column="sort"/>
+        <result property="createTime" column="create_time"/>
+        <result property="createBy" column="create_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+    <sql id="selectCategoryVo">
+        select *
+        from category
+    </sql>
+    <insert id="insert" parameterType="com.liu.db.entity.Category">
+        insert into category
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="categoryId != null">
+                category_id,
+            </if>
+            <if test="name != null and name.length() > 0">
+                name,
+            </if>
+            <if test="pid != null">
+                pid,
+            </if>
+            <if test="sort != null">
+                sort,
+            </if>
+            <if test="createBy != null and createBy.length() > 0">
+                create_by,
+            </if>
+            <if test="remark != null and remark.length() > 0">
+                remark,
+            </if>
+            create_time
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="categoryId != null">
+                #{categoryId},
+            </if>
+            <if test="name != null and name.length() > 0">
+                #{name},
+            </if>
+            <if test="pid != null">
+                #{pid},
+            </if>
+            <if test="sort != null">
+                #{sort},
+            </if>
+            <if test="createBy != null and createBy.length() > 0">
+                #{createBy},
+            </if>
+            <if test="remark != null and remark.length() > 0">
+                #{remark},
+            </if>
+            sysdate()
+        </trim>
+    </insert>
+    <update id="update" parameterType="com.liu.db.entity.Category">
+        update category
+        <trim prefix="set" suffixOverrides=",">
+            <if test="name != null and name.length() > 0">
+                name = #{name},
+            </if>
+            <if test="pid != null">
+                pid = #{pid},
+            </if>
+            <if test="sort != null">
+                sort = #{sort},
+            </if>
+            <if test="updateBy != null and updateBy.length() > 0">
+                update_by = #{updateBy},
+            </if>
+            <if test="remark != null and remark.length() > 0">
+                remark = #{remark},
+            </if>
+            update_time = sysdate(),
+        </trim>
+        where category_id = #{categoryId}
+    </update>
+
+    <delete id="deleteById" parameterType="String">
+        delete
+        from category
+        where category_id = #{categoryIds};
+    </delete>
+
+    <select id="selectCategoryList" parameterType="com.liu.db.entity.Category"
+            resultMap="CategoryMapperResult">
+        <include refid="selectCategoryVo"/>
+        <where>
+            <if test="name != null and name.length() > 0">
+                <bind name="name" value="name + '%'"/>
+                and name like #{name}
+            </if>
+            <if test="pid != null">
+                and pid = #{pid}
+            </if>
+        </where>
+    </select>
+    <select id="selectCategoryByCategoryId" resultType="com.liu.db.entity.Category">
+        <include refid="selectCategoryVo"/>
+        <where>
+            category_id = #{categoryId}
+        </where>
+    </select>
+    <select id="getChildIdByPid" resultType="java.lang.Long">
+        select `category_id` from `category` where pid = #{pid}
+    </select>
+</mapper>

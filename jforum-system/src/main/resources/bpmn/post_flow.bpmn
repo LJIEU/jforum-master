@@ -8,14 +8,12 @@
       <bpmn:extensionElements />
       <bpmn:incoming>Flow_0c2ar0t</bpmn:incoming>
       <bpmn:outgoing>Flow_1xjsk48</bpmn:outgoing>
-      <bpmn:multiInstanceLoopCharacteristics />
     </bpmn:serviceTask>
     <bpmn:sequenceFlow id="Flow_1dy8bza" sourceRef="StartEvent_1" targetRef="Activity_1iwdozz" />
     <bpmn:userTask id="Activity_1iwdozz" name="发帖者" camunda:formRef="" camunda:formRefBinding="latest" camunda:assignee="${initiator}">
       <bpmn:extensionElements />
       <bpmn:incoming>Flow_1dy8bza</bpmn:incoming>
       <bpmn:outgoing>Flow_0c2ar0t</bpmn:outgoing>
-      <bpmn:multiInstanceLoopCharacteristics />
     </bpmn:userTask>
     <bpmn:sequenceFlow id="Flow_0c2ar0t" sourceRef="Activity_1iwdozz" targetRef="Activity_0di1rl6" />
     <bpmn:sequenceFlow id="Flow_1xjsk48" sourceRef="Activity_0di1rl6" targetRef="Gateway_0i1xomc" />
@@ -23,7 +21,6 @@
     <bpmn:userTask id="Activity_0k0g3la" name="人工审批" camunda:candidateUsers="${candidateUsers}">
       <bpmn:incoming>Flow_16jf9tv</bpmn:incoming>
       <bpmn:outgoing>Flow_16fqza2</bpmn:outgoing>
-      <bpmn:multiInstanceLoopCharacteristics />
     </bpmn:userTask>
     <bpmn:parallelGateway id="Gateway_0i1xomc">
       <bpmn:incoming>Flow_1xjsk48</bpmn:incoming>

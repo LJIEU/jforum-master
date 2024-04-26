@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace等于mapper接口类的全限定名,这样实现对应 -->
+<mapper namespace="com.liu.db.mapper.PostMapper">
+    <resultMap id="PostMapperResult" type="Post">
+        <result property="postId" column="post_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="title" column="title"/>
+        <result property="type" column="type"/>
+        <result property="views" column="views"/>
+        <result property="ipAddress" column="ip_address"/>
+        <result property="sort" column="sort"/>
+        <result property="state" column="state"/>
+        <result property="content" column="content"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="isDelete" column="is_delete"/>
+    </resultMap>
+
+    <sql id="selectPostVo">
+        select *
+        from post
+    </sql>
+    <insert id="insert" parameterType="Post">
+        insert into post
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="postId != null and postId.length() > 0">
+                post_id,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="title != null and title.length() > 0">
+                title,
+            </if>
+            <if test="type != null">
+                type,
+            </if>
+            <if test="views != null">
+                views,
+            </if>
+            <if test="ipAddress != null and ipAddress.length() > 0">
+                ip_address,
+            </if>
+            <if test="sort != null">
+                sort,
+            </if>
+            <if test="state != null and state.length() > 0">
+                state,
+            </if>
+            <if test="content != null and content.length() > 0">
+                content,
+            </if>
+            <if test="isDelete != null and isDelete.length() > 0">
+                is_delete,
+            </if>
+            create_time
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="postId != null and postId.length() > 0">
+                #{postId},
+            </if>
+            <if test="userId != null">
+                #{userId},
+            </if>
+            <if test="title != null and title.length() > 0">
+                #{title},
+            </if>
+            <if test="type != null">
+                #{type},
+            </if>
+            <if test="views != null">
+                #{views},
+            </if>
+            <if test="ipAddress != null and ipAddress.length() > 0">
+                #{ipAddress},
+            </if>
+            <if test="sort != null">
+                #{sort},
+            </if>
+            <if test="state != null and state.length() > 0">
+                #{state},
+            </if>
+            <if test="content != null and content.length() > 0">
+                #{content},
+            </if>
+            <if test="isDelete != null and isDelete.length() > 0">
+                #{isDelete},
+            </if>
+            sysdate()
+        </trim>
+    </insert>
+    <update id="update" parameterType="Post">
+        update post
+        <trim prefix="set" suffixOverrides=",">
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+            <if test="title != null and title.length() > 0">
+                title = #{title},
+            </if>
+            <if test="type != null">
+                type = #{type},
+            </if>
+            <if test="views != null">
+                views = #{views},
+            </if>
+            <if test="ipAddress != null and ipAddress.length() > 0">
+                ip_address = #{ipAddress},
+            </if>
+            <if test="sort != null">
+                sort = #{sort},
+            </if>
+            <if test="state != null and state.length() > 0">
+                state = #{state},
+            </if>
+            <if test="content != null and content.length() > 0">
+                content = #{content},
+            </if>
+            update_time = sysdate(),
+        </trim>
+        where post_id = #{postId}
+    </update>
+
+    <delete id="deleteById" parameterType="String">
+        update post
+        set is_delete = 1
+        where post_id = #{postIds};
+    </delete>
+
+    <select id="selectPostList" parameterType="Post"
+            resultMap="PostMapperResult">
+        <include refid="selectPostVo"/>
+        <where>
+            is_delete = 0
+            <if test="title != null and title.length() > 0">
+                <bind name="title" value="title + '%'"/>
+                and title like #{title}
+            </if>
+            <if test="state != null and state.length() > 0">
+                and state = #{state}
+            </if>
+            <!--如果要使用 param 必须要初始化并赋值-->
+            <if test="params.startTime != null"><!-- 开始时间检索 -->
+                AND date_format(create_time,'%y%m%d') &gt;= date_format(#{params.startTime},'%y%m%d')
+            </if>
+            <if test="params.endTime != null"><!-- 结束时间检索 -->
+                AND date_format(create_time,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
+            </if>
+        </where>
+    </select>
+    <select id="selectPostByPostId" resultType="Post">
+        <include refid="selectPostVo"/>
+        <where>
+            post_id = #{postId}
+            and is_delete = 0
+        </where>
+    </select>
+</mapper>
