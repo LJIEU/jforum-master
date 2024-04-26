@@ -1,8 +1,6 @@
 package com.liu.camunda.controller.flow;
 
 import com.liu.camunda.service.ProcessDefinitionService;
-import com.liu.camunda.vo.DefinitionVo;
-import com.liu.camunda.vo.DeployVo;
 import com.liu.core.result.R;
 import com.liu.core.utils.SecurityUtils;
 import com.liu.core.utils.SpringUtils;
@@ -14,8 +12,10 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Map;
 
 /**
  * Description: 流程部署
@@ -38,12 +38,14 @@ public class ProcessDefinitionController {
      * @param requestParam 请求参数
      * @return 提示信息
      */
-    @Operation(summary = "发布流程定义")
+    @Operation(summary = "流程部署")
     @PostMapping("/deploy")
-    public R<String> deployProcessDefinition(@RequestBody DeployVo requestParam, HttpServletRequest request) {
+    public R<Map<String, Object>> deployProcessDefinition(
+            @RequestParam("bpmnName") String bpmnName,
+            @RequestPart @RequestParam("file") MultipartFile file, HttpServletRequest request) {
         String username = SecurityUtils.currentUsername(request);
         SysUser user = SpringUtils.getBean(SysUserService.class).getItemByUserName(username);
-        return processDefinitionService.deploy(user, requestParam);
+        return processDefinitionService.deploy(user, file, bpmnName);
     }
 
     /**
@@ -81,14 +83,14 @@ public class ProcessDefinitionController {
             @PathVariable("id") String processDefinitionId) {
         return processDefinitionService.getBpmnModelInstance(processDefinitionId);
     }
-
-    /**
-     * json转为bpmn
-     *
-     * @param param 请求参数
-     */
-    @PostMapping("/convert")
-    public R<String> convert(@RequestBody @Validated DefinitionVo param) {
-        return processDefinitionService.convert(param);
-    }
+//
+//    /**
+//     * json转为bpmn
+//     *
+//     * @param param 请求参数
+//     */
+//    @PostMapping("/convert")
+//    public R<String> convert(@RequestBody @Validated DefinitionVo param) {
+//        return processDefinitionService.convert(param);
+//    }
 }

@@ -30,7 +30,7 @@ import java.util.Map;
  * @version 1.0
  * @since 2024/04/22 12:49
  */
-@Tag(name = "流程定义功能")
+@Tag(name = "流程实例模块")
 @RestController
 @RequestMapping("/my_camunda/process-instance")
 public class ProcessInstanceController extends BaseController {

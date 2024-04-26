@@ -42,7 +42,7 @@ public class SecurityUtils {
      */
     public static String currentUsername(HttpServletRequest request) {
         //  2024/4/10/17:08 记住后续要将这个关闭 这个只是为了测试
-        String username = "";
+        String username = "JIE123";
         try {
             username = request.getUserPrincipal().getName();
         } catch (Exception ignored) {

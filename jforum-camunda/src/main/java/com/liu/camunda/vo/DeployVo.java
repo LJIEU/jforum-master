@@ -1,6 +1,7 @@
 package com.liu.camunda.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * Description:
@@ -19,10 +20,10 @@ public class DeployVo {
     private String bpmnName;
 
     /**
-     * 需要部署的bpmn路径
+     * 需要部署的bpmn文件
      */
-    @Schema(description = "Bpmn流程图路径")
-    private String resourcePath;
+    @Schema(description = "Bpmn流程图")
+    private MultipartFile file;
 
     public String getBpmnName() {
         return bpmnName;
@@ -32,11 +33,11 @@ public class DeployVo {
         this.bpmnName = bpmnName;
     }
 
-    public String getResourcePath() {
-        return resourcePath;
+    public MultipartFile getFile() {
+        return file;
     }
 
-    public void setResourcePath(String resourcePath) {
-        this.resourcePath = resourcePath;
+    public void setFile(MultipartFile file) {
+        this.file = file;
     }
 }

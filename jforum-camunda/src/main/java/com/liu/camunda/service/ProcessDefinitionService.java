@@ -1,9 +1,11 @@
 package com.liu.camunda.service;
 
 import com.liu.camunda.vo.DefinitionVo;
-import com.liu.camunda.vo.DeployVo;
 import com.liu.core.result.R;
 import com.liu.db.entity.SysUser;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Map;
 
 /**
  * Description:
@@ -17,11 +19,12 @@ public interface ProcessDefinitionService {
     /**
      * 部署
      *
-     * @param user  用户信息
-     * @param param 参数
+     * @param user     用户信息
+     * @param file     参数
+     * @param bpmnName 流程名称
      * @return 返回结果
      */
-    R<String> deploy(SysUser user, DeployVo param);
+    R<Map<String, Object>> deploy(SysUser user, MultipartFile file, String bpmnName);
 
 
     /**

@@ -128,7 +128,7 @@ public class SecurityConfig {
                                         // 测试使用
                                         "/test/index",
                                         "/test/test", "/test/test2", "/test/test3", "/test/test4", "/test/test5",
-                                        "/test/test8", "/test/test9/*","/sys/post/**",
+                                        "/test/test8", "/test/test9/*", "/sys/post/**",
                                         // 代码生成
                                         "/tools/**",
                                         // 静态资源
@@ -139,6 +139,8 @@ public class SecurityConfig {
                                         "/swagger-ui/**", "/swagger-resources/**", "/webjars/**", "/*/api-docs/**",
                                         // Druid 控制台
                                         "/druid/**",
+                                        // 测试使用 流程管理模块
+                                        "/my_camunda/**",
                                         // camunda 工作流   modeler流程部署    modeler表单部署
                                         "/camunda/**", "/engine-rest/**", "/forms/**"
                                 ).permitAll()
