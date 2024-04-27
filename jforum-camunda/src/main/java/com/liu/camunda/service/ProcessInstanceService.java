@@ -1,9 +1,12 @@
 package com.liu.camunda.service;
 
+import com.liu.camunda.vo.ProcessVo;
 import com.liu.camunda.vo.RejectInstanceVo;
 import com.liu.camunda.vo.StartProcessVo;
 import com.liu.core.result.R;
 import com.liu.db.entity.SysUser;
+
+import java.util.List;
 
 /**
  * Description:
@@ -39,4 +42,15 @@ public interface ProcessInstanceService {
      * @return 是否驳回成功
      */
     R<String> rejectProcessInstance(RejectInstanceVo requestParam);
+
+
+    /**
+     * 获取当前用户的 审核全部记录
+     *
+     * @param pageNum  页码
+     * @param pageSize 页大小
+     * @param user     用户
+     * @return 返回结果
+     */
+    R<List<ProcessVo>> list(Integer pageNum, Integer pageSize, SysUser user);
 }

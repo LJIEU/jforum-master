@@ -134,6 +134,10 @@ camunda:
       index-redirect-enabled: true
     # 自动部署 resource 下的 Bpmn 文件
     auto-deployment-enabled: false
+    # 历史记录 级别 full
     history-level: full
     filter:
       create: All tasks
+    # 租户校验关闭
+    authorization:
+      tenant-check-enabled: false

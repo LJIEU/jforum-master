@@ -2,6 +2,7 @@ package com.liu.camunda.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.map.MapUtil;
+import com.liu.camunda.constants.BpmConstants;
 import com.liu.camunda.service.ProcessTaskService;
 import com.liu.camunda.vo.CompleteTaskVo;
 import com.liu.camunda.vo.TaskVo;
@@ -39,12 +40,23 @@ public class ProcessTaskServiceImpl implements ProcessTaskService {
     @Override
     public R<List<TaskVo>> singleToDoTaskList(SysUser user, String businessKey) {
         String userId = user.getUserId().toString();
+
         List<TaskVo> taskList = new ArrayList<>();
         List<Task> tasks = taskService.createTaskQuery()
-                .processInstanceBusinessKey(businessKey)
-                .taskAssignee(userId)
-                .list();
-        taskToVo(taskList, tasks);
+                .processInstanceBusinessKey(businessKey).list();
+        for (Task task : tasks) {
+            // 不是什么人都可以对流程进行审批的 这里 进行筛选
+            List<String> userIds = null;
+            try {
+                userIds = (List<String>) taskService.getVariable(task.getId(), BpmConstants.CANDIDATE_USERS);
+                // 符合 候选用户才行
+                if (userIds.contains(userId)) {
+                    taskToVo(taskList, task);
+                }
+            } catch (Exception ignored) {
+
+            }
+        }
         return R.success(taskList);
     }
 
@@ -122,6 +134,18 @@ public class ProcessTaskServiceImpl implements ProcessTaskService {
                 taskList.add(taskVo);
             }
         }
+    }
+
+    /**
+     * @param taskList ListVo集合
+     * @param task     原数据
+     */
+    private void taskToVo(List<TaskVo> taskList, final Task task) {
+        TaskVo taskVo;
+        taskVo = new TaskVo();
+        taskVo.setProcessInstanceId(task.getProcessInstanceId());
+        taskVo.setTaskId(task.getId());
+        taskList.add(taskVo);
     }
 
 

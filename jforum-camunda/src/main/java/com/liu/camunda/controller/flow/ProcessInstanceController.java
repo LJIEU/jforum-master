@@ -3,10 +3,11 @@ package com.liu.camunda.controller.flow;
 import com.liu.camunda.service.ProcessInstanceService;
 import com.liu.camunda.service.ProcessTaskService;
 import com.liu.camunda.vo.CompleteTaskVo;
+import com.liu.camunda.vo.ProcessVo;
 import com.liu.camunda.vo.RejectInstanceVo;
-import com.liu.camunda.vo.StartProcessVo;
 import com.liu.camunda.vo.TaskVo;
 import com.liu.core.controller.BaseController;
+import com.liu.core.excption.ServiceException;
 import com.liu.core.result.R;
 import com.liu.core.utils.SecurityUtils;
 import com.liu.core.utils.SpringUtils;
@@ -44,22 +45,6 @@ public class ProcessInstanceController extends BaseController {
         this.processTaskService = processTaskService;
     }
 
-    @Operation(summary = "根据流程定义Key发起流程实例")
-    @PostMapping("/startProcessInstanceByKey")
-    public R<String> startProcessInstanceByKey(@RequestBody StartProcessVo requestParam, HttpServletRequest request) {
-        String username = SecurityUtils.currentUsername(request);
-        SysUser user = SpringUtils.getBean(SysUserService.class).getItemByUserName(username);
-        return processInstanceService.startProcessInstanceByKey(user, requestParam);
-    }
-
-    @Operation(summary = "根据流程定义ID发起流程实例")
-    @PostMapping("/startProcessInstanceById")
-    public R<String> startProcessInstanceById(@RequestBody StartProcessVo requestParam, HttpServletRequest request) {
-        String username = SecurityUtils.currentUsername(request);
-        SysUser user = SpringUtils.getBean(SysUserService.class).getItemByUserName(username);
-        return processInstanceService.startProcessInstanceById(user, requestParam);
-    }
-
     @Operation(summary = "查询当前用户代办任务 --> 单个业务")
     @GetMapping("/singleToDoTaskList")
     public R<List<TaskVo>> listToDoTaskBySingle(
@@ -67,6 +52,7 @@ public class ProcessInstanceController extends BaseController {
             @RequestParam("businessKey") String businessKey,
             HttpServletRequest request) {
         /*
+        这是由于 Camunda 中 一个流程实例ID是唯一的 但是 BusinessKey 可以不唯一 这个是一个标识
           一个 业务Key 对应 多个 任务
           多个 业务Key 对应 多个 任务
          */
@@ -104,36 +90,6 @@ public class ProcessInstanceController extends BaseController {
         return processTaskService.completeSingleTask(requestParam);
     }
 
-//    /**
-//     * 转办任务
-//     *
-//     * @param requestParam 请求参数
-//     */
-//    @PostMapping("/transferTask")
-//    public R<Void> transferTask(@RequestBody @Validated TransferTaskRequest requestParam) {
-//        return processTaskService.transferTask(requestParam);
-//    }
-//
-//    /**
-//     * 委托任务
-//     *
-//     * @param requestParam 请求参数
-//     */
-//    @PostMapping("/delegateTask")
-//    public R<Void> delegateTask(@RequestBody @Validated DelegateTaskRequest requestParam) {
-//        return processTaskService.delegateTask(requestParam);
-//    }
-//
-//    /**
-//     * 解决任务
-//     *
-//     * @param requestParam 请求参数
-//     */
-//    @PostMapping("/resolveTask")
-//    public R<Void> resolveTask(@RequestBody @Validated ResolveTaskRequest requestParam) {
-//        return processTaskService.resolveTask(requestParam);
-//    }
-
     @Operation(summary = "查询用户已办任务")
     @GetMapping("/listDoneTask")
     public R<List<TaskVo>> listDoneTask(
@@ -149,6 +105,18 @@ public class ProcessInstanceController extends BaseController {
     @PostMapping("/rejectProcessInstance")
     public R<String> rejectProcessInstance(@RequestBody @Validated RejectInstanceVo requestParam) {
         return processInstanceService.rejectProcessInstance(requestParam);
+    }
+
+    @Operation(summary = "获取当前用户的所有审批记录[代办|已完成|发起|]")
+    @PostMapping("/list")
+    public R<List<ProcessVo>> list(
+            @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize,
+            @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum, HttpServletRequest request) {
+        SysUser user = SpringUtils.getBean(SysUserService.class).getItemByUserName(SecurityUtils.currentUsername(request));
+        if (user == null) {
+            throw new ServiceException("用户不存在");
+        }
+        return processInstanceService.list(pageNum, pageSize, user);
     }
 //
 //    /**

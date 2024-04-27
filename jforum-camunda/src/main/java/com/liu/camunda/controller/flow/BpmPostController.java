@@ -9,13 +9,12 @@ import com.liu.core.utils.SpringUtils;
 import com.liu.db.entity.SysUser;
 import com.liu.db.service.SysUserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -43,4 +42,35 @@ public class BpmPostController {
         }
         return bpmPostService.startPostFlow(bpmPostVo, user);
     }
+
+    @Operation(summary = "发起审核")
+    @PostMapping("/initiateReview")
+    public R<String> initiateReview(
+            @Parameter(name = "processInstanceId", description = "流程实例ID", in = ParameterIn.QUERY)
+            @RequestParam("processInstanceId") String processInstanceId) {
+        return bpmPostService.initiateReview(processInstanceId);
+    }
+
+    @Operation(summary = "删除流程实例")
+    @PostMapping("/delete")
+    public R<String> delete(
+            @Parameter(name = "processInstanceId", description = "流程实例ID", in = ParameterIn.QUERY)
+            @RequestParam("processInstanceId") String processInstanceId) {
+        return bpmPostService.delete(processInstanceId);
+    }
+
+    @Operation(summary = "进行审核")
+    @PostMapping("/reviewing")
+    public R<String> reviewing(
+            @Parameter(name = "processInstanceId", description = "流程实例ID", in = ParameterIn.QUERY)
+            @RequestParam("processInstanceId") String processInstanceId, HttpServletRequest request) {
+        SysUser user = SpringUtils.getBean(SysUserService.class).getItemByUserName(SecurityUtils.currentUsername(request));
+        if (user == null) {
+            throw new ServiceException("用户不存在");
+        }
+        return bpmPostService.reviewing(processInstanceId, user);
+    }
+
+
+
 }

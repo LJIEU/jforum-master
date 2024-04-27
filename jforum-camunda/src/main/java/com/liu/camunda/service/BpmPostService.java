@@ -22,4 +22,30 @@ public interface BpmPostService {
      * @return 返回 流程定义 ID
      */
     R<Map<String, Object>> startPostFlow(BpmPostVo bpmPostVo, SysUser user);
+
+    /**
+     * 根据 流程实例ID 删除流程实例
+     *
+     * @param processInstanceId 流程实例ID
+     * @return 返回 结果
+     */
+    R<String> delete(String processInstanceId);
+
+    /**
+     * 发起审核流程
+     *
+     * @param processInstanceId 流程实例ID
+     * @return 返回 结果
+     */
+    R<String> initiateReview(String processInstanceId);
+
+    /**
+     * 进行审核
+     *
+     * @param processInstanceId 流程实例ID
+     * @param user              当前审核员信息
+     * @return 返回结果
+     */
+    R<String> reviewing(String processInstanceId, SysUser user);
+
 }

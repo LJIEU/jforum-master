@@ -54,7 +54,7 @@ public class ProcessDefinitionServiceImpl implements ProcessDefinitionService {
 
         // 这里只是部署 但是还未启动
         Deployment deploy = repositoryService.createDeployment()
-                .addInputStream("1.bpmn", inputStream)
+                .addInputStream(bpmnName + ".bpmn", inputStream)
                 .name(bpmnName)
                 // 使用 Model 实例
 //                .addModelInstance("", )
@@ -72,7 +72,6 @@ public class ProcessDefinitionServiceImpl implements ProcessDefinitionService {
             e.printStackTrace();
         }
         ProcessDefinition processDefinition = null;
-//        log.info("部署ID:{}", deploy.getId());
         try {
             processDefinition = repositoryService.createProcessDefinitionQuery().deploymentId(deploy.getId()).list().get(0);
         } catch (Exception e) {

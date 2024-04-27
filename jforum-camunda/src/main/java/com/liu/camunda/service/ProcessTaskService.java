@@ -19,8 +19,8 @@ public interface ProcessTaskService {
     /**
      * 查询当前用户的待办任务--针对单个业务
      *
-     * @param user        用户信息
-     * @param businessKey 业务key
+     * @param user              用户信息
+     * @param businessKey 实例ID
      * @return 待办任务信息
      */
     R<List<TaskVo>> singleToDoTaskList(SysUser user, String businessKey);
