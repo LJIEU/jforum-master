@@ -25,6 +25,10 @@ public enum StateEnum {
      * 驳回
      */
     REJECT("驳回", "danger"),
+    /**
+     * 撤回
+     */
+    DELETE("撤回", "danger"),
 
     /**
      * 其他

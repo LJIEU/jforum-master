@@ -31,6 +31,9 @@ public class ViolationChecker implements JavaDelegate {
         log.info("查询积分");
         // 查询 发起者用户ID
         String initiator = (String) execution.getVariable(BpmConstants.INITIATOR);
+        taskService.setAssignee(
+                taskService.createTaskQuery().processInstanceId(execution.getProcessInstanceId()).singleResult().getId(),
+                "机器审批");
         // 去查询该用户的违规记录  如果大于 阈值则走人工审核
         // TODO 2024/4/27/10:21 由于这里没有创建 积分表 所以这里模拟一下
 //        int integral = RandomUtil.randomInt(0, 100);

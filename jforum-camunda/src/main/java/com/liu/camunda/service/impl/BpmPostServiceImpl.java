@@ -4,9 +4,13 @@ import cn.hutool.core.map.MapUtil;
 import com.liu.camunda.constants.BpmConstants;
 import com.liu.camunda.service.BpmPostService;
 import com.liu.camunda.vo.BpmPostVo;
+import com.liu.camunda.vo.SubmitPostVo;
 import com.liu.core.excption.ServiceException;
 import com.liu.core.result.R;
+import com.liu.core.utils.SpringUtils;
+import com.liu.db.entity.Post;
 import com.liu.db.entity.SysUser;
+import com.liu.db.service.PostService;
 import jakarta.annotation.Resource;
 import org.camunda.bpm.engine.*;
 import org.camunda.bpm.engine.history.HistoricVariableInstance;
@@ -62,10 +66,10 @@ public class BpmPostServiceImpl implements BpmPostService {
                 runtimeService.createProcessInstanceByKey(processDefinition.getKey())
                         .businessKey(BpmConstants.POST_BUSINESS);
 
-        // 业务Key 生成
-        // 如果有需要传递的变量，可以在此设置  设置 发起者信息 ==》 当前用户ID
         // 设置 流程发起者ID 后期使用 getStartUserId()
         identityService.setAuthenticatedUserId(user.getUserId().toString());
+
+        // 如果有需要传递的变量，可以在此设置  设置 发起者信息 ==》 当前用户ID
         processInstantiationBuilder.setVariable(BpmConstants.INITIATOR, user.getUserId().toString());
         processInstantiationBuilder.setVariable(BpmConstants.POST_ID, bpmPostVo.getPostId());
         // 以上代码可以写以下格式 设置变量
@@ -87,7 +91,7 @@ public class BpmPostServiceImpl implements BpmPostService {
         result.put("businessKey", processInstance.getBusinessKey());
 
         // TODO 2024/4/27/15:06 这里进行自动发起 审查
-        this.initiateReview(processInstance.getId());
+        this.initiateReview(processInstance.getId(), user);
         return R.success(result);
     }
 
@@ -102,17 +106,20 @@ public class BpmPostServiceImpl implements BpmPostService {
     }
 
     @Override
-    public R<String> initiateReview(String processInstanceId) {
+    public R<String> initiateReview(String processInstanceId, SysUser user) {
         Task task = taskService.createTaskQuery().processInstanceId(processInstanceId).singleResult();
+        // 该任务是由我发起的
+        task.setAssignee(user.getUserId().toString());
         taskService.complete(task.getId());
         return R.success();
     }
 
     @Override
-    public R<String> reviewing(String processInstanceId, SysUser user) {
-        Task task = taskService.createTaskQuery().processInstanceId(processInstanceId).singleResult();
+    public R<String> reviewing(SubmitPostVo submitPostVo, SysUser user) {
+        // TODO 2024/4/28/22:19 一定要对数据进行校验后再进行 下面的流程
+        Task task = taskService.createTaskQuery().processInstanceId(submitPostVo.getProcessInstanceId()).singleResult();
         List<HistoricVariableInstance> variableInstanceList = historyService.createHistoricVariableInstanceQuery()
-                .processInstanceId(processInstanceId).list();
+                .processInstanceId(submitPostVo.getProcessInstanceId()).list();
         // 发起者ID
         String initiator = "";
         // 帖子ID
@@ -137,20 +144,31 @@ public class BpmPostServiceImpl implements BpmPostService {
 
         log.info("审核信息::发起者:{} ==> 帖子:{} ==> 可审核人员:{}", initiator, postId, candidateUsers);
 
-        // 模拟通过
-//        taskService.setVariable(task.getId(), BpmConstants.OPTIONS, "0");
-//        taskService.setVariable(task.getId(), BpmConstants.OPINION, "没有意见");
+        // 设置 审批意见  和 审批选项[0通过  1不通过]
+        taskService.setVariable(task.getId(), BpmConstants.OPTIONS, submitPostVo.getOptions());
+        taskService.setVariable(task.getId(), BpmConstants.OPINION, submitPostVo.getOpinion());
 
-        // 模拟未通过
-        taskService.setVariable(task.getId(), BpmConstants.OPTIONS, "1");
-        taskService.setVariable(task.getId(), BpmConstants.OPINION, "我有意见");
-        // 在驳回时 要将 一些变量 删除
-        runtimeService.removeVariable(processInstanceId, BpmConstants.CANDIDATE_USERS);
-
+        // 在驳回时 要将 一些变量 删除  其实通过之后也可以删除该变量
+        runtimeService.removeVariable(submitPostVo.getProcessInstanceId(), BpmConstants.CANDIDATE_USERS);
         // 设置候选人 为自己   ==>即 表示是我完成的
         taskService.setAssignee(task.getId(), user.getUserId().toString());
         taskService.complete(task.getId());
         return R.success();
+    }
+
+    @Override
+    public R<Map<String, Object>> getInfo(String processInstanceId) {
+        String postId = (String) historyService.createHistoricVariableInstanceQuery()
+                .processInstanceId(processInstanceId).variableName(BpmConstants.POST_ID).singleResult().getValue();
+        Post post = SpringUtils.getBean(PostService.class).selectPostByPostId(postId);
+        if (post == null) {
+            return R.success();
+        }
+        Map<String, Object> result = MapUtil.newHashMap();
+        result.put("postId", postId);
+        result.put("title", post.getTitle());
+        result.put("content", post.getContent());
+        return R.success(result);
     }
 
 }

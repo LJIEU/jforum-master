@@ -1,6 +1,7 @@
 package com.liu.camunda.service;
 
 import com.liu.camunda.vo.BpmPostVo;
+import com.liu.camunda.vo.SubmitPostVo;
 import com.liu.core.result.R;
 import com.liu.db.entity.SysUser;
 
@@ -35,17 +36,25 @@ public interface BpmPostService {
      * 发起审核流程
      *
      * @param processInstanceId 流程实例ID
+     * @param user              当前用户
      * @return 返回 结果
      */
-    R<String> initiateReview(String processInstanceId);
+    R<String> initiateReview(String processInstanceId, SysUser user);
 
     /**
      * 进行审核
      *
-     * @param processInstanceId 流程实例ID
-     * @param user              当前审核员信息
+     * @param submitPostVo 提交信息
+     * @param user         当前审核员信息
      * @return 返回结果
      */
-    R<String> reviewing(String processInstanceId, SysUser user);
+    R<String> reviewing(SubmitPostVo submitPostVo, SysUser user);
 
+    /**
+     * 获取 帖子信息
+     *
+     * @param processInstanceId 流程实例
+     * @return 返回结果
+     */
+    R<Map<String, Object>> getInfo(String processInstanceId);
 }

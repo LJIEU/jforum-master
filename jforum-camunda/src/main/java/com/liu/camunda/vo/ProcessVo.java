@@ -17,6 +17,19 @@ public class ProcessVo {
     @Schema(description = "ID")
     private String id;
 
+    @Schema(description = "发起ID")
+    private String userId;
+
+    @Schema(description = "发起人ID")
+    private String username;
+
+    @Schema(description = "头像地址")
+    private String avatar;
+
+    @Schema(description = "用户昵称")
+    private String nickName;
+
+
     @Schema(description = "流程实例ID")
     private String processInstanceId;
 
@@ -100,7 +113,40 @@ public class ProcessVo {
         return businessKey;
     }
 
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
+    public String getNickName() {
+        return nickName;
+    }
+
+    public void setNickName(String nickName) {
+        this.nickName = nickName;
+    }
+
     public void setBusinessKey(String businessKey) {
+
         this.businessKey = businessKey;
     }
 }

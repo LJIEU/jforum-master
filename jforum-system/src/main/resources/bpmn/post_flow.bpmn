@@ -24,7 +24,6 @@
       <bpmn:incoming>Flow_0bqxo6s</bpmn:incoming>
       <bpmn:outgoing>Flow_0c2ar0t</bpmn:outgoing>
     </bpmn:userTask>
-    <bpmn:sequenceFlow id="Flow_0c2ar0t" sourceRef="Activity_1iwdozz" targetRef="Activity_0di1rl6" />
     <bpmn:userTask id="Activity_0k0g3la" name="人工审批" camunda:candidateUsers="${candidateUsers}">
       <bpmn:extensionElements>
         <camunda:formData>
@@ -47,9 +46,6 @@
     <bpmn:sequenceFlow id="Flow_05uy5vf" name="通过[&#39;0&#39;]" sourceRef="Gateway_0q2aezh" targetRef="Event_1fye5os">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${options == '0'}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:sequenceFlow id="Flow_0bqxo6s" name="驳回[&#39;1&#39;]" sourceRef="Gateway_0q2aezh" targetRef="Activity_1iwdozz">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${options  == '1'}</bpmn:conditionExpression>
-    </bpmn:sequenceFlow>
     <bpmn:endEvent id="Event_0v0yfhb" name="积分满足自动审批结束">
       <bpmn:incoming>Flow_0cqvi74</bpmn:incoming>
     </bpmn:endEvent>
@@ -65,6 +61,10 @@
     <bpmn:sequenceFlow id="Flow_1olsurs" name="人工审批" sourceRef="Gateway_0vpnshw" targetRef="Activity_0k0g3la">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${needUser == 'true'}</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_0bqxo6s" name="驳回[&#39;1&#39;]" sourceRef="Gateway_0q2aezh" targetRef="Activity_1iwdozz">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${options  == '1'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_0c2ar0t" sourceRef="Activity_1iwdozz" targetRef="Activity_0di1rl6" />
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1bi94nk">
@@ -136,7 +136,7 @@
       <bpmndi:BPMNEdge id="Flow_0kyyl6s_di" bpmnElement="Flow_0kyyl6s">
         <di:waypoint x="380" y="300" />
         <di:waypoint x="380" y="220" />
-        <di:waypoint x="440" y="220" />
+        <di:waypoint x="445" y="220" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0cqvi74_di" bpmnElement="Flow_0cqvi74">
         <di:waypoint x="470" y="195" />

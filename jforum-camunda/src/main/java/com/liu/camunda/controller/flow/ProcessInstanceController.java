@@ -2,10 +2,7 @@ package com.liu.camunda.controller.flow;
 
 import com.liu.camunda.service.ProcessInstanceService;
 import com.liu.camunda.service.ProcessTaskService;
-import com.liu.camunda.vo.CompleteTaskVo;
-import com.liu.camunda.vo.ProcessVo;
-import com.liu.camunda.vo.RejectInstanceVo;
-import com.liu.camunda.vo.TaskVo;
+import com.liu.camunda.vo.*;
 import com.liu.core.controller.BaseController;
 import com.liu.core.excption.ServiceException;
 import com.liu.core.result.R;
@@ -117,6 +114,15 @@ public class ProcessInstanceController extends BaseController {
             throw new ServiceException("用户不存在");
         }
         return processInstanceService.list(pageNum, pageSize, user);
+    }
+
+
+    @Operation(summary = "根据流程实例ID获取所有流程")
+    @PostMapping("/hist")
+    public R<List<HistVo>> hist(
+            @RequestParam(value = "processInstanceId") String processInstanceId,
+            @RequestParam(value = "businessKey") String businessKey) {
+        return processInstanceService.hist(processInstanceId, businessKey);
     }
 //
 //    /**

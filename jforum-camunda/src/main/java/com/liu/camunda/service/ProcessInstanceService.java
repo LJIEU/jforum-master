@@ -1,5 +1,6 @@
 package com.liu.camunda.service;
 
+import com.liu.camunda.vo.HistVo;
 import com.liu.camunda.vo.ProcessVo;
 import com.liu.camunda.vo.RejectInstanceVo;
 import com.liu.camunda.vo.StartProcessVo;
@@ -53,4 +54,13 @@ public interface ProcessInstanceService {
      * @return 返回结果
      */
     R<List<ProcessVo>> list(Integer pageNum, Integer pageSize, SysUser user);
+
+    /**
+     * 获取流程实例的任务节点
+     *
+     * @param processInstanceId 流程实例
+     * @param businessKey       流程业务Key
+     * @return 返回结果
+     */
+    R<List<HistVo>> hist(String processInstanceId, String businessKey);
 }

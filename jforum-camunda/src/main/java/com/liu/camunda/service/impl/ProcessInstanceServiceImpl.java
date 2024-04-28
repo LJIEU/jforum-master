@@ -2,17 +2,21 @@ package com.liu.camunda.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.IdUtil;
+import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.StrUtil;
 import com.liu.camunda.constants.BpmConstants;
 import com.liu.camunda.constants.CamundaState;
 import com.liu.camunda.constants.StateEnum;
 import com.liu.camunda.service.ProcessInstanceService;
+import com.liu.camunda.vo.HistVo;
 import com.liu.camunda.vo.ProcessVo;
 import com.liu.camunda.vo.RejectInstanceVo;
 import com.liu.camunda.vo.StartProcessVo;
 import com.liu.core.excption.ServiceException;
 import com.liu.core.result.R;
+import com.liu.core.utils.SpringUtils;
 import com.liu.db.entity.SysUser;
+import com.liu.db.service.SysUserService;
 import jakarta.annotation.Resource;
 import org.camunda.bpm.engine.HistoryService;
 import org.camunda.bpm.engine.RepositoryService;
@@ -28,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Description:
@@ -106,6 +111,7 @@ public class ProcessInstanceServiceImpl implements ProcessInstanceService {
     public R<List<ProcessVo>> list(Integer pageNum, Integer pageSize, SysUser user) {
         // 获取所有已完成的
         List<ProcessVo> result = new ArrayList<>();
+        List<ProcessVo> myInitiatives = new ArrayList<>();
         // 1. 我发起的流程
         List<HistoricProcessInstance> list = historyService.createHistoricProcessInstanceQuery()
                 .startedBy(user.getUserId().toString()).list();
@@ -117,16 +123,17 @@ public class ProcessInstanceServiceImpl implements ProcessInstanceService {
                     processVo.setState(StateEnum.REVIEW.getState());
                     processVo.setTagType(StateEnum.REVIEW.getTagType());
                 } else if (CamundaState.INTERNALLY_TERMINATED.equals(v.getState())) {
-                    processVo.setState(StateEnum.REJECT.getState());
-                    processVo.setTagType(StateEnum.REJECT.getTagType());
+                    processVo.setState(StateEnum.DELETE.getState());
+                    processVo.setTagType(StateEnum.DELETE.getTagType());
                 } else if (CamundaState.COMPLETED.equals(v.getState())) {
                     processVo.setState(StateEnum.COMPLETE.getState());
                     processVo.setTagType(StateEnum.COMPLETE.getTagType());
                 }
-                result.add(processVo);
+                myInitiatives.add(processVo);
             });
         }
-        // 2. 我代办的流程
+        // 2. 我代办的流程[去正在运行的任务中寻找]
+        List<ProcessVo> myDoToList = new ArrayList<>();
         List<Task> taskList = taskService.createTaskQuery().active().list();
         if (CollUtil.isNotEmpty(taskList)) {
             List<String> userIds = null;
@@ -136,18 +143,18 @@ public class ProcessInstanceServiceImpl implements ProcessInstanceService {
                     try {
                         userIds = (List<String>) taskService.getVariable(task.getId(), BpmConstants.CANDIDATE_USERS);
                         if (Objects.requireNonNull(userIds).contains(user.getUserId().toString())) {
-                            result.add(taskToProcessVo(task));
+                            myDoToList.add(taskToProcessVo(task));
                         }
                     } catch (Exception ignored) {
 
                     }
                 } else if (task.getAssignee().equals(user.getUserId().toString())) {
-                    result.add(taskToProcessVo(task));
+                    myDoToList.add(taskToProcessVo(task));
                 }
             }
         }
         // 3. 我完成的流程
-        // TODO 2024/4/27/21:06 需要判断是否是驳回的流程
+        List<ProcessVo> myCompleted = new ArrayList<>();
         List<HistoricTaskInstance> completedTasks = historyService.createHistoricTaskInstanceQuery()
                 .taskAssignee(user.getUserId().toString()).finished()
                 .taskDeleteReason(CamundaState.COMPLETED.toLowerCase(Locale.ROOT)).list();
@@ -156,8 +163,75 @@ public class ProcessInstanceServiceImpl implements ProcessInstanceService {
             ProcessVo processVo = toProcessVo(repositoryService.getProcessDefinition(completedTask.getProcessDefinitionId()).getName(),
                     completedTask.getProcessInstanceId(), historicProcessInstance.getBusinessKey(), StateEnum.COMPLETE, completedTask.getStartTime(),
                     false);
-            result.add(processVo);
+            myCompleted.add(processVo);
         }
+        // 整理数据
+        // 我发起的  我代办的  我完成的
+        isReject(myCompleted);
+        isReject(myInitiatives);
+        // 合并
+        result.addAll(myInitiatives);
+        result.addAll(myDoToList);
+        // 我完成的进行筛选 状态 和 流程实例ID一样则 时间为第一个流程实例的开始时间  第二个流程实例的结束时间
+//        List<ProcessVo> newMyCompleted = new ArrayList<ProcessVo>();
+        for (int i = 0; i < myCompleted.size(); i++) {
+            ProcessVo processVo = myCompleted.get(i);
+            for (int j = 0; j < myCompleted.size(); j++) {
+                if (i != j && processVo.getProcessInstanceId().equals(myCompleted.get(j).getProcessInstanceId())) {
+                    Date startTime = processVo.getStartTime();
+                    // 遇到一样的实例
+                    if (processVo.getStartTime().getTime() > myCompleted.get(j).getStartTime().getTime()) {
+                        startTime = myCompleted.get(j).getStartTime();
+                    }
+                    // 删除 驳回的流程 然后 审批通过
+                    myCompleted.get(j).setStartTime(startTime);
+                    myCompleted.removeIf(v -> v.equals(processVo));
+                    i--;
+                }
+            }
+        }
+        result.addAll(myCompleted);
+        return R.success(result);
+    }
+
+    /**
+     * 是否 驳回 流程
+     *
+     * @param processVoList 列表
+     */
+    private void isReject(List<ProcessVo> processVoList) {
+        for (ProcessVo processVo : processVoList) {
+            String value = (String) historyService.createHistoricVariableInstanceQuery().processInstanceId(processVo.getProcessInstanceId()).variableName(BpmConstants.OPTIONS).singleResult().getValue();
+            if ("1".equals(value)) {
+                // 驳回
+                processVo.setState(StateEnum.REJECT.getState());
+                processVo.setTagType(StateEnum.REJECT.getTagType());
+            }
+        }
+    }
+
+    @Override
+    public R<List<HistVo>> hist(String processInstanceId, String businessKey) {
+        List<HistVo> result = new ArrayList<>();
+        List<HistoricTaskInstance> histTask = historyService.createHistoricTaskInstanceQuery().processInstanceId(processInstanceId).processInstanceBusinessKey(businessKey).list();
+        for (HistoricTaskInstance v : histTask) {
+            HistVo histVo = new HistVo();
+            histVo.setTackId(v.getId());
+            histVo.setName(v.getName());
+            // 0 完成 1进行中 duration
+            histVo.setState(ObjUtil.isEmpty(v.getEndTime()) ? 1 : 0);
+            // 执行者
+            histVo.setLastUser(v.getAssignee());
+            histVo.setStartTime(v.getStartTime());
+            histVo.setEndTime(v.getEndTime());
+            result.add(histVo);
+        }
+        result = result.stream().sorted(new Comparator<HistVo>() {
+            @Override
+            public int compare(HistVo o1, HistVo o2) {
+                return Math.toIntExact(o1.getStartTime().getTime() - o2.getStartTime().getTime());
+            }
+        }).collect(Collectors.toList());
         return R.success(result);
     }
 
@@ -177,7 +251,13 @@ public class ProcessInstanceServiceImpl implements ProcessInstanceService {
         processVo.setName(name);
         processVo.setMyInitiate(myInitiate);
         processVo.setBusinessKey(businessKey);
-
+        // 设置 发起者用户信息
+        String userId = historyService.createHistoricProcessInstanceQuery().processInstanceId(processInstanceId).singleResult().getStartUserId();
+        SysUser user = SpringUtils.getBean(SysUserService.class).selectSysUserByUserId(Long.valueOf(userId));
+        processVo.setUserId(userId);
+        processVo.setUsername(user.getUserName());
+        processVo.setNickName(user.getNickName());
+        processVo.setAvatar(user.getAvatar());
         return processVo;
     }
 }

@@ -2,6 +2,7 @@ package com.liu.camunda.controller.flow;
 
 import com.liu.camunda.service.BpmPostService;
 import com.liu.camunda.vo.BpmPostVo;
+import com.liu.camunda.vo.SubmitPostVo;
 import com.liu.core.excption.ServiceException;
 import com.liu.core.result.R;
 import com.liu.core.utils.SecurityUtils;
@@ -13,6 +14,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -47,8 +49,12 @@ public class BpmPostController {
     @PostMapping("/initiateReview")
     public R<String> initiateReview(
             @Parameter(name = "processInstanceId", description = "流程实例ID", in = ParameterIn.QUERY)
-            @RequestParam("processInstanceId") String processInstanceId) {
-        return bpmPostService.initiateReview(processInstanceId);
+            @RequestParam("processInstanceId") String processInstanceId, HttpServletRequest request) {
+        SysUser user = SpringUtils.getBean(SysUserService.class).getItemByUserName(SecurityUtils.currentUsername(request));
+        if (user == null) {
+            throw new ServiceException("当前用户不存在!");
+        }
+        return bpmPostService.initiateReview(processInstanceId, user);
     }
 
     @Operation(summary = "删除流程实例")
@@ -62,15 +68,21 @@ public class BpmPostController {
     @Operation(summary = "进行审核")
     @PostMapping("/reviewing")
     public R<String> reviewing(
-            @Parameter(name = "processInstanceId", description = "流程实例ID", in = ParameterIn.QUERY)
-            @RequestParam("processInstanceId") String processInstanceId, HttpServletRequest request) {
+            @RequestBody @Valid SubmitPostVo submitPostVo, HttpServletRequest request) {
         SysUser user = SpringUtils.getBean(SysUserService.class).getItemByUserName(SecurityUtils.currentUsername(request));
         if (user == null) {
             throw new ServiceException("用户不存在");
         }
-        return bpmPostService.reviewing(processInstanceId, user);
+        return bpmPostService.reviewing(submitPostVo, user);
     }
 
-
+    @Operation(summary = "根据流程实例ID获取帖子信息")
+    @GetMapping("/getInfo/{processInstanceId}")
+    public R<Map<String, Object>> getInfo(
+            @Parameter(name = "processInstanceId", description = "流程实例ID", in = ParameterIn.PATH)
+            @PathVariable(value = "processInstanceId") String processInstanceId,
+            HttpServletRequest request) {
+        return bpmPostService.getInfo(processInstanceId);
+    }
 
 }
