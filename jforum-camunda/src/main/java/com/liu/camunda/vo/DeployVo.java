@@ -20,10 +20,35 @@ public class DeployVo {
     private String bpmnName;
 
     /**
+     * ID
+     */
+    @Schema(description = "Bpmn流程ID")
+    private String bpmnId;
+
+    /**
      * 需要部署的bpmn文件
      */
     @Schema(description = "Bpmn流程图")
     private MultipartFile file;
+
+    @Schema(description = "Bpmn流程XML字符串")
+    private String xml;
+
+    public String getXml() {
+        return xml;
+    }
+
+    public void setXml(String xml) {
+        this.xml = xml;
+    }
+
+    public String getBpmnId() {
+        return bpmnId;
+    }
+
+    public void setBpmnId(String bpmnId) {
+        this.bpmnId = bpmnId;
+    }
 
     public String getBpmnName() {
         return bpmnName;

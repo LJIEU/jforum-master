@@ -362,7 +362,7 @@ public class SysUserController extends BaseController {
         } else if (password.length() < UserConstants.PASSWORD_MIN_LENGTH || password.length() > UserConstants.PASSWORD_MAX_LENGTH) {
             return R.fail("密码长度必须在5到20个字符之间");
         }
-        SecurityUtils.encryptPassword(password);
+        sysUser.setPassword(SecurityUtils.encryptPassword(password));
         sysUser.setUpdateBy(SecurityUtils.currentUsername(request));
         sysuserService.update(sysUser);
         return R.success();

@@ -1,6 +1,7 @@
 package com.liu.camunda.controller.flow;
 
 import com.liu.camunda.service.ProcessDefinitionService;
+import com.liu.camunda.vo.DeployVo;
 import com.liu.core.result.R;
 import com.liu.core.utils.SecurityUtils;
 import com.liu.core.utils.SpringUtils;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -46,6 +48,21 @@ public class ProcessDefinitionController {
         String username = SecurityUtils.currentUsername(request);
         SysUser user = SpringUtils.getBean(SysUserService.class).getItemByUserName(username);
         return processDefinitionService.deploy(user, file, bpmnName);
+    }
+
+    /**
+     * 发布流程定义
+     *
+     * @param deployVo 请求参数
+     * @return 提示信息
+     */
+    @Operation(summary = "流程部署XML")
+    @PostMapping("/deploy-xml")
+    public R<Map<String, Object>> deployProcessDefinition(
+            @RequestBody DeployVo deployVo, HttpServletRequest request) {
+        String username = SecurityUtils.currentUsername(request);
+        SysUser user = SpringUtils.getBean(SysUserService.class).getItemByUserName(username);
+        return processDefinitionService.deployXml(user, deployVo);
     }
 
     /**
@@ -83,7 +100,14 @@ public class ProcessDefinitionController {
             @PathVariable("id") String processDefinitionId) {
         return processDefinitionService.getBpmnModelInstance(processDefinitionId);
     }
-//
+
+    @Operation(summary = "获取Bpmn流程")
+    @GetMapping("/deployList")
+    public R<List<DeployVo>> deployList() {
+        return processDefinitionService.deployList();
+    }
+
+
 //    /**
 //     * json转为bpmn
 //     *

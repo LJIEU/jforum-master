@@ -1,7 +1,9 @@
 package com.liu.camunda.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import com.liu.camunda.service.ProcessDefinitionService;
 import com.liu.camunda.vo.DefinitionVo;
+import com.liu.camunda.vo.DeployVo;
 import com.liu.core.excption.ServiceException;
 import com.liu.core.result.R;
 import com.liu.db.entity.SysUser;
@@ -18,11 +20,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Description:
@@ -54,8 +55,8 @@ public class ProcessDefinitionServiceImpl implements ProcessDefinitionService {
 
         // 这里只是部署 但是还未启动
         Deployment deploy = repositoryService.createDeployment()
-                .addInputStream(bpmnName + ".bpmn", inputStream)
-                .name(bpmnName)
+                .addInputStream(bpmnSuffix(bpmnName), inputStream)
+                .name(bpmnName.split("\\.")[0])
                 // 使用 Model 实例
 //                .addModelInstance("", )
                 // 开启重复过滤
@@ -63,27 +64,7 @@ public class ProcessDefinitionServiceImpl implements ProcessDefinitionService {
                 // 租户信息
 //                .tenantId(user.getUserId().toString())
                 .deploy();
-        if (deploy == null) {
-            throw new ServiceException("部署失败!");
-        }
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        ProcessDefinition processDefinition = null;
-        try {
-            processDefinition = repositoryService.createProcessDefinitionQuery().deploymentId(deploy.getId()).list().get(0);
-        } catch (Exception e) {
-            // 删除部署
-            this.deleteDeployment(deploy.getId());
-            throw new ServiceException("部署出现异常");
-        }
-        Map<String, Object> map = new HashMap<>(2);
-        map.put("deployId", deploy.getId());
-        map.put("deployName", deploy.getName());
-        map.put("processDefinitionId", processDefinition != null ? processDefinition.getId() : "获取流程定义失败~");
-        return R.success(map);
+        return R.success(deployInfo(deploy));
     }
 
     @Override
@@ -121,4 +102,104 @@ public class ProcessDefinitionServiceImpl implements ProcessDefinitionService {
     public R<String> convert(DefinitionVo param) {
         return null;
     }
+
+    @Override
+    public R<Map<String, Object>> deployXml(SysUser user, DeployVo deployVo) {
+        Deployment deploy = repositoryService.createDeployment()
+                .addString(bpmnSuffix(deployVo.getBpmnId()), deployVo.getXml())
+                .name(deployVo.getBpmnName()).enableDuplicateFiltering(true).deploy();
+        return R.success(deployInfo(deploy));
+    }
+
+    @Override
+    public R<List<DeployVo>> deployList() {
+        List<Deployment> list = repositoryService.createDeploymentQuery().list();
+        if (CollUtil.isEmpty(list)) {
+            return R.success();
+        }
+        List<DeployVo> result = new ArrayList<>();
+        for (Deployment deployment : list) {
+            DeployVo deployVo = new DeployVo();
+            deployVo.setBpmnId(deployment.getId());
+            deployVo.setBpmnName(deployment.getName());
+            // 获取源数据
+            List<org.camunda.bpm.engine.repository.Resource> resources = repositoryService.getDeploymentResources(deployment.getId());
+            for (org.camunda.bpm.engine.repository.Resource resource : resources) {
+                String resourceName = resource.getName();
+                InputStream inputStream = repositoryService.getResourceAsStream(deployment.getId(), resourceName);
+                // 读取资源数据
+                try {
+                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                    byte[] buffer = new byte[1024];
+                    int length;
+                    while ((length = inputStream.read(buffer)) != -1) {
+                        outputStream.write(buffer, 0, length);
+                    }
+
+                    // 获取资源数据
+                    byte[] resourceData = outputStream.toByteArray();
+                    deployVo.setXml(new String(resourceData));
+                    // 关闭输入流
+                    inputStream.close();
+                    outputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            result.add(deployVo);
+        }
+        return R.success(result);
+    }
+
+    private Map<String, Object> deployInfo(Deployment deploy) {
+        if (deploy == null) {
+            throw new ServiceException("部署失败!");
+        }
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        ProcessDefinition processDefinition = null;
+        try {
+            processDefinition = repositoryService.createProcessDefinitionQuery()
+                    .deploymentId(deploy.getId()).list().get(0);
+        } catch (Exception e) {
+            // 删除部署
+            this.deleteDeployment(deploy.getId());
+            throw new ServiceException("部署出现异常");
+        }
+
+        Map<String, Object> map = new HashMap<>(2);
+        map.put("deployId", deploy.getId());
+        map.put("deployName", deploy.getName());
+        map.put("processDefinitionId", processDefinition != null ? processDefinition.getId() : "获取流程定义失败~");
+        return map;
+    }
+
+    /**
+     * 处理后缀 .bpmn
+     *
+     * @param name 文件名
+     * @return 返回 完整的xx.bpmn
+     */
+    private static String bpmnSuffix(String name) {
+        String[] split = name.split("\\.");
+        if ("bpmn".equals(split[split.length - 1])) {
+            return name;
+        }
+        StringBuilder temp = new StringBuilder();
+        for (String s : split) {
+            temp.append(s);
+        }
+        temp.append(".bpmn");
+        return temp.toString();
+    }
+
+//    public static void main(String[] args) {
+//        System.out.println(bpmnSuffix("1.bpmn")); // 1.bpmn
+//        System.out.println(bpmnSuffix("1.")); // 1.bpmn
+//        System.out.println(bpmnSuffix("xxx")); // xxx.bpmn
+//    }
+
 }
