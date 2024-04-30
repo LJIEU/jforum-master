@@ -14,6 +14,10 @@ public class BaseOperateLog implements Serializable {
     @Serial
     private static final long serialVersionUID = 8437340490036790603L;
     /**
+     * 用户名
+     */
+    private String username;
+    /**
      * 操作IP地址
      */
     private String ip;
@@ -83,6 +87,14 @@ public class BaseOperateLog implements Serializable {
                 requestData, responseData,
                 costTime);
         return "打印完成";
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getIp() {

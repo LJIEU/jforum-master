@@ -8,6 +8,7 @@ import com.liu.core.constant.Constants;
 import com.liu.core.fiter.PropertyPreExcludeFilter;
 import com.liu.core.model.BaseOperateLog;
 import com.liu.core.utils.IpUtils;
+import com.liu.core.utils.SecurityUtils;
 import com.liu.core.utils.ServletUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -136,6 +137,7 @@ public class BaseLogAspect {
                     action, describe, ordinal,
                     requestData, responseData,
                     costTime);*/
+            baseOperateLog.setUsername(SecurityUtils.currentUsername(request));
             baseOperateLog.setIp(ip);
             baseOperateLog.setRequestMethod(requestMethod);
             baseOperateLog.setUri(uri);

@@ -1,6 +1,7 @@
 package com.liu.system.aspect;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.StrUtil;
 import com.liu.core.annotation.Log;
 import com.liu.core.aspect.BaseLogAspect;
 import com.liu.core.manager.AsyncManager;
@@ -34,6 +35,13 @@ public class SysLogAspect extends BaseLogAspect {
         SysOperateLog sysOperateLog = new SysOperateLog();
         // 将 base的数据 拷贝到 sys中
         BeanUtil.copyProperties(baseOperateLog, sysOperateLog);
+        sysOperateLog.setBusinessType(baseOperateLog.getAction());
+        sysOperateLog.setOperatorType(baseOperateLog.getOrdinal());
+        sysOperateLog.setRequestUrl(baseOperateLog.getUri());
+        sysOperateLog.setOperateParam(baseOperateLog.getRequestData());
+        sysOperateLog.setJsonResult(baseOperateLog.getResponseData());
+        sysOperateLog.setErrorMessage(baseOperateLog.getErrMessage());
+        sysOperateLog.setStatus(StrUtil.isEmpty(baseOperateLog.getErrMessage()) ? 0 : 1);
         AsyncManager.manager().execute(AsyncFactory.recordOperate(sysOperateLog));
         return baseOperateLog;
     }
