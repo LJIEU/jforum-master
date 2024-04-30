@@ -2,14 +2,21 @@ package com.liu.system.controller;
 
 import cn.hutool.core.util.StrUtil;
 import com.github.pagehelper.PageInfo;
+import com.liu.core.annotation.Log;
+import com.liu.core.constant.enume.OperatorType;
 import com.liu.core.controller.BaseController;
+import com.liu.core.excption.user.UserNotExistsException;
 import com.liu.core.result.R;
 import com.liu.core.utils.ExcelUtil;
 import com.liu.core.utils.SecurityUtils;
+import com.liu.core.utils.SpringUtils;
 import com.liu.db.entity.SysMenu;
 import com.liu.db.entity.SysRole;
+import com.liu.db.entity.SysUser;
 import com.liu.db.service.SysRoleService;
+import com.liu.db.service.SysUserService;
 import com.liu.db.service.relation.SysRoleAndMenuService;
+import com.liu.db.service.relation.SysUserAndRoleService;
 import com.liu.db.vo.RoleVo;
 import com.liu.db.vo.level.Level;
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,6 +28,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -167,6 +175,26 @@ public class SysRoleController extends BaseController {
         return R.success(result);
     }
 
+    /**
+     * 获取 自身 角色 下拉列表
+     */
+    @Operation(summary = "获取自身 角色 下拉列表")
+    @GetMapping("/optionsByMe")
+    public R<List<Level>> optionsByMe(HttpServletRequest request) {
+        SysUser user = SpringUtils.getBean(SysUserService.class).getItemByUserName(SecurityUtils.currentUsername(request));
+        if (user == null) {
+            throw new UserNotExistsException();
+        }
+        List<Level> result = SpringUtils.getBean(SysUserAndRoleService.class).getRoleByUserId(user.getUserId())
+                .stream().map(v -> {
+                    Level level = new Level();
+                    level.setValue(v.getRoleId());
+                    level.setLabel(v.getRoleName());
+                    return level;
+                }).collect(Collectors.toList());
+        return R.success(result);
+    }
+
 
     /**
      * 修改 角色状态
@@ -187,8 +215,8 @@ public class SysRoleController extends BaseController {
      */
     @Operation(summary = "分配菜单")
     @PutMapping("/{roleId}/assignMenus")
-//    @Log(describe = "赋权操作", operatorType = OperatorType.MANAGE)
-//    @PreAuthorize("@authority.hasPermission('system:role:add,system:menu:add,system:menu:update,system:menu:delete')")
+    @Log(describe = "赋权操作", operatorType = OperatorType.MANAGE)
+    @PreAuthorize("@authority.hasPermission('system:role:add,system:menu:add,system:menu:update,system:menu:delete')")
     public R<String> assignMenus(
             @PathVariable("roleId") Long roleId,
             @RequestParam("menusIds") Long[] menusIds, HttpServletRequest request) {

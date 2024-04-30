@@ -294,6 +294,12 @@ public class SysMenuController extends BaseController {
         SysMenu sysMenu = menuVoToMenu(menuVo);
         if ("C".equalsIgnoreCase(menuVo.getType())) {
             sysMenu.setComponent("Layout");
+            // 并且对 路径进行处理
+            String path = menuVo.getPath();
+            if (path.charAt(0) != '/') {
+                // 如果 不是 /xx 就加上 / 只有菜单才需要这样
+                sysMenu.setPath("/" + path);
+            }
         }
         String username = SecurityUtils.currentUsername(request);
         SysUser user = SpringUtils.getBean(SysUserService.class).getItemByUserName(username);

@@ -105,6 +105,11 @@ public class SysRoleAndMenuService {
         // 查询当前角色已经拥有的MenusId
         List<Long> dbRoleMenus = selectMenuListByRoleId(roleId).stream().map(SysMenu::getMenuId).collect(Collectors.toList());
         Map<ToolEnum, Object> multiple = ToolUtils.multiple(dbRoleMenus, requiredMenus);
+        // 一定要注意顺序 先删除 之前的旧数据 在进行更新
+        List<Long> delete = (List<Long>) multiple.get(ToolEnum.DELETE);
+        delete.forEach(v -> {
+            delete(v, roleId);
+        });
         Map<Long, Long> update = (Map<Long, Long>) multiple.get(ToolEnum.UPDATE);
         if (!MapUtil.isEmpty(update)) {
             // 更新操作
@@ -116,10 +121,7 @@ public class SysRoleAndMenuService {
         add.forEach(v -> {
             insert(v, roleId);
         });
-        List<Long> delete = (List<Long>) multiple.get(ToolEnum.DELETE);
-        delete.forEach(v -> {
-            delete(v, roleId);
-        });
+
     }
 
     public void insert(Long newMenuId, Long roleId) {

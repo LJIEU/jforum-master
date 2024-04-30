@@ -50,7 +50,7 @@
     </insert>
     <update id="update">
         update `sys_role_menu`
-        set menu_id = #{newMenuId}
+        set `menu_id` = #{newMenuId}
         where `role_id` = #{roleId}
           and `menu_id` = #{oldMenuId}
     </update>
