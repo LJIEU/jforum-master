@@ -72,10 +72,11 @@ public class ProcessDefinitionController {
      * @return 提示信息
      */
     @Operation(summary = "删除部署")
-    @DeleteMapping("/deleteDeployment")
+    @DeleteMapping("/deleteDeployment/{deploymentId}")
     public R<String> deleteDeployment(
-            @Parameter(name = "deploymentId", description = "部署ID", in = ParameterIn.QUERY)
-            @RequestParam("deploymentId") String deploymentId) {
+            @Parameter(name = "deploymentId", description = "部署ID", in = ParameterIn.PATH)
+            @PathVariable("deploymentId") String deploymentId) {
+        // TODO 2024/4/30/16:05 不是什么人都可以删除部署
         return processDefinitionService.deleteDeployment(deploymentId);
     }
 
@@ -105,6 +106,15 @@ public class ProcessDefinitionController {
     @GetMapping("/deployList")
     public R<List<DeployVo>> deployList() {
         return processDefinitionService.deployList();
+    }
+
+
+    @Operation(summary = "获取表单")
+    @GetMapping("/formDataHtml/{deploymentId}")
+    public R<String> formDataHtml(
+            @Parameter(name = "deploymentId", description = "部署ID", in = ParameterIn.PATH)
+            @PathVariable("deploymentId") String deploymentId) {
+        return processDefinitionService.formDataHtml(deploymentId);
     }
 
 

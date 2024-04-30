@@ -75,4 +75,11 @@ public interface ProcessDefinitionService {
      * @return 返回结果
      */
     R<List<DeployVo>> deployList();
+
+    /**
+     * 获取表单数据
+     * @param deploymentId 部署ID
+     * @return 返回结果
+     */
+    R<String> formDataHtml(String deploymentId);
 }
