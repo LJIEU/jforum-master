@@ -8,6 +8,7 @@ import com.liu.core.result.R;
 import com.liu.db.entity.SysUser;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Description:
@@ -63,4 +64,33 @@ public interface ProcessInstanceService {
      * @return 返回结果
      */
     R<List<HistVo>> hist(String processInstanceId, String businessKey);
+
+    /**
+     * 启动流程
+     *
+     * @param deployId 部署ID
+     * @param params   参数列表
+     * @param user     用户
+     * @return 返回结果
+     */
+    R<String> startProcessInstanceByDeployId(String deployId, Map<String, Object> params, SysUser user);
+
+    /**
+     * 根据流程实例ID 返回对应的表单
+     *
+     * @param instanceId 流程实例ID
+     * @param user       用户
+     * @return 返回结果
+     */
+    R<Map<String, Object>> formHtmlByInstanceId(String instanceId, SysUser user);
+
+    /**
+     * 提交当前节点任务
+     *
+     * @param instanceId 实例ID
+     * @param user       用户
+     * @param params     参数
+     * @return 返回结果
+     */
+    R<String> complete(String instanceId, SysUser user, Map<String, Object> params);
 }

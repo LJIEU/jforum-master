@@ -1,5 +1,6 @@
 package com.liu.camunda.controller.flow;
 
+import cn.hutool.core.util.StrUtil;
 import com.liu.camunda.service.ProcessInstanceService;
 import com.liu.camunda.service.ProcessTaskService;
 import com.liu.camunda.vo.*;
@@ -124,7 +125,51 @@ public class ProcessInstanceController extends BaseController {
             @RequestParam(value = "businessKey") String businessKey) {
         return processInstanceService.hist(processInstanceId, businessKey);
     }
-//
+
+    @Operation(summary = "开启流程")
+    @PostMapping("/start")
+    public R<String> startByDeployId(
+            @RequestBody Map<String, Object> params, HttpServletRequest request
+    ) {
+        SysUser user = SpringUtils.getBean(SysUserService.class).getItemByUserName(SecurityUtils.currentUsername(request));
+        if (user == null) {
+            throw new ServiceException("当前用户不存在!");
+        }
+        // 与前端写死  这个ID 是 部署ID
+        String deployId = (String) params.get("id");
+        if (StrUtil.isEmpty(deployId)) {
+            return R.fail("部署ID为空!");
+        }
+        return processInstanceService.startProcessInstanceByDeployId(deployId, params, user);
+    }
+
+
+    @Operation(summary = "根据流程实例ID返回表单")
+    @GetMapping("/formDataHtmlByInstanceId/{instanceId}")
+    public R<Map<String, Object>> formHtmlByInstanceId(
+            @Parameter(name = "instanceId", description = "流程实例ID", in = ParameterIn.PATH)
+            @PathVariable("instanceId") String instanceId, HttpServletRequest request) {
+        SysUser user = SpringUtils.getBean(SysUserService.class).getItemByUserName(SecurityUtils.currentUsername(request));
+        if (user == null) {
+            throw new ServiceException("当前用户不存在!");
+        }
+        return processInstanceService.formHtmlByInstanceId(instanceId, user);
+    }
+
+    @Operation(summary = "根据流程实例ID启动流程")
+    @PostMapping("/complete")
+    public R<String> startByInstanceId(
+            @RequestBody Map<String, Object> params, HttpServletRequest request) {
+        SysUser user = SpringUtils.getBean(SysUserService.class).getItemByUserName(SecurityUtils.currentUsername(request));
+        if (user == null) {
+            throw new ServiceException("当前用户不存在!");
+        }
+        String instanceId = (String) params.get("id");
+        if (StrUtil.isEmpty(instanceId)) {
+            return R.fail("流程ID为空!");
+        }
+        return processInstanceService.complete(instanceId, user, params);
+    }
 //    /**
 //     * 设置流程实例变量
 //     *

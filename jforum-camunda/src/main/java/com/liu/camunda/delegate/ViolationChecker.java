@@ -47,6 +47,7 @@ public class ViolationChecker implements JavaDelegate {
             list.add("2");
             list.add("3");
             execution.setVariable(BpmConstants.CANDIDATE_USERS, list);
+
         } else {
             execution.setVariable(BpmConstants.NEED_USER, "false");
             // 修改 帖子 状态为 发布

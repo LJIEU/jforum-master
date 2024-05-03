@@ -10,3 +10,6 @@
 2. 委托任务=》 Service Task ==》 自行业务判断并且 添加 candidateUsers 列表 后期审核人员ID列表 符合的才可以审批
 3. 审批者 获取 candidateUsers 变量的 可审批人员列表 如果审批者符合则进行操作 否则不允许操作 完成后清空 candidateUsers
    变量 ``runtimeService.removeVariable(processInstanceId, BpmConstants.CANDIDATE_USERS);``
+
+
+一定要有约束

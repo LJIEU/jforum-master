@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace等于mapper接口类的全限定名,这样实现对应 -->
+<mapper namespace="com.liu.db.mapper.DeployAllNodeMapper">
+    <resultMap id="deployAllNodeResultMap" type="DeployAllNode">
+        <id property="deployId" column="deploy_id"/>
+        <result property="data" column="data" typeHandler="com.liu.core.converter.BpmnHandler"/>
+    </resultMap>
+
+    <insert id="insert">
+        insert into `deploy_all_node`(`deploy_id`, `data`)
+        values (#{deployId},
+                #{data,jdbcType=JAVA_OBJECT,javaType=java.util.List,typeHandler=com.liu.core.converter.BpmnHandler})
+    </insert>
+    <delete id="delete">
+        delete
+        from `deploy_all_node`
+        where `deploy_id` = #{deploymentId}
+    </delete>
+
+    <select id="getData" resultMap="deployAllNodeResultMap">
+        select *
+        from `deploy_all_node`
+        where `deploy_id` = #{deployId}
+    </select>
+</mapper>

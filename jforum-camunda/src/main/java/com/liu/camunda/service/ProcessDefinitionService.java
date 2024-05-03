@@ -2,6 +2,7 @@ package com.liu.camunda.service;
 
 import com.liu.camunda.vo.DefinitionVo;
 import com.liu.camunda.vo.DeployVo;
+import com.liu.camunda.vo.FormVo;
 import com.liu.core.result.R;
 import com.liu.db.entity.SysUser;
 import org.springframework.web.multipart.MultipartFile;
@@ -81,5 +82,5 @@ public interface ProcessDefinitionService {
      * @param deploymentId 部署ID
      * @return 返回结果
      */
-    R<String> formDataHtml(String deploymentId);
+    R<Map<String, Object>> formDataHtml(String deploymentId);
 }

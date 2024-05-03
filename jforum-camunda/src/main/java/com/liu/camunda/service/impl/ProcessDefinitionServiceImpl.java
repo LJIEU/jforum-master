@@ -1,10 +1,15 @@
 package com.liu.camunda.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import com.liu.camunda.domin.BpmnInfo;
+import com.liu.camunda.domin.FormField;
+import com.liu.camunda.service.DeployAllNodeService;
 import com.liu.camunda.service.ProcessDefinitionService;
+import com.liu.camunda.utils.CamundaUtils;
 import com.liu.camunda.vo.DefinitionVo;
 import com.liu.camunda.vo.DeployVo;
 import com.liu.core.excption.ServiceException;
+import com.liu.core.manager.AsyncManager;
 import com.liu.core.result.R;
 import com.liu.db.entity.SysUser;
 import jakarta.annotation.Resource;
@@ -16,16 +21,11 @@ import org.camunda.bpm.model.bpmn.instance.Definitions;
 import org.camunda.bpm.model.bpmn.instance.UserTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -45,6 +45,9 @@ public class ProcessDefinitionServiceImpl implements ProcessDefinitionService {
 
     @Resource
     private RepositoryService repositoryService;
+
+    @Autowired
+    private DeployAllNodeService deployAllNodeService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -70,6 +73,14 @@ public class ProcessDefinitionServiceImpl implements ProcessDefinitionService {
                 // 租户信息
 //                .tenantId(user.getUserId().toString())
                 .deploy();
+        // 部署成功后 开启异步线程 去完成 该部署文件的节点读取任务 然后写入表中
+        AsyncManager.manager().execute(new TimerTask() {
+            @Override
+            public void run() {
+                byte[] bpmnResource = getBpmnResource(deploy.getId());
+                deployAllNodeService.insert(deploy.getId(), bpmnResource);
+            }
+        });
         return R.success(deployInfo(deploy));
     }
 
@@ -90,6 +101,7 @@ public class ProcessDefinitionServiceImpl implements ProcessDefinitionService {
         // 级联删除  删除其绑定的流程实例和job
         try {
             repositoryService.deleteDeployment(deploymentId);
+            deployAllNodeService.delete(deploymentId);
         } catch (Exception ignored) {
 
         }
@@ -141,7 +153,6 @@ public class ProcessDefinitionServiceImpl implements ProcessDefinitionService {
                     while ((length = inputStream.read(buffer)) != -1) {
                         outputStream.write(buffer, 0, length);
                     }
-
                     // 获取资源数据
                     byte[] resourceData = outputStream.toByteArray();
                     deployVo.setXml(new String(resourceData));
@@ -158,40 +169,27 @@ public class ProcessDefinitionServiceImpl implements ProcessDefinitionService {
     }
 
     @Override
-    public R<String> formDataHtml(String deploymentId) {
+    public R<Map<String, Object>> formDataHtml(String deploymentId) {
         try {
-            // 读取 BPMN
-            byte[] bpmnXmlByte = getBpmnResource(deploymentId);
-            // 创建 DocumentBuilder
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = factory.newDocumentBuilder();
-
-            // 将字符串解析为 Document
-            Document doc = builder.parse(new ByteArrayInputStream(bpmnXmlByte));
-
-            // 获取所有 camunda:formField 元素
-            NodeList formFields = doc.getElementsByTagName("camunda:formField");
-            StringBuilder htmlElement = new StringBuilder();
-            for (int i = 0; i < formFields.getLength(); i++) {
-                Element formField = (Element) formFields.item(i);
-                String id = formField.getAttribute("id");
-                String label = formField.getAttribute("label");
-                String type = formField.getAttribute("type");
-
-                // 根据 camunda:formField 创建相应的 HTML 元素
-//                htmlElement = "<input type=" + type + "\" id=\"" + id + "\" placeholder=\"" + label + "\" />";
-//                String format = StrUtil.format("<input type=\"{}\" id={} placeholder=\"{label}\"/>", type, id, label);
-//                String beginning = StrUtil.format("<el-form-item label=\"{}\" prop=\"{}\" class=\"label-center-align\">", label, id);
-//                String body = StrUtil.format("<el-input type=\"textarea\" v-model=\"formData.{}\" rows=\"3\"/>", id);
-//                String ending = StrUtil.format("</el-form-item>");
-//                htmlElement.append(beginning).append(body).append(ending);
-                // 整理表单数据
-
+            // 获取整理好的 BPMN 文件
+            List<BpmnInfo> data = deployAllNodeService.selectByDeployId(deploymentId);
+            // 返回第一个用户服务就行
+            for (BpmnInfo info : data) {
+                if (info.getStartEvent() != null) {
+                    continue;
+                }
+                if (info.getUserTask() != null) {
+                    // 获取第一个 用户任务就返回
+                    List<FormField> formData = info.getFormData();
+                    Map<String, Object> result = CamundaUtils.formDataResult(formData, data);
+                    return R.success(result);
+                }
             }
-            return R.success(htmlElement.toString());
         } catch (Exception e) {
-            return R.fail();
+            e.printStackTrace();
+            return R.fail("解析失败");
         }
+        return R.success();
     }
 
     private byte[] getBpmnResource(String deploymentId) {

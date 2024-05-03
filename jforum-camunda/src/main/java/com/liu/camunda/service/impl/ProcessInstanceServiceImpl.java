@@ -7,7 +7,11 @@ import cn.hutool.core.util.StrUtil;
 import com.liu.camunda.constants.BpmConstants;
 import com.liu.camunda.constants.CamundaState;
 import com.liu.camunda.constants.StateEnum;
+import com.liu.camunda.domin.BpmnInfo;
+import com.liu.camunda.domin.FormField;
+import com.liu.camunda.service.DeployAllNodeService;
 import com.liu.camunda.service.ProcessInstanceService;
+import com.liu.camunda.utils.CamundaUtils;
 import com.liu.camunda.vo.HistVo;
 import com.liu.camunda.vo.ProcessVo;
 import com.liu.camunda.vo.RejectInstanceVo;
@@ -18,14 +22,14 @@ import com.liu.core.utils.SpringUtils;
 import com.liu.db.entity.SysUser;
 import com.liu.db.service.SysUserService;
 import jakarta.annotation.Resource;
-import org.camunda.bpm.engine.HistoryService;
-import org.camunda.bpm.engine.RepositoryService;
-import org.camunda.bpm.engine.RuntimeService;
-import org.camunda.bpm.engine.TaskService;
+import org.camunda.bpm.engine.*;
+import org.camunda.bpm.engine.history.HistoricActivityInstance;
 import org.camunda.bpm.engine.history.HistoricProcessInstance;
 import org.camunda.bpm.engine.history.HistoricTaskInstance;
+import org.camunda.bpm.engine.repository.ProcessDefinition;
 import org.camunda.bpm.engine.runtime.ActivityInstance;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
+import org.camunda.bpm.engine.runtime.ProcessInstantiationBuilder;
 import org.camunda.bpm.engine.task.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,6 +60,10 @@ public class ProcessInstanceServiceImpl implements ProcessInstanceService {
 
     @Resource
     private RepositoryService repositoryService;
+
+
+    @Resource
+    private IdentityService identityService;
 
 
     @Override
@@ -200,8 +208,17 @@ public class ProcessInstanceServiceImpl implements ProcessInstanceService {
      * @param processVoList 列表
      */
     private void isReject(List<ProcessVo> processVoList) {
+        if (CollUtil.isEmpty(processVoList)) {
+            return;
+        }
         for (ProcessVo processVo : processVoList) {
-            String value = (String) historyService.createHistoricVariableInstanceQuery().processInstanceId(processVo.getProcessInstanceId()).variableName(BpmConstants.OPTIONS).singleResult().getValue();
+            String value = null;
+            try {
+                value = (String) historyService.createHistoricVariableInstanceQuery().processInstanceId(processVo.getProcessInstanceId()).variableName(BpmConstants.OPTIONS).singleResult().getValue();
+            } catch (Exception e) {
+                // 说明不存在驳回数据 直接返回即可
+                return;
+            }
             if ("1".equals(value)) {
                 // 驳回
                 processVo.setState(StateEnum.REJECT.getState());
@@ -233,6 +250,139 @@ public class ProcessInstanceServiceImpl implements ProcessInstanceService {
             }
         }).collect(Collectors.toList());
         return R.success(result);
+    }
+
+    @Override
+    public R<String> startProcessInstanceByDeployId(String deployId, Map<String, Object> params, SysUser user) {
+        List<BpmnInfo> bpmnInfoList = SpringUtils.getBean(DeployAllNodeService.class).selectByDeployId(deployId);
+        List<String> fieldList = new ArrayList<>();
+        for (BpmnInfo bpmnInfo : bpmnInfoList) {
+            if (bpmnInfo.getUserTask() != null) {
+                for (FormField field : bpmnInfo.getFormData()) {
+                    fieldList.add(field.getId());
+                }
+                break;
+            }
+        }
+        // 获取流程定义对象
+        ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery()
+                .deploymentId(deployId)
+                .singleResult();
+        if (processDefinition == null) {
+            throw new ServiceException("未找到流程定义！");
+        }
+        // 创建流程实例
+        ProcessInstantiationBuilder processInstantiationBuilder =
+                runtimeService.createProcessInstanceByKey(processDefinition.getKey())
+                        .businessKey(BpmConstants.POST_BUSINESS);
+
+        // 设置 流程发起者ID 后期使用 getStartUserId()
+        identityService.setAuthenticatedUserId(user.getUserId().toString());
+
+        // 如果有需要传递的变量，可以在此设置  设置 发起者信息 ==》 当前用户ID
+        processInstantiationBuilder.setVariable(BpmConstants.INITIATOR, user.getUserId().toString());
+        for (String field : fieldList) {
+            processInstantiationBuilder.setVariable(field, params.get(field));
+        }
+        // 启动流程实例
+        ProcessInstance processInstance = processInstantiationBuilder.execute();
+        // 检查流程实例是否成功启动
+        if (processInstance == null) {
+            throw new ServiceException("流程实例启动失败！");
+        }
+
+        // 发起
+        this.initiateReview(processInstance.getId(), user);
+        return R.success();
+    }
+
+    private void initiateReview(String processInstanceId, SysUser user) {
+        Task task = taskService.createTaskQuery().processInstanceId(processInstanceId).singleResult();
+        // 该任务是由我发起的
+        task.setAssignee(user.getUserId().toString());
+        taskService.complete(task.getId());
+    }
+
+
+    @Override
+    public R<Map<String, Object>> formHtmlByInstanceId(String instanceId, SysUser user) {
+        // 查询部署ID
+        BpmnInfo node = currNode(instanceId);
+        if (node == null) {
+            return R.success();
+        }
+        // 这个就是当前节点
+        List<FormField> formData = node.getFormData();
+        // 整理数据表单
+        Map<String, Object> result = CamundaUtils.formDataResult(formData, allNode(instanceId));
+        return R.success(result);
+    }
+
+    /**
+     * 返回当前节点 或者 全部
+     *
+     * @param instanceId 流程实例ID
+     * @return 返回当前节点信息
+     */
+    private BpmnInfo currNode(String instanceId) {
+        // 查询已完成的节点 没有结束时间的 就是当前节点任务
+        String activityId = "";
+        List<HistoricActivityInstance> list = historyService.createHistoricActivityInstanceQuery().processInstanceId(instanceId).list();
+        for (HistoricActivityInstance instance : list) {
+            if (instance.getEndTime() == null) {
+                activityId = instance.getActivityId();
+                break;
+            }
+        }
+        if (StrUtil.isEmpty(activityId)) {
+            return null;
+        }
+        List<BpmnInfo> bpmnInfoList = allNode(instanceId);
+        BpmnInfo node = null;
+        int index = 0;
+        for (BpmnInfo bpmnInfo : bpmnInfoList) {
+            if (bpmnInfo.getId().equals(activityId)) {
+                node = bpmnInfoList.get(index);
+                return node;
+            }
+            index++;
+        }
+        return null;
+    }
+
+    /**
+     * 获取所有节点
+     *
+     * @param instanceId 实例ID
+     * @return 返回已经整理好顺序的节点
+     */
+    private List<BpmnInfo> allNode(String instanceId) {
+        // 流程实例
+        ProcessInstance processInstance = runtimeService.createProcessInstanceQuery().processInstanceId(instanceId).singleResult();
+        // 流程定义
+        ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery().processDefinitionId(processInstance.getProcessDefinitionId()).singleResult();
+        return SpringUtils.getBean(DeployAllNodeService.class).selectByDeployId(processDefinition.getDeploymentId());
+    }
+
+    @Override
+    public R<String> complete(String instanceId, SysUser user, Map<String, Object> params) {
+        BpmnInfo bpmnInfo = currNode(instanceId);
+        Task task = taskService.createTaskQuery().processInstanceId(instanceId).singleResult();
+        // 如果有需要传递的变量，可以在此设置  设置 发起者信息 ==》 当前用户ID
+        taskService.setVariable(task.getId(), BpmConstants.INITIATOR, user.getUserId().toString());
+        List<String> fieldList = new ArrayList<>();
+        if (bpmnInfo != null && bpmnInfo.getFormData() != null) {
+            for (FormField field : bpmnInfo.getFormData()) {
+                fieldList.add(field.getId());
+            }
+            for (String field : fieldList) {
+                taskService.setVariable(task.getId(), field, params.get(field));
+            }
+        }
+        // 我完成的
+        task.setAssignee(user.getUserId().toString());
+        taskService.complete(task.getId());
+        return R.success();
     }
 
     private ProcessVo taskToProcessVo(Task task) {

@@ -111,7 +111,7 @@ public class ProcessDefinitionController {
 
     @Operation(summary = "获取表单")
     @GetMapping("/formDataHtml/{deploymentId}")
-    public R<String> formDataHtml(
+    public R<Map<String, Object>> formDataHtml(
             @Parameter(name = "deploymentId", description = "部署ID", in = ParameterIn.PATH)
             @PathVariable("deploymentId") String deploymentId) {
         return processDefinitionService.formDataHtml(deploymentId);

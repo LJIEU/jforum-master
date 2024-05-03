@@ -29,13 +29,16 @@ public class FormVo {
      * 下拉列表
      */
     private List<MyOption> options;
-
     /**
      * 是否是文件上传字段
      */
     private boolean isFileUpload;
 
-    static class MyOption {
+
+    /**
+     * 下拉选项
+     */
+    public static class MyOption {
         private String label;
         private String value;
 
@@ -54,6 +57,34 @@ public class FormVo {
         public void setValue(String value) {
             this.value = value;
         }
+
+        @Override
+        public String toString() {
+            return "MyOption{" +
+                    "label='" + label + '\'' +
+                    ", value='" + value + '\'' +
+                    '}';
+        }
+    }
+
+
+    @Override
+    public String toString() {
+        return "FormVo{" +
+                "label='" + label + '\'' +
+                ", prop='" + prop + '\'' +
+                ", type='" + type + '\'' +
+                ", options=" + options +
+                ", isFileUpload=" + isFileUpload +
+                '}';
+    }
+
+    public boolean isFileUpload() {
+        return isFileUpload;
+    }
+
+    public void setFileUpload(boolean fileUpload) {
+        isFileUpload = fileUpload;
     }
 
     public String getLabel() {
