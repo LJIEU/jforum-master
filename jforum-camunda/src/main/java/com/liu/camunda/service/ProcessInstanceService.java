@@ -61,9 +61,10 @@ public interface ProcessInstanceService {
      *
      * @param processInstanceId 流程实例
      * @param businessKey       流程业务Key
+     * @param user              用户
      * @return 返回结果
      */
-    R<List<HistVo>> hist(String processInstanceId, String businessKey);
+    R<List<HistVo>> hist(String processInstanceId, String businessKey, SysUser user);
 
     /**
      * 启动流程

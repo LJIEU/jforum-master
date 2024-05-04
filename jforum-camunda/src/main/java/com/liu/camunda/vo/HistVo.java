@@ -23,6 +23,15 @@ public class HistVo {
     @Schema(description = "当前节点名称")
     private String name;
 
+    @Schema(description = "头像")
+    private String avatar;
+
+    @Schema(description = "用户名")
+    private String username;
+
+    @Schema(description = "昵称")
+    private String nickName;
+
     @Schema(description = "最后执行者")
     private String lastUser;
 
@@ -41,12 +50,20 @@ public class HistVo {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof HistVo histVo)) return false;
-        return Objects.equals(getTackId(), histVo.getTackId()) && Objects.equals(getName(), histVo.getName()) && Objects.equals(getLastUser(), histVo.getLastUser()) && Objects.equals(getState(), histVo.getState()) && Objects.equals(getStartTime(), histVo.getStartTime()) && Objects.equals(getEndTime(), histVo.getEndTime());
+        return Objects.equals(getTackId(), histVo.getTackId()) && Objects.equals(getName(), histVo.getName()) && Objects.equals(getAvatar(), histVo.getAvatar()) && Objects.equals(getUsername(), histVo.getUsername()) && Objects.equals(getNickName(), histVo.getNickName()) && Objects.equals(getLastUser(), histVo.getLastUser()) && Objects.equals(getState(), histVo.getState()) && Objects.equals(getStartTime(), histVo.getStartTime()) && Objects.equals(getEndTime(), histVo.getEndTime());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getTackId(), getName(), getLastUser(), getState(), getStartTime(), getEndTime());
+        return Objects.hash(getTackId(), getName(), getAvatar(), getUsername(), getNickName(), getLastUser(), getState(), getStartTime(), getEndTime());
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 
     public String getLastUser() {
@@ -95,5 +112,21 @@ public class HistVo {
 
     public void setStartTime(Date startTime) {
         this.startTime = startTime;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setNickName(String nickName) {
+        this.nickName = nickName;
+    }
+
+    public String getNickName() {
+        return nickName;
     }
 }

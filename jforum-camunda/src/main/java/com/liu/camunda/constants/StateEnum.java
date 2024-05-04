@@ -8,12 +8,16 @@ package com.liu.camunda.constants;
  * @since 2024/04/27 21:08
  */
 public enum StateEnum {
+
     /**
      * 审核通过
      */
     COMPLETE("审核通过", "success"),
     /**
-     * ;
+     * 已批准
+     */
+    MY_COMPLETE("已批准", "success"),
+    /**
      * 审核中
      */
     REVIEW("审核中", "primary"),
@@ -25,6 +29,10 @@ public enum StateEnum {
      * 驳回
      */
     REJECT("驳回", "danger"),
+    /**
+     * 被驳回
+     */
+    MY_REJECT("被驳回", "warning"),
     /**
      * 撤回
      */

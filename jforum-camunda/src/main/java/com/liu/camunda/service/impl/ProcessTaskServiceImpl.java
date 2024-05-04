@@ -2,7 +2,7 @@ package com.liu.camunda.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.map.MapUtil;
-import com.liu.camunda.constants.BpmConstants;
+import com.liu.camunda.constants.BpmnConstants;
 import com.liu.camunda.service.ProcessTaskService;
 import com.liu.camunda.vo.CompleteTaskVo;
 import com.liu.camunda.vo.TaskVo;
@@ -48,7 +48,7 @@ public class ProcessTaskServiceImpl implements ProcessTaskService {
             // 不是什么人都可以对流程进行审批的 这里 进行筛选
             List<String> userIds = null;
             try {
-                userIds = (List<String>) taskService.getVariable(task.getId(), BpmConstants.CANDIDATE_USERS);
+                userIds = (List<String>) taskService.getVariable(task.getId(), BpmnConstants.CANDIDATE_USERS);
                 // 符合 候选用户才行
                 if (userIds.contains(userId)) {
                     taskToVo(taskList, task);

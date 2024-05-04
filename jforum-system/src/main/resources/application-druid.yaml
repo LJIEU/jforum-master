@@ -50,7 +50,7 @@ spring:
         enabled: true
       # Druid StatView Servlet配置
       stat-view-servlet:
-        enabled: true
+        enabled: false
         # StatView Servlet允许访问的路径 http://localhost/druid/
         allow:
         url-pattern: /druid/*

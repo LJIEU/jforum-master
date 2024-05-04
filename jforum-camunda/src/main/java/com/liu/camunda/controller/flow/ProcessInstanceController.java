@@ -122,8 +122,12 @@ public class ProcessInstanceController extends BaseController {
     @PostMapping("/hist")
     public R<List<HistVo>> hist(
             @RequestParam(value = "processInstanceId") String processInstanceId,
-            @RequestParam(value = "businessKey") String businessKey) {
-        return processInstanceService.hist(processInstanceId, businessKey);
+            @RequestParam(value = "businessKey") String businessKey, HttpServletRequest request) {
+        SysUser user = SpringUtils.getBean(SysUserService.class).getItemByUserName(SecurityUtils.currentUsername(request));
+        if (user == null) {
+            throw new ServiceException("用户不存在");
+        }
+        return processInstanceService.hist(processInstanceId, businessKey, user);
     }
 
     @Operation(summary = "开启流程")
@@ -156,7 +160,7 @@ public class ProcessInstanceController extends BaseController {
         return processInstanceService.formHtmlByInstanceId(instanceId, user);
     }
 
-    @Operation(summary = "根据流程实例ID启动流程")
+    @Operation(summary = "根据流程实例ID提交流程")
     @PostMapping("/complete")
     public R<String> startByInstanceId(
             @RequestBody Map<String, Object> params, HttpServletRequest request) {
@@ -170,80 +174,4 @@ public class ProcessInstanceController extends BaseController {
         }
         return processInstanceService.complete(instanceId, user, params);
     }
-//    /**
-//     * 设置流程实例变量
-//     *
-//     * @param requestParam 请求参数
-//     * @return 提示信息
-//     */
-//    @PostMapping("/setVariableByInstance")
-//    public R<String> setVariableByInstance(@RequestBody @Validated SetVariableVo requestParam) {
-//        return processInstanceService.setVariableByInstance(requestParam);
-//    }
-//
-//    /**
-//     * 挂起流程实例--可以设置/删除变量，其他操作将不被允许
-//     *
-//     * @param processInstanceId 流程实例id
-//     * @return 提示信息
-//     */
-//    @PostMapping("/suspendById")
-//    public R<String> suspendProcessInstanceById(@RequestParam("processInstanceId") String processInstanceId) {
-//        return processInstanceService.suspendProcessInstanceById(processInstanceId);
-//    }
-//
-//    /**
-//     * 激活流程实例
-//     *
-//     * @param processInstanceId 流程实例id
-//     * @return 提示信息
-//     */
-//    @PostMapping("/activateById")
-//    public R<String> activateProcessInstanceById(@RequestParam("processInstanceId") String processInstanceId) {
-//        return processInstanceService.activateProcessInstanceById(processInstanceId);
-//    }
-//
-//    /**
-//     * 删除流程实例
-//     *
-//     * @param processInstanceId 流程实例id
-//     * @return 提示信息
-//     */
-//    @DeleteMapping("/deleteProcessInstance")
-//    public R<String> deleteProcessInstance(@RequestParam("processInstanceId") String processInstanceId) {
-//        return processInstanceService.deleteProcessInstance(processInstanceId);
-//    }
-//
-//    /**
-//     * 修改流程实例【这个接口可以实现很多功能，比如B节点驳回到A节点，换个思路就是希望流程实例从A节点重新开始】
-//     *
-//     * @param requestParam 请求参数
-//     * @return 提示信息
-//     */
-//    @PostMapping("/modifyProcessInstance")
-//    public R<String> modifyProcessInstance(@RequestBody @Validated ModifyInstanceRequest requestParam) {
-//        return processInstanceService.modifyProcessInstance(requestParam);
-//    }
-//
-//    /**
-//     * 根据获取审批人方式不同，提供了V2版本，适用于审批人是通过执行监听器获取的方式。
-//     *
-//     * @param requestParam 请求参数
-//     * @return 提示信息
-//     */
-//    @PostMapping("/modifyProcessInstanceV2")
-//    public R<String> modifyProcessInstanceV2(@RequestBody @Validated ModifyInstanceRequest requestParam) {
-//        return processInstanceService.modifyProcessInstanceV2(requestParam);
-//    }
-//
-//    /**
-//     * 查询流程实例节点状态，只包含历史和当前节点
-//     *
-//     * @param processInstanceId 流程实例id
-//     * @return k:节点id v:状态值
-//     */
-//    @GetMapping("/queryInstanceNodeState")
-//    public R<Map<String, Integer>> queryInstanceNodeState(@RequestParam("processInstanceId") String processInstanceId) {
-//        return processInstanceService.queryInstanceNodeState(processInstanceId);
-//    }
 }

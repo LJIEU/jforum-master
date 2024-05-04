@@ -3,6 +3,7 @@ package com.liu.camunda.utils;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
+import com.liu.camunda.constants.BpmnConstants;
 import com.liu.camunda.domin.BpmnInfo;
 import com.liu.camunda.domin.FormField;
 import com.liu.camunda.vo.FormVo;
@@ -91,22 +92,23 @@ public class CamundaUtils {
             rulesVo.setField(field.getId());
             rulesVo.setMessage("请输入" + field.getLabel());
             rulesVo.setTrigger("blur");
+            // 如果是意见 那就使用多行文本
+            if (field.getId().equals(BpmnConstants.OPINION)) {
+                formVo.setType(HTMLConstants.TEXTAREA);
+            }
             // 去判断类型 1.默认的  2.查看 conditionExpression 是否有该变量存在
             List<FormVo.MyOption> myOptions = new ArrayList<>();
             for (BpmnInfo bpmnInfo : resultBpmn) {
                 if (bpmnInfo.getConditionExpression() != null &&
                         bpmnInfo.getConditionExpression().matches(".*" + field.getId() + ".*")) {
                     // 如果存在 那说明是下拉选项 进行收集[值+name]
-//                        System.out.println(bpmnInfo.getConditionExpression());
                     Matcher matcher = Pattern.compile("==\\s*(.*)}").matcher(bpmnInfo.getConditionExpression());
                     if (matcher.find()) {
-//                            System.out.println(matcher.group(1));
                         String s = matcher.group(1);
-                        if (field.getType().equals("string")) {
+                        if ("string".equals(field.getType())) {
                             s = s.replaceAll("'", "");
-//                            System.out.println(s + "\t" + bpmnInfo.getName());
                             FormVo.MyOption myOption = new FormVo.MyOption();
-                            myOption.setLabel(bpmnInfo.getName());
+                            myOption.setLabel(bpmnInfo.getDesc());
                             myOption.setValue(s);
                             myOptions.add(myOption);
                         }

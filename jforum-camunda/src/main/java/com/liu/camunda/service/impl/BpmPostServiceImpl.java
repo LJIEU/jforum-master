@@ -1,7 +1,7 @@
 package com.liu.camunda.service.impl;
 
 import cn.hutool.core.map.MapUtil;
-import com.liu.camunda.constants.BpmConstants;
+import com.liu.camunda.constants.BpmnConstants;
 import com.liu.camunda.service.BpmPostService;
 import com.liu.camunda.vo.BpmPostVo;
 import com.liu.camunda.vo.SubmitPostVo;
@@ -64,14 +64,14 @@ public class BpmPostServiceImpl implements BpmPostService {
         // 创建流程实例
         ProcessInstantiationBuilder processInstantiationBuilder =
                 runtimeService.createProcessInstanceByKey(processDefinition.getKey())
-                        .businessKey(BpmConstants.POST_BUSINESS);
+                        .businessKey(BpmnConstants.POST_BUSINESS);
 
         // 设置 流程发起者ID 后期使用 getStartUserId()
         identityService.setAuthenticatedUserId(user.getUserId().toString());
 
         // 如果有需要传递的变量，可以在此设置  设置 发起者信息 ==》 当前用户ID
-        processInstantiationBuilder.setVariable(BpmConstants.INITIATOR, user.getUserId().toString());
-        processInstantiationBuilder.setVariable(BpmConstants.POST_ID, bpmPostVo.getPostId());
+        processInstantiationBuilder.setVariable(BpmnConstants.INITIATOR, user.getUserId().toString());
+        processInstantiationBuilder.setVariable(BpmnConstants.POST_ID, bpmPostVo.getPostId());
         // 以上代码可以写以下格式 设置变量
 //        runtimeService.startProcessInstanceByKey("key", "businessKey", new HashMap<>());
 
@@ -127,13 +127,13 @@ public class BpmPostServiceImpl implements BpmPostService {
         // 可以进行审核的 用户ID列表
         List<String> candidateUsers = new ArrayList<String>();
         for (HistoricVariableInstance variableInstance : variableInstanceList) {
-            if (variableInstance.getName().equals(BpmConstants.INITIATOR)) {
+            if (variableInstance.getName().equals(BpmnConstants.INITIATOR)) {
                 initiator = (String) variableInstance.getValue();
             }
-            if (variableInstance.getName().equals(BpmConstants.POST_ID)) {
+            if (variableInstance.getName().equals(BpmnConstants.POST_ID)) {
                 postId = (String) variableInstance.getValue();
             }
-            if (variableInstance.getName().equals(BpmConstants.CANDIDATE_USERS)) {
+            if (variableInstance.getName().equals(BpmnConstants.CANDIDATE_USERS)) {
                 candidateUsers = (List<String>) variableInstance.getValue();
             }
         }
@@ -145,11 +145,11 @@ public class BpmPostServiceImpl implements BpmPostService {
         log.info("审核信息::发起者:{} ==> 帖子:{} ==> 可审核人员:{}", initiator, postId, candidateUsers);
 
         // 设置 审批意见  和 审批选项[0通过  1不通过]
-        taskService.setVariable(task.getId(), BpmConstants.OPTIONS, submitPostVo.getOptions());
-        taskService.setVariable(task.getId(), BpmConstants.OPINION, submitPostVo.getOpinion());
+        taskService.setVariable(task.getId(), BpmnConstants.OPTIONS, submitPostVo.getOptions());
+        taskService.setVariable(task.getId(), BpmnConstants.OPINION, submitPostVo.getOpinion());
 
         // 在驳回时 要将 一些变量 删除  其实通过之后也可以删除该变量
-        runtimeService.removeVariable(submitPostVo.getProcessInstanceId(), BpmConstants.CANDIDATE_USERS);
+        runtimeService.removeVariable(submitPostVo.getProcessInstanceId(), BpmnConstants.CANDIDATE_USERS);
         // 设置候选人 为自己   ==>即 表示是我完成的
         taskService.setAssignee(task.getId(), user.getUserId().toString());
         taskService.complete(task.getId());
@@ -159,7 +159,7 @@ public class BpmPostServiceImpl implements BpmPostService {
     @Override
     public R<Map<String, Object>> getInfo(String processInstanceId) {
         String postId = (String) historyService.createHistoricVariableInstanceQuery()
-                .processInstanceId(processInstanceId).variableName(BpmConstants.POST_ID).singleResult().getValue();
+                .processInstanceId(processInstanceId).variableName(BpmnConstants.POST_ID).singleResult().getValue();
         Post post = SpringUtils.getBean(PostService.class).selectPostByPostId(postId);
         if (post == null) {
             return R.success();

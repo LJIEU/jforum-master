@@ -1,6 +1,6 @@
 package com.liu.camunda.delegate;
 
-import com.liu.camunda.constants.BpmConstants;
+import com.liu.camunda.constants.BpmnConstants;
 import jakarta.annotation.Resource;
 import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
@@ -19,7 +19,7 @@ import java.util.List;
  * @version 1.0
  * @since 2024/04/23 8:03
  */
-@Component(value = BpmConstants.DELEGATE_VIOLATION_CHECKER)
+@Component(value = BpmnConstants.DELEGATE_VIOLATION_CHECKER)
 public class ViolationChecker implements JavaDelegate {
     private static final Logger log = LoggerFactory.getLogger(ViolationChecker.class);
 
@@ -30,26 +30,27 @@ public class ViolationChecker implements JavaDelegate {
     public void execute(DelegateExecution execution) throws Exception {
         log.info("查询积分");
         // 查询 发起者用户ID
-        String initiator = (String) execution.getVariable(BpmConstants.INITIATOR);
-        taskService.setAssignee(
-                taskService.createTaskQuery().processInstanceId(execution.getProcessInstanceId()).singleResult().getId(),
-                "机器审批");
+        String initiator = (String) execution.getVariable(BpmnConstants.INITIATOR);
+//        taskService.setAssignee(
+//                taskService.createTaskQuery().processInstanceId(execution.getProcessInstanceId()).singleResult().getId(),
+//                "机器审批");
+
         // 去查询该用户的违规记录  如果大于 阈值则走人工审核
         // TODO 2024/4/27/10:21 由于这里没有创建 积分表 所以这里模拟一下
 //        int integral = RandomUtil.randomInt(0, 100);
         int integral = 99;
         if (integral > 50) {
-            execution.setVariable(BpmConstants.NEED_USER, "true");
+            execution.setVariable(BpmnConstants.NEED_USER, "true");
             // 将其 分配给 审批员
             List<String> list = new ArrayList<>();
 //            // 全部 审核员1
             list.add("1");
             list.add("2");
             list.add("3");
-            execution.setVariable(BpmConstants.CANDIDATE_USERS, list);
+            execution.setVariable(BpmnConstants.CANDIDATE_USERS, list);
 
         } else {
-            execution.setVariable(BpmConstants.NEED_USER, "false");
+            execution.setVariable(BpmnConstants.NEED_USER, "false");
             // 修改 帖子 状态为 发布
             log.info("积分良好 ====> 成功发布");
         }

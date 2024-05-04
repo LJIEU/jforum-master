@@ -7,7 +7,7 @@ package com.liu.camunda.constants;
  * @version 1.0
  * @since 2024/04/27 9:47
  */
-public interface BpmConstants {
+public interface BpmnConstants {
     /**
      * 发起者
      */
