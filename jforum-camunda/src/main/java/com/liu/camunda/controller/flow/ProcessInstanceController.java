@@ -4,6 +4,7 @@ import cn.hutool.core.util.StrUtil;
 import com.liu.camunda.service.ProcessInstanceService;
 import com.liu.camunda.service.ProcessTaskService;
 import com.liu.camunda.vo.*;
+import com.liu.core.config.repeat.RepeatSubmit;
 import com.liu.core.controller.BaseController;
 import com.liu.core.excption.ServiceException;
 import com.liu.core.result.R;
@@ -132,6 +133,7 @@ public class ProcessInstanceController extends BaseController {
 
     @Operation(summary = "开启流程")
     @PostMapping("/start")
+    @RepeatSubmit
     public R<String> startByDeployId(
             @RequestBody Map<String, Object> params, HttpServletRequest request
     ) {
@@ -162,6 +164,7 @@ public class ProcessInstanceController extends BaseController {
 
     @Operation(summary = "根据流程实例ID提交流程")
     @PostMapping("/complete")
+    @RepeatSubmit
     public R<String> startByInstanceId(
             @RequestBody Map<String, Object> params, HttpServletRequest request) {
         SysUser user = SpringUtils.getBean(SysUserService.class).getItemByUserName(SecurityUtils.currentUsername(request));
@@ -173,5 +176,16 @@ public class ProcessInstanceController extends BaseController {
             return R.fail("流程ID为空!");
         }
         return processInstanceService.complete(instanceId, user, params);
+    }
+
+    @Operation(summary = "删除流程")
+    @DeleteMapping("/delete/{processInstanceId}")
+    public R<String> delete(
+            @PathVariable(value = "processInstanceId") String processInstanceId, HttpServletRequest request) {
+        SysUser user = SpringUtils.getBean(SysUserService.class).getItemByUserName(SecurityUtils.currentUsername(request));
+        if (user == null) {
+            throw new ServiceException("用户不存在");
+        }
+        return processInstanceService.removeProcessInstance(processInstanceId, user);
     }
 }

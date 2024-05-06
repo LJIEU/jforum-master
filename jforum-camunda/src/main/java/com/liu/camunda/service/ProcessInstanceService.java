@@ -94,4 +94,13 @@ public interface ProcessInstanceService {
      * @return 返回结果
      */
     R<String> complete(String instanceId, SysUser user, Map<String, Object> params);
+
+
+    /**
+     * 删除流程实例
+     * @param processInstanceId 流程实例ID
+     * @param user 用户
+     * @return 返回结果
+     */
+    R<String> removeProcessInstance(String processInstanceId, SysUser user);
 }

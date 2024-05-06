@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.Date;
-import java.util.Objects;
 
 /**
  * Description: 流程节点信息
@@ -46,17 +45,11 @@ public class HistVo {
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "GMT+8")
     Date endTime;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof HistVo histVo)) return false;
-        return Objects.equals(getTackId(), histVo.getTackId()) && Objects.equals(getName(), histVo.getName()) && Objects.equals(getAvatar(), histVo.getAvatar()) && Objects.equals(getUsername(), histVo.getUsername()) && Objects.equals(getNickName(), histVo.getNickName()) && Objects.equals(getLastUser(), histVo.getLastUser()) && Objects.equals(getState(), histVo.getState()) && Objects.equals(getStartTime(), histVo.getStartTime()) && Objects.equals(getEndTime(), histVo.getEndTime());
-    }
+    @Schema(description = "意见")
+    private String opinion;
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(getTackId(), getName(), getAvatar(), getUsername(), getNickName(), getLastUser(), getState(), getStartTime(), getEndTime());
-    }
+    @Schema(description = "默认是否展开")
+    private Boolean expanded = false;
 
     public String getAvatar() {
         return avatar;
@@ -128,5 +121,21 @@ public class HistVo {
 
     public String getNickName() {
         return nickName;
+    }
+
+    public void setOpinion(String opinion) {
+        this.opinion = opinion;
+    }
+
+    public String getOpinion() {
+        return opinion;
+    }
+
+    public Boolean getExpanded() {
+        return expanded;
+    }
+
+    public void setExpanded(Boolean expanded) {
+        this.expanded = expanded;
     }
 }

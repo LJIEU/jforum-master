@@ -136,7 +136,7 @@
       <bpmndi:BPMNEdge id="Flow_0kyyl6s_di" bpmnElement="Flow_0kyyl6s">
         <di:waypoint x="380" y="300" />
         <di:waypoint x="380" y="220" />
-        <di:waypoint x="440" y="220" />
+        <di:waypoint x="445" y="220" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0cqvi74_di" bpmnElement="Flow_0cqvi74">
         <di:waypoint x="470" y="195" />

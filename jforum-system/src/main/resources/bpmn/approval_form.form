@@ -1,0 +1,55 @@
+{
+  "components": [
+    {
+      "label": "意见",
+      "type": "textarea",
+      "layout": {
+        "row": "Row_1619i47",
+        "columns": null
+      },
+      "id": "Field_046cayy",
+      "key": "opinon",
+      "validate": {
+        "required": true,
+        "maxLength": 200
+      }
+    },
+    {
+      "values": [
+        {
+          "label": "批准",
+          "value": "0"
+        },
+        {
+          "label": "驳回",
+          "value": "1"
+        }
+      ],
+      "label": "选项",
+      "type": "select",
+      "layout": {
+        "row": "Row_035f11o",
+        "columns": null
+      },
+      "id": "Field_0s091pp",
+      "key": "options",
+      "defaultValue": "<none>",
+      "validate": {
+        "required": true
+      },
+      "searchable": false,
+      "disabled": false,
+      "readonly": false,
+      "properties": {}
+    }
+  ],
+  "type": "default",
+  "id": "approval_form",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.22.0"
+  },
+  "executionPlatform": "Camunda Platform",
+  "executionPlatformVersion": "7.21.0",
+  "schemaVersion": 16
+}

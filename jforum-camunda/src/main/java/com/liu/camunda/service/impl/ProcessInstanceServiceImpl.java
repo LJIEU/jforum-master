@@ -26,6 +26,7 @@ import org.camunda.bpm.engine.*;
 import org.camunda.bpm.engine.history.HistoricActivityInstance;
 import org.camunda.bpm.engine.history.HistoricProcessInstance;
 import org.camunda.bpm.engine.history.HistoricTaskInstance;
+import org.camunda.bpm.engine.history.HistoricVariableInstance;
 import org.camunda.bpm.engine.repository.ProcessDefinition;
 import org.camunda.bpm.engine.runtime.ActivityInstance;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
@@ -296,6 +297,7 @@ public class ProcessInstanceServiceImpl implements ProcessInstanceService {
             HistVo histVo = new HistVo();
             histVo.setTackId(v.getId());
             histVo.setName(v.getName());
+            // 设置 最后执行者信息
             if (StrUtil.isNotEmpty(v.getAssignee())) {
                 SysUser nodeUser = SpringUtils.getBean(SysUserService.class).selectSysUserByUserId(Long.valueOf(v.getAssignee()));
                 histVo.setAvatar(nodeUser.getAvatar());
@@ -311,6 +313,37 @@ public class ProcessInstanceServiceImpl implements ProcessInstanceService {
             result.add(histVo);
         }
         result = result.stream().sorted((o1, o2) -> Math.toIntExact(o1.getStartTime().getTime() - o2.getStartTime().getTime())).collect(Collectors.toList());
+        // 排序之后进行 整理是否是驳回的
+        if (CollUtil.isNotEmpty(result)) {
+            HistVo histVo = result.get(0);
+            if (StrUtil.isNotEmpty(histVo.getLastUser())) {
+                SysUser nodeUser = SpringUtils.getBean(SysUserService.class).selectSysUserByUserId(Long.valueOf(histVo.getLastUser()));
+                histVo.setAvatar(nodeUser.getAvatar());
+                histVo.setUsername(nodeUser.getUserName());
+                histVo.setNickName(nodeUser.getNickName());
+            }
+        }
+        // 排序好的列表
+        for (int i = 0; i < result.size() - 1; i++) {
+            String name = result.get(i).getName();
+            for (int j = i + 1; j < result.size(); j++) {
+                if (result.get(j).getName().equals(name)) {
+                    // 那说明是被驳回的 那其前一个节点就是审批者 设置状态为驳回
+                    result.get(j - 1).setState(2);
+                    try {
+                        HistoricVariableInstance historicVariableInstance = historyService.createHistoricVariableInstanceQuery().processInstanceId(processInstanceId)
+                                .variableName(BpmnConstants.OPINION).singleResult();
+                        String opinion = (String) historicVariableInstance.getValue();
+                        if (StrUtil.isNotEmpty(opinion)) {
+                            result.get(j - 1).setOpinion(opinion);
+                        }
+                    } catch (Exception ignored) {
+                    }
+                    // i移动位置到当前
+                    i = j - 1;
+                }
+            }
+        }
         return R.success(result);
     }
 
@@ -425,6 +458,27 @@ public class ProcessInstanceServiceImpl implements ProcessInstanceService {
     public R<String> complete(String instanceId, SysUser user, Map<String, Object> params) {
         BpmnInfo bpmnInfo = currNode(instanceId);
         Task task = taskService.createTaskQuery().processInstanceId(instanceId).singleResult();
+/*
+        if (MapUtil.isNotEmpty(params)) {
+            String options = (String) params.get(BpmnConstants.OPTIONS);
+            String option = (String) params.get(BpmnConstants.OPINION);
+            if ("1".equals(options)) {
+                // 驳回
+                String[] forActivity = getInstanceIdForActivity(instanceId);
+                taskService.createComment(task.getId(), instanceId, option);
+//                ActivityInstance activity = runtimeService.getActivityInstance(instanceId);
+                runtimeService.createProcessInstanceModification(instanceId)
+                        .setAnnotation("驳回任务~")
+                        // 取消当前任务
+                        .cancelActivityInstance(forActivity[0])
+//                        .cancelActivityInstance(activity.getId())
+                        // 回退上级任务
+                        .startBeforeActivity(forActivity[1])
+                        .execute();
+                return R.success("驳回成功");
+            }
+        }
+*/
         // 如果有需要传递的变量，可以在此设置  设置 发起者信息 ==》 当前用户ID
         taskService.setVariable(task.getId(), BpmnConstants.INITIATOR, user.getUserId().toString());
         List<String> fieldList = new ArrayList<>();
@@ -436,10 +490,74 @@ public class ProcessInstanceServiceImpl implements ProcessInstanceService {
                 taskService.setVariable(task.getId(), field, params.get(field));
             }
         }
-        taskService.removeVariable(task.getId(), BpmnConstants.CANDIDATE_USERS);
+
+        // 按开始时间升序排序
+        // 删除上一个任务传递过来的变量信息
+        List<HistoricTaskInstance> histTaskList = historyService.createHistoricTaskInstanceQuery().processInstanceId(instanceId).list().stream().sorted((o1, o2) -> Math.toIntExact(o1.getStartTime().getTime() - o2.getStartTime().getTime())).collect(Collectors.toList());
+        if (CollUtil.isNotEmpty(histTaskList) && histTaskList.size() > 1) {
+            for (int i = 1; i < histTaskList.size(); i++) {
+                if (histTaskList.get(i).getId().equals(task.getId())) {
+                    // 找到了 --> 获取其上一个任务节点
+                    String pre = histTaskList.get(i - 1).getId();
+                    // 去查找其变量信息 删除变量
+                    try {
+                        Map<String, Object> variables = taskService.getVariables(pre);
+                        if (variables != null && variables.size() > 0) {
+                            for (String key : variables.keySet()) {
+                                // 意见不进行删除
+                                if (!key.equals(BpmnConstants.OPINION)) {
+                                    taskService.removeVariable(pre, key);
+                                }
+                            }
+                        }
+                    } catch (Exception ignored) {
+
+                    }
+                }
+            }
+        }
+
+//        taskService.removeVariable(task.getId(), BpmnConstants.CANDIDATE_USERS);
+
         // 我完成的
         taskService.setAssignee(task.getId(), user.getUserId().toString());
         taskService.complete(task.getId());
+
+        return R.success();
+    }
+
+    /**
+     * 当前活动的实例ID
+     *
+     * @param instanceId 流程实例
+     * @return 返回ID[停止, 启动]  ==> 获取的是执行ID Execution_ID
+     */
+    private String[] getInstanceIdForActivity(String instanceId) {
+        List<HistoricTaskInstance> historicTaskInstanceList = historyService.createHistoricTaskInstanceQuery()
+                .processInstanceId(instanceId).list().stream().sorted((o1, o2) -> {
+                    return Math.toIntExact(o2.getStartTime().getTime() - o1.getStartTime().getTime());
+                }).collect(Collectors.toList());
+        String cancelId = historicTaskInstanceList.get(historicTaskInstanceList.size() - 1).getId();
+        String startId = historicTaskInstanceList.get(historicTaskInstanceList.size() - 2).getId();
+        List<HistoricActivityInstance> historicActivityInstanceList = historyService.createHistoricActivityInstanceQuery().processInstanceId(instanceId).list();
+        for (HistoricActivityInstance activityInstance : historicActivityInstanceList) {
+            if (activityInstance.getTaskId() != null) {
+                if (activityInstance.getTaskId().equals(cancelId)) {
+                    cancelId = activityInstance.getExecutionId();
+                } else if (activityInstance.getTaskId().equals(startId)) {
+                    startId = activityInstance.getExecutionId();
+                }
+            }
+        }
+        return new String[]{cancelId, startId};
+    }
+
+    @Override
+    public R<String> removeProcessInstance(String processInstanceId, SysUser user) {
+        try {
+            runtimeService.deleteProcessInstance(processInstanceId, "删除~");
+        } catch (Exception ignored) {
+        }
         return R.success();
     }
 

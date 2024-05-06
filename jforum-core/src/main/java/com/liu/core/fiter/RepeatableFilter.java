@@ -31,7 +31,7 @@ public class RepeatableFilter implements Filter {
                 && StringUtils.startsWithIgnoreCase(request.getContentType(), MediaType.APPLICATION_JSON_VALUE)) {
             requestWrapper = new RepeatedlyRequestWrapper((HttpServletRequest) request, (HttpServletResponse) response);
         }
-        // 正常的Get Set
+        // 正常的Get
         if (null == requestWrapper) {
             chain.doFilter(request, response);
         } else {

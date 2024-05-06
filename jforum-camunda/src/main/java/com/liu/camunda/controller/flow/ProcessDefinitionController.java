@@ -2,6 +2,7 @@ package com.liu.camunda.controller.flow;
 
 import com.liu.camunda.service.ProcessDefinitionService;
 import com.liu.camunda.vo.DeployVo;
+import com.liu.core.config.repeat.RepeatSubmit;
 import com.liu.core.result.R;
 import com.liu.core.utils.SecurityUtils;
 import com.liu.core.utils.SpringUtils;
@@ -37,11 +38,11 @@ public class ProcessDefinitionController {
     /**
      * 发布流程定义
      *
-     * @param requestParam 请求参数
      * @return 提示信息
      */
     @Operation(summary = "流程部署")
     @PostMapping("/deploy")
+    @RepeatSubmit
     public R<Map<String, Object>> deployProcessDefinition(
             @RequestParam("bpmnName") String bpmnName,
             @RequestPart @RequestParam("file") MultipartFile file, HttpServletRequest request) {

@@ -29,7 +29,7 @@ public class FilterConfig {
     /**
      * 不可重复提交 拦截器
      */
-    private final static Integer REPEATABLE = 1;
+    private final static Integer REPEATABLE = -128;
     /**
      * JWT 拦截器
      */

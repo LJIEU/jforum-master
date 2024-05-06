@@ -129,7 +129,7 @@ camunda:
       password: demo
     database:
       type: mysql
-      schema-update: false # 进行手动创建数据库 true则是自动创建
+      schema-update: true # 进行手动创建数据库 true则是自动创建
     webapp:
       index-redirect-enabled: true
     # 自动部署 resource 下的 Bpmn 文件
