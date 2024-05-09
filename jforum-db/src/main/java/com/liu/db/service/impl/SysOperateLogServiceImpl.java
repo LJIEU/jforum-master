@@ -48,4 +48,9 @@ public class SysOperateLogServiceImpl implements SysOperateLogService {
     public int delete(Long[] operateIds) {
         return sysoperatelogMapper.deleteById(operateIds);
     }
+
+    @Override
+    public List<String> moduleNames() {
+        return sysoperatelogMapper.moduleNames();
+    }
 }

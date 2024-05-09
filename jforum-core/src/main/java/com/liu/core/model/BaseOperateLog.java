@@ -65,6 +65,10 @@ public class BaseOperateLog implements Serializable {
      * 执行时间
      */
     private Long costTime;
+    /**
+     * 所属模块
+     */
+    private String moduleName;
 
     @Override
     public String toString() {
@@ -191,5 +195,13 @@ public class BaseOperateLog implements Serializable {
 
     public void setCostTime(Long costTime) {
         this.costTime = costTime;
+    }
+
+    public void setModuleName(String moduleName) {
+        this.moduleName = moduleName;
+    }
+
+    public String getModuleName() {
+        return moduleName;
     }
 }

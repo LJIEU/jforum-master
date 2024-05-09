@@ -51,4 +51,5 @@ public interface SysDictTypeService {
      * @return 删除情况
      */
     int delete(Long[] dictIds);
+
 }

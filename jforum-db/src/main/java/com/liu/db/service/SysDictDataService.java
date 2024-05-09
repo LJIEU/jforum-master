@@ -59,4 +59,12 @@ public interface SysDictDataService {
      * @param newDictType 新的
      */
     void updateAllDictType(String oldDictType, String newDictType);
+
+    /**
+     * 根据 字典类型 获取字典数据列表
+     *
+     * @param dictType 字典类型
+     * @return 返回结果
+     */
+    List<SysDictData> selectSysDictDataByDictType(String dictType);
 }

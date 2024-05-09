@@ -10,15 +10,15 @@ import java.util.List;
  * @since 2024/04/11 18:26
  */
 public class Level {
-    private Long value;
+    private Object value;
     private String label;
     private List<Level> children;
 
-    public Long getValue() {
+    public Object getValue() {
         return value;
     }
 
-    public void setValue(Long value) {
+    public void setValue(Object value) {
         this.value = value;
     }
 

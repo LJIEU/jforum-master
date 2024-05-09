@@ -59,4 +59,9 @@ public class SysDictDataServiceImpl implements SysDictDataService {
     public void updateAllDictType(String oldDictType, String newDictType) {
         sysdictdataMapper.updateAllDictType(oldDictType, newDictType);
     }
+
+    @Override
+    public List<SysDictData> selectSysDictDataByDictType(String dictType) {
+        return sysdictdataMapper.selectSysDictDataByDictType(dictType);
+    }
 }

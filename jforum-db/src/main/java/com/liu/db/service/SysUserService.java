@@ -85,4 +85,5 @@ public interface SysUserService {
 
     Set<String> getMenuPermission(BaseUser user);
 
+    List<String> selectAdminNickNameList();
 }

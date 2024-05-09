@@ -21,6 +21,7 @@ import com.liu.db.service.relation.SysRoleAndMenuService;
 import com.liu.db.service.relation.SysUserAndRoleService;
 import com.liu.db.vo.UserInfo;
 import com.liu.db.vo.UserVo;
+import com.liu.db.vo.level.Level;
 import com.liu.system.config.excel.handler.UserWriteHandler;
 import com.liu.system.config.excel.listener.UserDataListener;
 import com.liu.system.config.excel.temple.UserTemple;
@@ -278,6 +279,20 @@ public class SysUserController extends BaseController {
         return R.success(userVo);
     }
 
+    @Operation(summary = "获取后台管理员的昵称列表")
+    @GetMapping("/nickNamesLevel")
+    public R<List<Level>> nickNameLevel() {
+        List<String> nickNames = sysuserService.selectAdminNickNameList();
+        List<Level> levelList = new ArrayList<>(nickNames.size());
+        for (int i = 0; i < nickNames.size(); i++) {
+            Level level = new Level();
+            // 都是 昵称
+            level.setValue(nickNames.get(i));
+            level.setLabel(nickNames.get(i));
+            levelList.add(level);
+        }
+        return R.success(levelList);
+    }
 
     /**
      * 文件上传

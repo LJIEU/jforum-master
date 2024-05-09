@@ -28,4 +28,30 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
             return null;
         }
     }
+
+    /**
+     * 通过 ms 时间 进行格式转换
+     *
+     * @param costTime 消耗时间
+     * @return 返回 字符串 xxx ms  xx s  xx minus
+     */
+    public static String parseCostTime(Long costTime) {
+        long time = 0;
+        try {
+            time = costTime;
+        } catch (Exception ignored) {
+            return "0 ms";
+        }
+        if (time / 1000 > 0) {
+            // 分钟
+            if (time / 1000 / 60 > 0) {
+                return time / 1000 / 60 + " minute";
+            } else {
+                // 秒
+                return time / 1000 + " s";
+            }
+        }
+        // 毫秒
+        return costTime + " ms";
+    }
 }

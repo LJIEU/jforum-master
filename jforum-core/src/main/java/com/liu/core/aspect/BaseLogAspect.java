@@ -10,6 +10,7 @@ import com.liu.core.model.BaseOperateLog;
 import com.liu.core.utils.IpUtils;
 import com.liu.core.utils.SecurityUtils;
 import com.liu.core.utils.ServletUtils;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
@@ -87,10 +88,18 @@ public class BaseLogAspect {
             String className = joinPoint.getTarget().getClass().getName();
             String methodName = joinPoint.getSignature().getName();
 
+            // 获取类上的 @Tag 注解中的 name 值 这个就是模块名称
+            String moduleName = joinPoint.getTarget().getClass().getAnnotation(Tag.class).name();
+            if (StringUtils.isNotBlank(moduleName)) {
+                baseOperateLog.setModuleName(moduleName);
+            }
             // 获取注解上的参数
             int action = controllerLog.businessType().ordinal();
             String describe = controllerLog.describe();
             int ordinal = controllerLog.operatorType().ordinal();
+            if (StringUtils.isNotBlank(moduleName)) {
+                baseOperateLog.setModuleName(moduleName);
+            }
             // 获取 请求体中的数据
             String requestData = "";
             if (controllerLog.isSaveRequestData()) {

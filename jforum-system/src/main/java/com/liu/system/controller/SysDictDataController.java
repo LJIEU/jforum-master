@@ -2,6 +2,9 @@ package com.liu.system.controller;
 
 import cn.hutool.core.util.StrUtil;
 import com.github.pagehelper.PageInfo;
+import com.liu.core.annotation.Log;
+import com.liu.core.constant.enume.BusinessType;
+import com.liu.core.constant.enume.OperatorType;
 import com.liu.core.controller.BaseController;
 import com.liu.core.result.R;
 import com.liu.core.utils.ExcelUtil;
@@ -145,6 +148,7 @@ public class SysDictDataController extends BaseController {
      */
     @Operation(summary = "新增字典数据")
     @PostMapping("/add")
+    @Log(describe = "新增字典数据", businessType = BusinessType.CREATE, operatorType = OperatorType.MANAGE)
     public R<Integer> add(@Valid @RequestBody DictDataVo dictDataVo, HttpServletRequest request) {
         SysDictData dictData = voToDictData(dictDataVo);
         dictData.setCreateBy(SecurityUtils.currentUsername(request));

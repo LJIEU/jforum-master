@@ -51,4 +51,10 @@ public interface SysOperateLogService {
      * @return 删除情况
      */
     int delete(Long[] operateIds);
+
+    /**
+     * 获取 模块名称列表
+     * @return 返回结果
+     */
+    List<String> moduleNames();
 }

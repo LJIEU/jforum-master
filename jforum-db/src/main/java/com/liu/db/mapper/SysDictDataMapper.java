@@ -2,6 +2,7 @@ package com.liu.db.mapper;
 
 import com.liu.db.entity.SysDictData;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -61,5 +62,14 @@ public interface SysDictDataMapper {
      * @param oldDictType 旧的字典类型
      * @param newDictType 新的
      */
-    void updateAllDictType(String oldDictType, String newDictType);
+    void updateAllDictType(@Param("oldDictType") String oldDictType, @Param("newDictType") String newDictType);
+
+
+    /**
+     * 根据 字典类型 获取字典数据列表
+     *
+     * @param dictType 字典类型
+     * @return 返回结果
+     */
+    List<SysDictData> selectSysDictDataByDictType(@Param("dictType") String dictType);
 }

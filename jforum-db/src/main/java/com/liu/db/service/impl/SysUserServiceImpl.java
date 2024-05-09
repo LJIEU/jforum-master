@@ -110,4 +110,10 @@ public class SysUserServiceImpl implements SysUserService {
         set.add(Constants.ALL_PERMISSION);
         return set;
     }
+
+
+    @Override
+    public List<String> selectAdminNickNameList() {
+        return sysuserMapper.selectAdminNickNameList();
+    }
 }

@@ -11,21 +11,37 @@ public enum BusinessType {
     /**
      * 其他 0
      */
-    OTHER,
+    OTHER(0, "其他"),
     /**
      * 创建 1
      */
-    CREATE,
+    CREATE(1, "创建"),
     /**
      * 查询 2
      */
-    SELECT,
+    SELECT(2, "查询"),
     /**
      * 修改 3
      */
-    UPDATE,
+    UPDATE(3, "修改"),
     /**
      * 删除 4
      */
-    DELETE
+    DELETE(4, "删除");
+
+    private final Integer value;
+    private final String label;
+
+    BusinessType(Integer value, String label) {
+        this.value = value;
+        this.label = label;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public Integer getValue() {
+        return value;
+    }
 }

@@ -2,6 +2,8 @@ package com.liu.system.controller;
 
 import cn.hutool.core.util.StrUtil;
 import com.github.pagehelper.PageInfo;
+import com.liu.core.annotation.Log;
+import com.liu.core.constant.enume.BusinessType;
 import com.liu.core.controller.BaseController;
 import com.liu.core.result.R;
 import com.liu.core.utils.ExcelUtil;
@@ -151,6 +153,7 @@ public class SysDictTypeController extends BaseController {
      */
     @Operation(summary = "新增字典类型")
     @PostMapping("/add")
+    @Log(describe = "新增字典类型", businessType = BusinessType.CREATE)
     public R<Integer> add(@Valid @RequestBody DictTypeVo dictTypeVo, HttpServletRequest request) {
         SysDictType dictType = voToDictType(dictTypeVo);
         dictType.setCreateBy(SecurityUtils.currentUsername(request));
@@ -163,6 +166,7 @@ public class SysDictTypeController extends BaseController {
      */
     @Operation(summary = "修改字典类型")
     @PutMapping("/update")
+    @Log(describe = "修改字典类型", businessType = BusinessType.UPDATE)
     public R<Integer> update(@RequestBody DictTypeVo dictTypeVo, HttpServletRequest request) {
         SysDictType params = voToDictType(dictTypeVo);
         params.setUpdateBy(SecurityUtils.currentUsername(request));
@@ -185,6 +189,7 @@ public class SysDictTypeController extends BaseController {
      */
     @Operation(summary = "删除字典类型")
     @DeleteMapping("/delete/{dictIds}")
+    @Log(describe = "删除字典类型", businessType = BusinessType.DELETE)
     public R<Integer> delete(@PathVariable("dictIds") Long[] dictIds) {
         return R.success(sysdicttypeService.delete(dictIds));
     }

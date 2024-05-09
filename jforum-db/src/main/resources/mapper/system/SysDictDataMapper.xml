@@ -169,4 +169,9 @@
             dict_code = #{dictCode}
         </where>
     </select>
+    <select id="selectSysDictDataByDictType" resultType="com.liu.db.entity.SysDictData">
+        select *
+        from `sys_dict_data`
+        where `dict_type` = #{dictType}
+    </select>
 </mapper>

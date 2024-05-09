@@ -1,8 +1,11 @@
 package com.liu.db.mapper;
 
+import com.liu.core.config.dynamic.DataSource;
+import com.liu.core.constant.enume.DataSourceType;
 import com.liu.db.entity.SysOperateLog;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
@@ -12,6 +15,7 @@ import java.util.List;
  * @author JIE
  * @since 2024-04-03
  */
+@DataSource(DataSourceType.MASTER)
 @Mapper
 public interface SysOperateLogMapper {
 
@@ -55,4 +59,10 @@ public interface SysOperateLogMapper {
      * @return 删除情况
      */
     int deleteById(@Param("operateIds") Long[] operateIds);
+
+    /**
+     * @return 返回 模块名称列表
+     */
+    @Select("select distinct module_name from `sys_operate_log` where `is_delete` = '0';")
+    List<String> moduleNames();
 }

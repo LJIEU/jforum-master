@@ -4,6 +4,7 @@ import com.liu.core.config.dynamic.DataSource;
 import com.liu.core.constant.enume.DataSourceType;
 import com.liu.db.entity.SysUser;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
@@ -76,4 +77,7 @@ public interface SysUserMapper {
      * @param username 用户名
      */
     SysUser selectSysUserByUserName(String username);
+
+    @Select("select distinct `nick_name` from sys_user where `user_type` = '00'")
+    List<String> selectAdminNickNameList();
 }
