@@ -38,6 +38,19 @@ public class LoginBody {
      */
     private String uuid;
 
+    /**
+     * 滑块验证码
+     */
+    private Boolean slider = false;
+
+
+    public Boolean getSlider() {
+        return slider;
+    }
+
+    public void setSlider(Boolean slider) {
+        this.slider = slider;
+    }
 
     public String getUsername() {
         return username;

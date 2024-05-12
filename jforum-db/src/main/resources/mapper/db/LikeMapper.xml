@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace等于mapper接口类的全限定名,这样实现对应 -->
+<mapper namespace="com.liu.db.mapper.LikeMapper">
+    <resultMap id="LikeMapperResult" type="com.liu.db.entity.Like">
+            <result property="likeId" column="like_id"/>
+            <result property="type" column="type"/>
+            <result property="typeId" column="type_id"/>
+            <result property="createBy" column="create_by"/>
+            <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <sql id="selectLikeVo">
+        select *
+        from `like`
+    </sql>
+    <insert id="insert" parameterType="com.liu.db.entity.Like">
+        insert into `like`
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+                    <if test="likeId != null">
+                        like_id,
+                    </if>
+                    <if test="type != null and type.length() > 0">
+                        type,
+                    </if>
+                    <if test="typeId != null and typeId.length() > 0">
+                        type_id,
+                    </if>
+                    <if test="createBy != null and createBy.length() > 0">
+                        create_by,
+                    </if>
+                create_time
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+                    <if test="likeId != null">
+                        #{likeId},
+                    </if>
+                    <if test="type != null and type.length() > 0">
+                        #{type},
+                    </if>
+                    <if test="typeId != null and typeId.length() > 0">
+                        #{typeId},
+                    </if>
+                    <if test="createBy != null and createBy.length() > 0">
+                        #{createBy},
+                    </if>
+                sysdate()
+        </trim>
+    </insert>
+    <update id="update" parameterType="com.liu.db.entity.Like">
+        update like
+        <trim prefix="set" suffixOverrides=",">
+                    <if test="type != null and type.length() > 0">
+                        type = #{type},
+                    </if>
+                    <if test="typeId != null and typeId.length() > 0">
+                        type_id = #{typeId},
+                    </if>
+        </trim>
+        where like_id = #{likeId}
+    </update>
+
+    <delete id="deleteById" parameterType="String">
+            update `like` set is_delete = 1
+            where like_id = #{likeIds};
+    </delete>
+
+    <select id="selectLikeList" parameterType="com.liu.db.entity.Like"
+            resultMap="LikeMapperResult">
+        <include refid="selectLikeVo"/>
+        <where>
+                    <if test="type != null and type.length() > 0">
+                        <bind name="type" value="type + '%'"/>
+                        and type like #{type}
+                    </if>
+                    <if test="typeId != null and typeId.length() > 0">
+                        <bind name="typeId" value="typeId + '%'"/>
+                        and type_id like #{typeId}
+                    </if>
+        </where>
+    </select>
+    <select id="selectLikeByLikeId" resultType="com.liu.db.entity.Like">
+        <include refid="selectLikeVo"/>
+        <where>
+            like_id = #{likeId}
+                and is_delete = 0
+        </where>
+    </select>
+</mapper>

@@ -82,6 +82,8 @@ public class PostVo {
      */
     @Schema(description = "点赞数")
     Integer likeNum;
+    @Schema(description = "浏览数")
+    Long views;
     /**
      * 评论数
      */
@@ -92,6 +94,14 @@ public class PostVo {
      */
     @Schema(description = "综合评分")
     Integer overallRating;
+
+    public Long getViews() {
+        return views;
+    }
+
+    public void setViews(Long views) {
+        this.views = views;
+    }
 
     public String getId() {
         return id;

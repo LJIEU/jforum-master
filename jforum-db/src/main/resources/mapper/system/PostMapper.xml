@@ -21,10 +21,10 @@
 
     <sql id="selectPostVo">
         select *
-        from post
+        from `post`
     </sql>
     <insert id="insert" parameterType="Post">
-        insert into post
+        insert into `post`
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="postId != null and postId.length() > 0">
                 post_id,
@@ -53,9 +53,7 @@
             <if test="content != null and content.length() > 0">
                 content,
             </if>
-            <if test="isDelete != null and isDelete.length() > 0">
-                is_delete,
-            </if>
+            is_delete,
             create_time
         </trim>
         values
@@ -87,9 +85,7 @@
             <if test="content != null and content.length() > 0">
                 #{content},
             </if>
-            <if test="isDelete != null and isDelete.length() > 0">
-                #{isDelete},
-            </if>
+            '0',
             sysdate()
         </trim>
     </insert>
@@ -156,7 +152,7 @@
         <include refid="selectPostVo"/>
         <where>
             post_id = #{postId}
-            and is_delete = 0
+            and is_delete = '0'
         </where>
     </select>
 </mapper>

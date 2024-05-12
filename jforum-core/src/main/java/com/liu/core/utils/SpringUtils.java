@@ -7,6 +7,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
+import java.util.function.Supplier;
+
 /**
  * Description: Spring工具类 在非Spring管理环境中获取Bean
  *
@@ -18,6 +20,14 @@ import org.springframework.stereotype.Component;
 public class SpringUtils implements BeanFactoryPostProcessor, ApplicationContextAware {
     private static ConfigurableListableBeanFactory beanFactory;
     private static ApplicationContext applicationContext;
+
+    public static <T> T getBeanOrDefault(String beanName, Supplier<T> defaultSupplier) {
+        try {
+            return applicationContext.getBean(beanName, (Class<T>) String[].class);
+        } catch (BeansException e) {
+            return defaultSupplier.get();
+        }
+    }
 
     /**
      * 用于将给定的Bean工厂赋值给"beanFactory"静态成员变量

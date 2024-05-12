@@ -1,0 +1,2 @@
+# 针对 org.h2.xxx 错误 因为 SpringBoot3 的 Druid 没有自动配置 所以这样实现导入
+com.alibaba.druid.spring.boot3.autoconfigure.DruidDataSourceAutoConfigure

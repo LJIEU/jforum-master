@@ -10,6 +10,7 @@
         <module>jforum-security</module>
         <module>jforum-camunda</module>
         <module>jforum-db</module>
+        <module>jforum-app</module>
     </modules>
 
     <groupId>com.liu</groupId>

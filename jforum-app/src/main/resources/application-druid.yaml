@@ -1,0 +1,76 @@
+spring:
+  # 数据源配置
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    druid:
+      # 主库数据源
+      master:
+        jdbc-url: jdbc:mysql://localhost:3306/jforum_system?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true
+        username: root
+        password: jie1234
+      camunda:
+        jdbc-url: jdbc:mysql://localhost:3306/camunda_db?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true
+        username: root
+        password: jie1234
+      # 从库数据源
+      slave:
+        enabled: true
+        jdbc-url: jdbc:mysql://localhost:3306/ry-vue?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true
+        username: root
+        password: jie1234
+      # 初始化连接数
+      initial-size: 5
+      # 最小空闲连接数
+      min-idle: 10
+      # 最大活跃连接数
+      max-active: 20
+      # 获取连接等待超时时间（毫秒）
+      max-wait: 60000
+      # 连接超时时间（毫秒）
+      connectTimeout: 30000
+      # Socket超时时间（毫秒）
+      socketTimeout: 60000
+      # 定时检测并关闭空闲连接的时间间隔（毫秒）
+      time-between-eviction-runs-millis: 60000
+      # 最小可空闲时间，超过此时间的空闲连接将被关闭（毫秒）
+      min-evictable-idle-time-millis: 300000
+      # 最大可空闲时间，超过此时间的空闲连接将被关闭（毫秒）
+      max-evictable-idle-time-millis: 900000
+      # 连接验证查询语句
+      validation-query: select 1 from dual
+      # 是否在空闲时测试连接
+      test-while-idle: true
+      # 是否在连接时测试连接
+      test-on-borrow: false
+      # 是否在返回连接时测试连接
+      test-on-return: false
+      # Druid WebStat过滤器配置
+      web-stat-filter:
+        enabled: true
+      # Druid StatView Servlet配置
+      stat-view-servlet:
+        enabled: false
+        # StatView Servlet允许访问的路径 http://localhost/druid/
+        allow:
+        url-pattern: /druid/*
+        # StatView Servlet登录用户名
+        login-username: root
+        # StatView Servlet登录密码
+        login-password: root
+      # Druid过滤器配置
+      filter:
+        # Stat过滤器配置
+        stat:
+          # 是否打印连接的创建栈跟踪信息
+          connection-stack-trace-enable: true
+          # 是否打印慢SQL日志
+          log-slow-sql: true
+          # 慢SQL阈值，超过此阈值的SQL将被记录（毫秒）
+          slow-sql-millis: 1000
+          # 是否合并SQL
+          merge-sql: true
+        # Wall过滤器配置
+        wall:
+          config:
+            multi-statement-allow: true

@@ -2,6 +2,8 @@ package com.liu.db.service;
 
 
 import com.liu.db.entity.Post;
+import com.liu.db.vo.api.PostParam;
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.List;
 
@@ -52,4 +54,19 @@ public interface PostService {
      * @return 删除情况
      */
     int delete(String[] postIds);
+
+    /**
+     * 创建帖子
+     *
+     * @param param   帖子信息
+     * @param request 请求
+     * @param userId  用户ID
+     */
+    void createPost(PostParam param, HttpServletRequest request, Long userId);
+
+    /**
+     * 浏览记录数+1
+     * @param post 帖子
+     */
+    void updateViews(Post post);
 }

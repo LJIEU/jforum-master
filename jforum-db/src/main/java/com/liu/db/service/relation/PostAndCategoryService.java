@@ -6,6 +6,7 @@ import com.liu.db.entity.Post;
 import com.liu.db.mapper.relation.PostAndCategoryMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -30,5 +31,10 @@ public class PostAndCategoryService {
 
     public List<Post> selectPostByCategoryId(Long categoryId) {
         return postAndCategoryMapper.selectPostByCategoryId(categoryId);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void insert(Long categoryId, String postId) {
+        postAndCategoryMapper.insert(categoryId, postId);
     }
 }

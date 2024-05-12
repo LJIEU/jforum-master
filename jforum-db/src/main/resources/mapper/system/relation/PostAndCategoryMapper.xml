@@ -29,6 +29,10 @@
         <result property="updateBy" column="update_by"/>
         <result property="remark" column="remark"/>
     </resultMap>
+    <insert id="insert">
+        insert into `post_category`(post_id, category_id)
+        values (#{postId}, #{categoryId})
+    </insert>
     <select id="selectCategoryByPostId" resultType="com.liu.db.entity.Category">
         select c.*
         from `post_category` as pc
@@ -39,7 +43,8 @@
         select p.*
         from `post_category` as pc
                  left join `post` as p on pc.post_id = p.post_id
-        where category_id = #{categoryId} and p.is_delete = 0
+        where category_id = #{categoryId}
+          and p.is_delete = 0
     </select>
 
 </mapper>

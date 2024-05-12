@@ -1,6 +1,9 @@
 package com.liu.core.controller;
 
+import cn.hutool.core.lang.UUID;
 import com.google.code.kaptcha.Producer;
+import com.liu.core.config.captcha.Captcha;
+import com.liu.core.config.captcha.CaptchaConfig;
 import com.liu.core.config.redis.RedisCache;
 import com.liu.core.constant.CacheConstants;
 import com.liu.core.constant.Constants;
@@ -8,6 +11,7 @@ import com.liu.core.result.R;
 import com.liu.core.service.BaseConfigService;
 import com.liu.core.utils.SpringUtils;
 import com.liu.core.utils.UUIDUtils;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletResponse;
@@ -98,5 +102,41 @@ public class CaptchaController {
         result.put("uuid", uuid);
         result.put("img", "data:image/png;base64," + base64Code);
         return R.success(result);
+    }
+
+    @Operation(summary = "获取滑块验证码")
+    @GetMapping("/slider/captchaImage")
+    public R<Object> getCaptchaImage(Captcha captcha) {
+        // 参数校验
+        CaptchaConfig.checkCaptcha(captcha);
+        // 获取画布的宽高
+        Integer canvasWidth = captcha.getCanvasWidth();
+        Integer canvasHeight = captcha.getCanvasHeight();
+        // 获取阻塞块的宽高和半径
+        Integer blockWidth = captcha.getBlockWidth();
+        Integer blockHeight = captcha.getBlockHeight();
+        Integer blockRadius = captcha.getBlockRadius();
+        // 获取资源图
+        BufferedImage canvasImage = CaptchaConfig.getBufferedImage(captcha.getPlace());
+        // 调整原图到指定大小
+        canvasImage = CaptchaConfig.imageResize(canvasImage, canvasWidth, canvasHeight);
+        // 随机生成阻塞块坐标
+        int blockX = CaptchaConfig.getNonceByRange(blockWidth, canvasWidth - blockWidth - 10);
+        int blockY = CaptchaConfig.getNonceByRange(10, canvasHeight - blockHeight + 1);
+        // 阻塞块
+        BufferedImage blockImage = new BufferedImage(blockWidth, blockHeight, BufferedImage.TYPE_4BYTE_ABGR);
+        // 新建的图像根据轮廓图的颜色赋值 原图生成遮罩
+        CaptchaConfig.cutByTemplate(canvasImage, blockImage, blockWidth, blockHeight, blockRadius, blockX, blockY);
+        // 移动横坐标
+        String nonceStr = UUID.randomUUID().toString().replaceAll("-", "");
+        String verifyKey = CacheConstants.CAPTCHA_CODE_KEY + ":" + nonceStr;
+        // 缓存
+        redisCache.setCacheObject(verifyKey, String.valueOf(blockX), Constants.CAPTCHA_EXPIRATION, TimeUnit.MINUTES);
+        // 设置返回参数
+        captcha.setNonceStr(nonceStr);
+        captcha.setBlockY(blockY);
+        captcha.setBlockSrc(CaptchaConfig.toBase64(blockImage, "png"));
+        captcha.setCanvasSrc(CaptchaConfig.toBase64(canvasImage, "png"));
+        return R.success(captcha);
     }
 }

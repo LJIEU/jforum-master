@@ -174,6 +174,12 @@ public class LoginService {
             AsyncManager.manager().execute(AsyncFactory.recordLoginLog(username, Constants.LOGIN_FAIL, MessageUtils.message("user.login.blocked")));
             throw new BlackListException();
         }
+        // 如果用户是前台用户则验证失败
+        SysUser user = userService.getItemByUserName(username);
+        if (user != null && !user.getUserType().equals(UserConstants.ADMIN_USER_TYPE)) {
+            AsyncManager.manager().execute(AsyncFactory.recordLoginLog(username, Constants.LOGIN_FAIL, MessageUtils.message("user.login.blocked")));
+            throw new BlackListException();
+        }
     }
 
     /**

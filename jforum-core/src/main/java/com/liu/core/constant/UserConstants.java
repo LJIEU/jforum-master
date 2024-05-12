@@ -26,4 +26,13 @@ public interface UserConstants {
      * 是唯一的 可以进行注册
      */
     boolean UNIQUE = Boolean.TRUE;
+
+    /**
+     * 普通用户标识
+     */
+    String USER_TYPE = "01";
+    /**
+     * 管理员用户标识
+     */
+    String ADMIN_USER_TYPE = "00";
 }

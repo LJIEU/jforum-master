@@ -5,6 +5,7 @@ import com.liu.core.constant.enume.DataSourceType;
 import com.liu.db.entity.Category;
 import com.liu.db.entity.Post;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -33,4 +34,12 @@ public interface PostAndCategoryMapper {
      * @return 帖子集合
      */
     List<Post> selectPostByCategoryId(Long categoryId);
+
+    /**
+     * 插入
+     *
+     * @param categoryId 类别ID
+     * @param postId     帖子ID
+     */
+    void insert(@Param("categoryId") Long categoryId, @Param("postId") String postId);
 }

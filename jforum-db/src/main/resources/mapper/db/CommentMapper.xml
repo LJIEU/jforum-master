@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace等于mapper接口类的全限定名,这样实现对应 -->
+<mapper namespace="com.liu.db.mapper.CommentMapper">
+    <resultMap id="CommentMapperResult" type="Comment">
+            <result property="commentId" column="comment_id"/>
+            <result property="commentPid" column="comment_pid"/>
+            <result property="userId" column="user_id"/>
+            <result property="postId" column="post_id"/>
+            <result property="content" column="content"/>
+            <result property="ip" column="ip"/>
+            <result property="city" column="city"/>
+            <result property="createBy" column="create_by"/>
+            <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <sql id="selectCommentVo">
+        select *
+        from `comment`
+    </sql>
+    <insert id="insert" parameterType="Comment">
+        insert into `comment`
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+                    <if test="commentId != null">
+                        comment_id,
+                    </if>
+                    <if test="commentPid != null">
+                        comment_pid,
+                    </if>
+                    <if test="userId != null">
+                        user_id,
+                    </if>
+                    <if test="postId != null and postId.length() > 0">
+                        post_id,
+                    </if>
+                    <if test="content != null and content.length() > 0">
+                        content,
+                    </if>
+                    <if test="ip != null and ip.length() > 0">
+                        ip,
+                    </if>
+                    <if test="city != null and city.length() > 0">
+                        city,
+                    </if>
+                    <if test="createBy != null and createBy.length() > 0">
+                        create_by,
+                    </if>
+                create_time
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+                    <if test="commentId != null">
+                        #{commentId},
+                    </if>
+                    <if test="commentPid != null">
+                        #{commentPid},
+                    </if>
+                    <if test="userId != null">
+                        #{userId},
+                    </if>
+                    <if test="postId != null and postId.length() > 0">
+                        #{postId},
+                    </if>
+                    <if test="content != null and content.length() > 0">
+                        #{content},
+                    </if>
+                    <if test="ip != null and ip.length() > 0">
+                        #{ip},
+                    </if>
+                    <if test="city != null and city.length() > 0">
+                        #{city},
+                    </if>
+                    <if test="createBy != null and createBy.length() > 0">
+                        #{createBy},
+                    </if>
+                sysdate()
+        </trim>
+    </insert>
+    <update id="update" parameterType="Comment">
+        update comment
+        <trim prefix="set" suffixOverrides=",">
+                    <if test="commentPid != null">
+                        comment_pid = #{commentPid},
+                    </if>
+                    <if test="userId != null">
+                        user_id = #{userId},
+                    </if>
+                    <if test="postId != null and postId.length() > 0">
+                        post_id = #{postId},
+                    </if>
+                    <if test="content != null and content.length() > 0">
+                        content = #{content},
+                    </if>
+                    <if test="ip != null and ip.length() > 0">
+                        ip = #{ip},
+                    </if>
+                    <if test="city != null and city.length() > 0">
+                        city = #{city},
+                    </if>
+        </trim>
+        where comment_id = #{commentId}
+    </update>
+
+    <delete id="deleteById" parameterType="String">
+            update comment set is_delete = 1
+            where comment_id = #{commentIds};
+    </delete>
+
+    <select id="selectCommentList" parameterType="Comment"
+            resultMap="CommentMapperResult">
+        <include refid="selectCommentVo"/>
+        <where>
+                    <if test="commentPid != null">
+                        and comment_pid = #{commentPid}
+                    </if>
+                    <if test="userId != null">
+                        and user_id = #{userId}
+                    </if>
+                    <if test="postId != null and postId.length() > 0">
+                        <bind name="postId" value="postId + '%'"/>
+                        and post_id like #{postId}
+                    </if>
+        </where>
+    </select>
+    <select id="selectCommentByCommentId" resultType="Comment">
+        <include refid="selectCommentVo"/>
+        <where>
+            comment_id = #{commentId}
+        </where>
+    </select>
+</mapper>

@@ -32,17 +32,41 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
  * @version 1.0
  * @since 2024/04/02 15:12
  */
+@SuppressWarnings("AlibabaRemoveCommentedCode")
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
 public class SecurityConfig {
+    /**
+     * 默认允许访问路径
+     */
+    public static final String[] DEFAULT_ALLOW_ACCESS_PATHS = new String[]{
+            // 测试使用
+            "/test/index",
+            "/test/test", "/test/test2", "/test/test3", "/test/test4", "/test/test5",
+            "/test/test8", "/test/test9/*", "/sys/post/**",
+            // 代码生成
+            "/tools/**",
+            // 静态资源
+            "/**.htm", "/**.html", "/**.css", "/**.js",
+            // 登录 和 注册 相关
+            "/captcha/**", "/*/login", "/*/register",
+            // swagger 相关
+            "/swagger-ui/**", "/swagger-resources/**", "/webjars/**", "/*/api-docs/**",
+            // Druid 控制台
+            "/druid/**",
+            // 测试使用 流程管理模块
+            "/my_camunda/**",
+            // camunda 工作流   modeler流程部署    modeler表单部署
+            "/camunda/**", "/engine-rest/**", "/forms/**"
+
+    };
 
     /**
      * 自定义用户认证逻辑
      */
 //    @Autowired
 //    private UserDetailsServiceImpl userDetailsService;
-
     /**
      * 认证失败处理类
      */
@@ -110,9 +134,12 @@ public class SecurityConfig {
         return source;
     }
 
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        // 允许访问路径  通过 allowAccess 注入  如果 没有注入 则使用默认
+        String[] allowAccesses = SpringUtils.getBeanOrDefault("allowAccess", () -> {
+            return DEFAULT_ALLOW_ACCESS_PATHS;
+        });
         return
                 http
                         // CSRF禁用[防止跨站请求伪造攻击] 不使用 session
@@ -125,24 +152,7 @@ public class SecurityConfig {
                         .authorizeHttpRequests(auth -> auth
                                 // 匿名访问
                                 .requestMatchers(
-                                        // 测试使用
-                                        "/test/index",
-                                        "/test/test", "/test/test2", "/test/test3", "/test/test4", "/test/test5",
-                                        "/test/test8", "/test/test9/*", "/sys/post/**",
-                                        // 代码生成
-                                        "/tools/**",
-                                        // 静态资源
-                                        "/**.htm", "/**.html", "/**.css", "/**.js",
-                                        // 登录 和 注册 相关
-                                        "/captcha/**", "/*/login", "/*/register",
-                                        // swagger 相关
-                                        "/swagger-ui/**", "/swagger-resources/**", "/webjars/**", "/*/api-docs/**",
-                                        // Druid 控制台
-                                        "/druid/**",
-                                        // 测试使用 流程管理模块
-                                        "/my_camunda/**",
-                                        // camunda 工作流   modeler流程部署    modeler表单部署
-                                        "/camunda/**", "/engine-rest/**", "/forms/**"
+                                        allowAccesses
                                 ).permitAll()
                                 // 除了上面的请求 其他所有请求都需要鉴权认证
                                 .anyRequest().authenticated())

@@ -1,5 +1,7 @@
 package com.liu.db.mapper;
 
+import com.liu.core.config.dynamic.DataSource;
+import com.liu.core.constant.enume.DataSourceType;
 import com.liu.db.entity.Post;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -12,6 +14,7 @@ import java.util.List;
  * @author JIE
  * @since 2024-04-23
  */
+@DataSource(DataSourceType.MASTER)
 @Mapper
 public interface PostMapper {
 

@@ -4,7 +4,7 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <!-- namespace等于mapper接口类的全限定名,这样实现对应 -->
 <mapper namespace="${packageName}.mapper.${ClassName}Mapper">
-    <resultMap id="${ClassName}MapperResult" type="${packageName}.dao.${ClassName}">
+    <resultMap id="${ClassName}MapperResult" type="${packageName}.entity.${ClassName}">
         #foreach($column in $columns)
             <result property="$column.javaField" column="$column.columnName"/>
         #end
@@ -14,7 +14,7 @@
         select *
         from ${tableName}
     </sql>
-    <insert id="insert" parameterType="${packageName}.dao.${ClassName}">
+    <insert id="insert" parameterType="${packageName}.entity.${ClassName}">
         insert into ${tableName}
         <trim prefix="(" suffix=")" suffixOverrides=",">
             #foreach($column in $columns)
@@ -54,7 +54,7 @@
             #end
         </trim>
     </insert>
-    <update id="update" parameterType="${packageName}.dao.${ClassName}">
+    <update id="update" parameterType="${packageName}.entity.${ClassName}">
         update ${tableName}
         <trim prefix="set" suffixOverrides=",">
             #foreach($column in $columns)
@@ -88,7 +88,7 @@
             #end
     </delete>
 
-    <select id="select${ClassName}List" parameterType="${packageName}.dao.${ClassName}"
+    <select id="select${ClassName}List" parameterType="${packageName}.entity.${ClassName}"
             resultMap="${ClassName}MapperResult">
         <include refid="select${ClassName}Vo"/>
         <where>
@@ -109,7 +109,7 @@
             #end
         </where>
     </select>
-    <select id="select${ClassName}By${pkColumn.capJavaField}" resultType="${packageName}.dao.${ClassName}">
+    <select id="select${ClassName}By${pkColumn.capJavaField}" resultType="${packageName}.entity.${ClassName}">
         <include refid="select${ClassName}Vo"/>
         <where>
             ${pkColumn.columnName} = #{${pkColumn.javaField}}
