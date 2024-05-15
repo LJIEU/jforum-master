@@ -95,6 +95,14 @@ public class PostVo {
     @Schema(description = "综合评分")
     Integer overallRating;
 
+    private String avatarUrl;
+    private String authorHome;
+    private String signature;
+
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
     public Long getViews() {
         return views;
     }
@@ -221,5 +229,25 @@ public class PostVo {
 
     public void setType(Integer type) {
         this.type = type;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
+    }
+
+    public void setAuthorHome(String authorHome) {
+        this.authorHome = authorHome;
+    }
+
+    public String getAuthorHome() {
+        return authorHome;
+    }
+
+    public void setSignature(String signature) {
+        this.signature = signature;
+    }
+
+    public String getSignature() {
+        return signature;
     }
 }

@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace等于mapper接口类的全限定名,这样实现对应 -->
+<mapper namespace="com.liu.db.mapper.UserReplenishMapper">
+    <resultMap id="UserReplenishMapperResult" type="com.liu.db.entity.UserReplenish">
+        <result property="userId" column="user_id"/>
+        <result property="userName" column="user_name"/>
+        <result property="backgroundUrl" column="background_url"/>
+        <result property="industryValue" column="industry_value"/>
+        <result property="signature" column="signature"/>
+        <result property="addressArr" column="address_arr"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="isDelete" column="is_delete"/>
+    </resultMap>
+
+    <sql id="selectUserReplenishVo">
+        select *
+        from user_replenish
+    </sql>
+    <insert id="insert" parameterType="com.liu.db.entity.UserReplenish">
+        insert into user_replenish
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="userName != null and userName.length() > 0">
+                user_name,
+            </if>
+            <if test="backgroundUrl != null and backgroundUrl.length() > 0">
+                background_url,
+            </if>
+            <if test="industryValue != null and industryValue.length() > 0">
+                industry_value,
+            </if>
+            <if test="signature != null and signature.length() > 0">
+                signature,
+            </if>
+            <if test="addressArr != null and addressArr.length() > 0">
+                address_arr,
+            </if>
+            <if test="isDelete != null and isDelete.length() > 0">
+                is_delete,
+            </if>
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">
+                #{userId},
+            </if>
+            <if test="userName != null and userName.length() > 0">
+                #{userName},
+            </if>
+            <if test="backgroundUrl != null and backgroundUrl.length() > 0">
+                #{backgroundUrl},
+            </if>
+            <if test="industryValue != null and industryValue.length() > 0">
+                #{industryValue},
+            </if>
+            <if test="signature != null and signature.length() > 0">
+                #{signature},
+            </if>
+            <if test="addressArr != null and addressArr.length() > 0">
+                #{addressArr},
+            </if>
+            <if test="isDelete != null and isDelete.length() > 0">
+                #{isDelete},
+            </if>
+        </trim>
+    </insert>
+    <update id="update" parameterType="com.liu.db.entity.UserReplenish">
+        update user_replenish
+        <trim prefix="set" suffixOverrides=",">
+            <if test="userName != null and userName.length() > 0">
+                user_name = #{userName},
+            </if>
+            <if test="backgroundUrl != null and backgroundUrl.length() > 0">
+                background_url = #{backgroundUrl},
+            </if>
+            <if test="industryValue != null and industryValue.length() > 0">
+                industry_value = #{industryValue},
+            </if>
+            <if test="signature != null and signature.length() > 0">
+                signature = #{signature},
+            </if>
+            <if test="addressArr != null and addressArr.length() > 0">
+                address_arr = #{addressArr},
+            </if>
+            update_time = sysdate(),
+        </trim>
+        where user_id = #{userId}
+    </update>
+
+    <delete id="deleteById" parameterType="String">
+        update user_replenish
+        set is_delete = 1
+        where user_id = #{userIds};
+    </delete>
+
+    <select id="selectUserReplenishList" parameterType="com.liu.db.entity.UserReplenish"
+            resultMap="UserReplenishMapperResult">
+        <include refid="selectUserReplenishVo"/>
+        <where>
+            <if test="userName != null and userName.length() > 0">
+                <bind name="userName" value="userName + '%'"/>
+                and user_name like #{userName}
+            </if>
+        </where>
+    </select>
+    <select id="selectUserReplenishByUserId" resultType="com.liu.db.entity.UserReplenish">
+        <include refid="selectUserReplenishVo"/>
+        <where>
+            user_id = #{userId}
+            and is_delete = 0
+        </where>
+    </select>
+</mapper>

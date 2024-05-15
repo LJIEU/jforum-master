@@ -18,7 +18,6 @@ import com.liu.db.service.PostService;
 import com.liu.db.service.SysUserService;
 import com.liu.db.service.relation.PostAndCategoryService;
 import com.liu.db.vo.PostVo;
-import com.liu.db.vo.api.AuthorInfo;
 import com.liu.db.vo.api.PostParam;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -78,7 +77,8 @@ public class ApiPostController extends BaseController {
                                            @RequestParam(value = "keywords", required = false) String keywords,
                                            @RequestParam(value = "sortRules", defaultValue = "post_id") String sortRules,
                                            @RequestParam(value = "isDesc", defaultValue = "false") Boolean isDesc,
-                                           Post post) {
+                                           @RequestParam(value = "isMy", defaultValue = "false") Boolean isMy,
+                                           Post post, HttpServletRequest request) {
         HashMap<String, Object> map = new HashMap<>(2);
         if (status != null) {
             post.setState(String.valueOf(status));
@@ -91,8 +91,18 @@ public class ApiPostController extends BaseController {
         param.put("endTime", endTime);
         post.setParams(param);
 
-        // 只能获取审核通过的
+        // 只能获取审核通过的[只限于首页帖子]
         post.setState("1");
+
+        if (isMy) {
+            SysUser user = userService.getItemByUserName(SecurityUtils.currentUsername(request));
+            if (user == null) {
+                throw new UserNotExistsException();
+            }
+            // 查询 所有自己的帖子
+            post.setState(null);
+            post.setUserId(user.getUserId());
+        }
         if (categoryService.selectCategoryByCategoryId(categoryId) == null) {
             startPage(pageNum, pageSize, sortRules, isDesc);
             List<Post> posts = postService.selectPostList(post);
@@ -133,10 +143,17 @@ public class ApiPostController extends BaseController {
 
     @Operation(summary = "查询帖子信息")
     @GetMapping("/api/{postId}")
-    public R<PostVo> getInfo(@PathVariable("postId") String postId) {
+    public R<PostVo> getInfo(@PathVariable("postId") String postId, HttpServletRequest request) {
         Post post = postService.selectPostByPostId(postId);
         if (post == null) {
             return R.fail("帖子不存在");
+        }
+        // 如果帖子的 状态不是公布的那就得进行过滤  只有自己可以查看自己的别人查看不了
+        if (!"1".equals(post.getState())) {
+            SysUser user = userService.getItemByUserName(SecurityUtils.currentUsername(request));
+            if (user == null || !user.getUserId().equals(post.getUserId())) {
+                return R.fail(5001, "未公开");
+            }
         }
         PostVo postVo = postToVo(post);
         // 浏览记录+1
@@ -144,17 +161,17 @@ public class ApiPostController extends BaseController {
         return R.success(postVo);
     }
 
-    @Operation(summary = "获取发帖者信息")
-    @GetMapping("/api/user/{postId}")
-    public R<Object> getUserByPostId(@PathVariable(value = "postId") String postId) {
-        Post post = postService.selectPostByPostId(postId);
-        if (post == null) {
-            return R.fail("获取失败");
-        }
-        SysUser user = userService.selectSysUserByUserId(post.getUserId());
-        // 2024/5/11/16:50 注意对结果只返回需要信息别全部显示给前端
-        return R.success(userToAuthorInfo(user));
-    }
+//    @Operation(summary = "获取发帖者信息")
+//    @GetMapping("/api/user/{postId}")
+//    public R<Object> getUserByPostId(@PathVariable(value = "postId") String postId) {
+//        Post post = postService.selectPostByPostId(postId);
+//        if (post == null) {
+//            return R.fail("获取失败");
+//        }
+//        SysUser user = userService.selectSysUserByUserId(post.getUserId());
+//        // 2024/5/11/16:50 注意对结果只返回需要信息别全部显示给前端
+//        return R.success(userToAuthorInfo(user));
+//    }
 
 
     @Operation(summary = "创建帖子")
@@ -170,24 +187,17 @@ public class ApiPostController extends BaseController {
         return R.success();
     }
 
-
-    private AuthorInfo userToAuthorInfo(SysUser user) {
-        AuthorInfo authorInfo = new AuthorInfo();
-        authorInfo.setUsername(user.getUserName());
-        authorInfo.setNickname(user.getNickName());
-        authorInfo.setAvatarurl(user.getAvatar());
-        // TODO 2024/5/11/16:56 以后会有一个 个人主页表  这些信息都是由这个表收集
-        authorInfo.setAuthorHome("https://www.zhihu.com/people/www.zhiyuan.com");
-        authorInfo.setSignature("我的个性签名" + RandomUtil.randomString(10));
-        return authorInfo;
-    }
-
     private PostVo postToVo(Post post) {
         PostVo vo = new PostVo();
         Category category = SpringUtils.getBean(PostAndCategoryService.class).selectCategoryByPostId(post.getPostId());
         SysUser user = SpringUtils.getBean(SysUserService.class).selectSysUserByUserId(post.getUserId());
         vo.setId(post.getPostId());
         vo.setNickname(user.getNickName());
+        vo.setAvatarUrl(user.getAvatar());
+        // TODO 2024/5/11/16:56 以后会有一个 个人主页表  这些信息都是由这个表收集
+        vo.setAuthorHome("https://www.zhihu.com/people/www.zhiyuan.com");
+        vo.setSignature("我的个性签名" + RandomUtil.randomString(10));
+
         vo.setReleaseTime(post.getUpdateTime());
         vo.setViews(post.getViews());
         // TODO 2024/4/25/20:20 模拟数据 后期要与数据库实际

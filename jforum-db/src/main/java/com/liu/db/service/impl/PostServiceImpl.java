@@ -185,4 +185,9 @@ public class PostServiceImpl implements PostService {
         post.setViews((post.getViews() == null ? 0L : post.getViews()) + 1);
         postMapper.update(post);
     }
+
+    @Override
+    public List<Post> pendingPostList() {
+        return postMapper.pendingPostList();
+    }
 }

@@ -1,6 +1,7 @@
 package com.liu.camunda.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.StrUtil;
@@ -19,7 +20,9 @@ import com.liu.camunda.vo.StartProcessVo;
 import com.liu.core.excption.ServiceException;
 import com.liu.core.result.R;
 import com.liu.core.utils.SpringUtils;
+import com.liu.db.entity.Post;
 import com.liu.db.entity.SysUser;
+import com.liu.db.service.PostService;
 import com.liu.db.service.SysUserService;
 import jakarta.annotation.Resource;
 import org.camunda.bpm.engine.*;
@@ -458,27 +461,32 @@ public class ProcessInstanceServiceImpl implements ProcessInstanceService {
     public R<String> complete(String instanceId, SysUser user, Map<String, Object> params) {
         BpmnInfo bpmnInfo = currNode(instanceId);
         Task task = taskService.createTaskQuery().processInstanceId(instanceId).singleResult();
-/*
         if (MapUtil.isNotEmpty(params)) {
             String options = (String) params.get(BpmnConstants.OPTIONS);
             String option = (String) params.get(BpmnConstants.OPINION);
-            if ("1".equals(options)) {
-                // 驳回
-                String[] forActivity = getInstanceIdForActivity(instanceId);
-                taskService.createComment(task.getId(), instanceId, option);
+            if ("0".equals(options)) {
+                // 通过
+                PostService postService = SpringUtils.getBean(PostService.class);
+                // 获取变量
+                String postId = (String) taskService.getVariable(task.getId(), BpmnConstants.POST_ID);
+                Post post = new Post();
+                post.setPostId(postId);
+                post.setState("0");
+                postService.update(post);
+//                String[] forActivity = getInstanceIdForActivity(instanceId);
+//                taskService.createComment(task.getId(), instanceId, option);
 //                ActivityInstance activity = runtimeService.getActivityInstance(instanceId);
-                runtimeService.createProcessInstanceModification(instanceId)
-                        .setAnnotation("驳回任务~")
-                        // 取消当前任务
-                        .cancelActivityInstance(forActivity[0])
-//                        .cancelActivityInstance(activity.getId())
-                        // 回退上级任务
-                        .startBeforeActivity(forActivity[1])
-                        .execute();
-                return R.success("驳回成功");
+//                runtimeService.createProcessInstanceModification(instanceId)
+//                        .setAnnotation("驳回任务~")
+//                        // 取消当前任务
+//                        .cancelActivityInstance(forActivity[0])
+////                        .cancelActivityInstance(activity.getId())
+//                        // 回退上级任务
+//                        .startBeforeActivity(forActivity[1])
+//                        .execute();
+//                return R.success("驳回成功");
             }
         }
-*/
         // 如果有需要传递的变量，可以在此设置  设置 发起者信息 ==》 当前用户ID
         taskService.setVariable(task.getId(), BpmnConstants.INITIATOR, user.getUserId().toString());
         List<String> fieldList = new ArrayList<>();
@@ -504,8 +512,8 @@ public class ProcessInstanceServiceImpl implements ProcessInstanceService {
                         Map<String, Object> variables = taskService.getVariables(pre);
                         if (variables != null && variables.size() > 0) {
                             for (String key : variables.keySet()) {
-                                // 意见不进行删除
-                                if (!key.equals(BpmnConstants.OPINION)) {
+                                // 意见和帖子ID不进行删除
+                                if (!key.equals(BpmnConstants.OPINION) && !key.equals(BpmnConstants.POST_ID)) {
                                     taskService.removeVariable(pre, key);
                                 }
                             }

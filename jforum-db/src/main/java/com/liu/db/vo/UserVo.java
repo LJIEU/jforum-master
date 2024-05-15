@@ -1,6 +1,7 @@
 package com.liu.db.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.Date;
 import java.util.List;
@@ -24,7 +25,52 @@ public class UserVo {
     private Integer status;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createTime;
+    /** 背景图 */
+    @Schema(description = "背景图")
+    private String backgroundUrl;
+    /** 行业值 与字典对应 */
+    @Schema(description = "行业值 与字典对应")
+    private String industryValue;
+    /** 个性签名 */
+    @Schema(description = "个性签名")
+    private String signature;
+    /** 地址值 多个用|分割开 */
+    @Schema(description = "地址值 多个用|分割开")
+    private String[] addressArr;
+
     private List<Long> roleIds;
+
+    public String getBackgroundUrl() {
+        return backgroundUrl;
+    }
+
+    public void setBackgroundUrl(String backgroundUrl) {
+        this.backgroundUrl = backgroundUrl;
+    }
+
+    public String getIndustryValue() {
+        return industryValue;
+    }
+
+    public void setIndustryValue(String industryValue) {
+        this.industryValue = industryValue;
+    }
+
+    public String getSignature() {
+        return signature;
+    }
+
+    public void setSignature(String signature) {
+        this.signature = signature;
+    }
+
+    public String[] getAddressArr() {
+        return addressArr;
+    }
+
+    public void setAddressArr(String[] addressArr) {
+        this.addressArr = addressArr;
+    }
 
     public Long getId() {
         return id;

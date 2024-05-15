@@ -58,4 +58,11 @@ public interface PostMapper {
      * @return 删除情况
      */
     int deleteById(@Param("postIds") String[] postIds);
+
+    /**
+     * 待处理的帖子列表 [只获取20条]
+     *
+     * @return 返回待审核的帖子列表 并且是根据时间升序的[优先处理老的]
+     */
+    List<Post> pendingPostList();
 }

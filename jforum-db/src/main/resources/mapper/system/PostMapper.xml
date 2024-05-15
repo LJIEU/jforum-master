@@ -131,13 +131,16 @@
             resultMap="PostMapperResult">
         <include refid="selectPostVo"/>
         <where>
-            is_delete = 0
+            is_delete = '0'
             <if test="title != null and title.length() > 0">
                 <bind name="title" value="title + '%'"/>
                 and title like #{title}
             </if>
             <if test="state != null and state.length() > 0">
                 and state = #{state}
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId}
             </if>
             <!--如果要使用 param 必须要初始化并赋值-->
             <if test="params.startTime != null"><!-- 开始时间检索 -->
@@ -154,5 +157,13 @@
             post_id = #{postId}
             and is_delete = '0'
         </where>
+    </select>
+    <select id="pendingPostList" resultType="Post">
+        select *
+        from jforum_system.post
+        where `state` = '2'
+          and `is_delete` = '0'
+        order by create_time asc
+        limit 0,20;
     </select>
 </mapper>

@@ -99,3 +99,10 @@ token:
 captchaType: math
 #captchaType: char
 
+# MinIO 配置
+minio:
+  endpoint: http://localhost:9000
+  bucketName: jforum # 存储桶名称
+  accessKey: uYM8NVtfIdZx78qe0waT # 访问Key
+  secretKey: IJ3dCY3HqQivUT1yc1tgWCH3W6RnfkfT28hzXNL1 # 访问秘钥
+
