@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 /**
  * Description:
  *
@@ -21,5 +23,13 @@ public class PostAndTagService {
     @Transactional(rollbackFor = Exception.class)
     public void insert(String tagId, String postId) {
         postAndTagMapper.insert(tagId, postId);
+    }
+
+    public List<String> selectTagsByPostId(String postId) {
+        return postAndTagMapper.selectTagsByPostId(postId);
+    }
+
+    public void delete(String postId) {
+        postAndTagMapper.delete(postId);
     }
 }

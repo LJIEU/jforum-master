@@ -3,6 +3,8 @@ package com.liu.db.mapper.relation;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 /**
  * Description:
  *
@@ -20,4 +22,18 @@ public interface PostAndTagMapper {
      * @param postId 帖子ID
      */
     void insert(@Param("tagId") String tagId, @Param("postId") String postId);
+
+
+    /**
+     * 查询 帖子绑定标签
+     * @param postId 帖子ID
+     * @return 返回结果
+     */
+    List<String> selectTagsByPostId(@Param("postId") String postId);
+
+    /**
+     * 删除
+     * @param postId 帖子ID
+     */
+    void delete(String postId);
 }

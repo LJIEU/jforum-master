@@ -42,4 +42,7 @@ public interface PostAndCategoryMapper {
      * @param postId     帖子ID
      */
     void insert(@Param("categoryId") Long categoryId, @Param("postId") String postId);
+
+
+    void update(@Param("categoryId") Long categoryId, @Param("postId") String postId);
 }

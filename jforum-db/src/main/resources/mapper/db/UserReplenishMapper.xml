@@ -40,9 +40,7 @@
             <if test="addressArr != null and addressArr.length() > 0">
                 address_arr,
             </if>
-            <if test="isDelete != null and isDelete.length() > 0">
-                is_delete,
-            </if>
+                is_delete
         </trim>
         values
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -64,9 +62,7 @@
             <if test="addressArr != null and addressArr.length() > 0">
                 #{addressArr},
             </if>
-            <if test="isDelete != null and isDelete.length() > 0">
-                #{isDelete},
-            </if>
+            '0'
         </trim>
     </insert>
     <update id="update" parameterType="com.liu.db.entity.UserReplenish">
@@ -112,7 +108,7 @@
         <include refid="selectUserReplenishVo"/>
         <where>
             user_id = #{userId}
-            and is_delete = 0
+            and is_delete = '0'
         </where>
     </select>
 </mapper>

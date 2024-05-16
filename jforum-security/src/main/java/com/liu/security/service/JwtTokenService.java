@@ -1,5 +1,6 @@
 package com.liu.security.service;
 
+import cn.hutool.core.util.StrUtil;
 import com.liu.core.config.redis.RedisCache;
 import com.liu.core.constant.CacheConstants;
 import com.liu.core.constant.Constants;
@@ -118,6 +119,11 @@ public class JwtTokenService {
      */
     public LoginUser getLoginUser(HttpServletRequest request) {
         String token = request.getHeader(header);
+        if (StrUtil.isEmpty(token)) {
+            if (request.getParameter(header) != null) {
+                token = request.getParameter(header);
+            }
+        }
         if (StringUtils.isNotEmpty(token)) {
             try {
                 Claims claims = Jwts.parser().setSigningKey(key).parseClaimsJws(token).getBody();

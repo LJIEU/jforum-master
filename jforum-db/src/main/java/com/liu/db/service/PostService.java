@@ -73,6 +73,15 @@ public interface PostService {
     /**
      * 待处理的帖子列表 [只获取20条]
      * @return 返回待审核的帖子列表 并且是根据时间升序的[优先处理老的]
+     * @param state 状态
      */
-    List<Post> pendingPostList();
+    List<Post> pendingPostList(String state);
+
+    /**
+     * 修改帖子
+     * @param param 参数
+     * @param request 请求
+     * @param userId 用户ID
+     */
+    void update(PostParam param, HttpServletRequest request, Long userId);
 }

@@ -17,87 +17,101 @@ public class PostVo {
      * 帖子ID
      */
     @Schema(description = "帖子ID")
-    String id;
+    private String id;
     /**
      * 标题
      */
     @Schema(description = "标题")
-    String title;
+    private String title;
     /**
      * 用户名
      */
     @Schema(description = "用户名")
-    String username;
+    private String username;
     /**
      * 用户名
      */
     @Schema(description = "昵称")
-    String nickname;
+    private String nickname;
     /**
      * 内容
      */
     @Schema(description = "内容")
-    String content;
+    private String content;
     /**
      * 状态 1已发布 2待审核 3隐私
      */
     @Schema(description = "状态 1已发布 2待审核 3隐私")
-    Integer state;
+    private Integer state;
     /**
      * 分类
      */
     @Schema(description = "分类")
-    String categoryName;
+    private String categoryName;
     /**
      * 分类
      */
     @Schema(description = "分类ID")
-    Long category;
+    private Long category;
     /**
      * 归属地
      */
     @Schema(description = "归属地")
-    String place;
+    private String place;
     /**
      * 创建时间
      */
     @Schema(description = "创建时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    Date createTime;
+    private Date createTime;
     /**
      * 审核通过时间
      */
     @Schema(description = "审核通过时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    Date releaseTime;
+    private Date releaseTime;
 
     /**
      * 类型  0普通 1置顶
      */
     @Schema(description = "类型 0普通 1置顶")
-    Integer type;
+    private Integer type;
 
     /**
      * 点赞数
      */
     @Schema(description = "点赞数")
-    Integer likeNum;
+    private Integer likeNum;
     @Schema(description = "浏览数")
-    Long views;
+    private Long views;
     /**
      * 评论数
      */
     @Schema(description = "评论数")
-    Integer commentNum;
+    private Integer commentNum;
     /**
      * 综合评分
      */
     @Schema(description = "综合评分")
-    Integer overallRating;
+    private Integer overallRating;
+
+    /**
+     * 标签
+     */
+    @Schema(description = "标签")
+    private String[] tagIds;
 
     private String avatarUrl;
     private String authorHome;
     private String signature;
+
+    public String[] getTagIds() {
+        return tagIds;
+    }
+
+    public void setTagIds(String[] tagIds) {
+        this.tagIds = tagIds;
+    }
 
     public String getAvatarUrl() {
         return avatarUrl;

@@ -1,6 +1,7 @@
 package com.liu.app.controller;
 
 import cn.hutool.core.util.StrUtil;
+import com.liu.core.config.repeat.RepeatSubmit;
 import com.liu.core.excption.user.UserNotExistsException;
 import com.liu.core.result.R;
 import com.liu.core.utils.SecurityUtils;
@@ -45,21 +46,22 @@ public class UserController {
 
     @Operation(summary = "修改用户信息")
     @PostMapping("/updateUser")
+    @RepeatSubmit
     public R<String> updateUser(@RequestBody UserInfoVo userInfoVo, HttpServletRequest request) {
         SysUser user = userService.getItemByUserName(SecurityUtils.currentUsername(request));
         if (user == null) {
             throw new UserNotExistsException();
         }
         // 用户名是不能更改的 只能更改 昵称
-        if (StrUtil.isNotEmpty(userInfoVo.getNickname())) {
+        if (StrUtil.isNotEmpty(userInfoVo.getNickname()) && !user.getNickName().equals(userInfoVo.getNickname())) {
             user.setNickName(userInfoVo.getNickname());
         }
         // 头像
-        if (StrUtil.isNotEmpty(userInfoVo.getAvatarUrl())) {
+        if (StrUtil.isNotEmpty(userInfoVo.getAvatarUrl()) && !user.getAvatar().equals(userInfoVo.getAvatarUrl())) {
             user.setAvatar(userInfoVo.getAvatarUrl());
         }
         // 性别
-        if (StrUtil.isNotEmpty(userInfoVo.getSex())) {
+        if (StrUtil.isNotEmpty(userInfoVo.getSex()) && !user.getSex().equals(userInfoVo.getSex())) {
             user.setSex(userInfoVo.getSex());
         }
 
@@ -69,6 +71,7 @@ public class UserController {
             replenish = new UserReplenish();
             replenish.setUserId(user.getUserId());
             replenish.setUserName(user.getUserName());
+            replenishService.insert(replenish);
         }
         // 背景
         if (StrUtil.isNotEmpty(userInfoVo.getBackgroundUrl())) {
@@ -84,17 +87,21 @@ public class UserController {
             // 整理地址
             String address = userInfoVo.getAddress().replace("|", "");
             String str = replenish.getAddressArr();
-            String[] addressArr = str.split("\\|");
-            boolean flag = false;
-            for (String v : addressArr) {
-                if (v.equals(address)) {
-                    flag = true;
-                    break;
+            if (StrUtil.isEmpty(str)) {
+                replenish.setAddressArr(address);
+            } else {
+                String[] addressArr = str.split("\\|");
+                boolean flag = false;
+                for (String v : addressArr) {
+                    if (v.equals(address)) {
+                        flag = true;
+                        break;
+                    }
                 }
-            }
-            // 不存在才添加地址
-            if (!flag) {
-                replenish.setAddressArr(replenish.getAddressArr() + "|" + address);
+                // 不存在才添加地址
+                if (!flag) {
+                    replenish.setAddressArr(replenish.getAddressArr() + "|" + address);
+                }
             }
         }
         // 行业
@@ -102,9 +109,9 @@ public class UserController {
             replenish.setIndustryValue(userInfoVo.getIndustry());
         }
 
-        // 插入
-        userService.insert(user);
-        replenishService.insert(replenish);
+        // 更新
+        userService.update(user);
+        replenishService.update(replenish);
         return R.success();
     }
 
@@ -122,11 +129,15 @@ public class UserController {
         userVo.setStatus(Objects.equals(sysUser.getStatus(), "0") ? 0 : 1);
         userVo.setCreateTime(sysUser.getCreateTime());
         userVo.setRoleIds(null);
-        // 扩展
-        userVo.setAddressArr(StrUtil.isNotEmpty(replenish.getAddressArr()) ? replenish.getAddressArr().split("\\|") : null);
-        userVo.setBackgroundUrl(replenish.getBackgroundUrl());
-        userVo.setIndustryValue(replenish.getIndustryValue());
-        userVo.setSignature(replenish.getSignature());
+        if (replenish != null) {
+            // 扩展
+            if (StrUtil.isNotEmpty(replenish.getAddressArr())) {
+                userVo.setAddressArr(replenish.getAddressArr().split("\\|"));
+            }
+            userVo.setBackgroundUrl(replenish.getBackgroundUrl());
+            userVo.setIndustryValue(replenish.getIndustryValue());
+            userVo.setSignature(replenish.getSignature());
+        }
         return userVo;
     }
 

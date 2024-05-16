@@ -57,4 +57,18 @@ public interface BpmPostService {
      * @return 返回结果
      */
     R<Map<String, Object>> getInfo(String processInstanceId);
+
+    /**
+     * 获取 帖子对应的 实例ID
+     * @param postId 帖子ID
+     * @return 返回结果
+     */
+    String getInstanceId(String postId);
+
+    /**
+     * 驳回的流程 进行提交
+     * @param instanceId 流程定义
+     * @param user 用户
+     */
+    void submitPost(String instanceId, SysUser user);
 }

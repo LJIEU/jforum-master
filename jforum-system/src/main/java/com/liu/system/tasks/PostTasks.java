@@ -2,6 +2,7 @@ package com.liu.system.tasks;
 
 import com.liu.camunda.constants.BpmnConstants;
 import com.liu.camunda.service.ProcessInstanceService;
+import com.liu.core.constant.PostState;
 import com.liu.core.utils.SpringUtils;
 import com.liu.db.entity.Post;
 import com.liu.db.entity.SysUser;
@@ -48,7 +49,7 @@ public class PostTasks {
         // 如果少于20条，则启动流程
         if (count < 20) {
             // 查询 20条 待审核的帖子ID
-            List<Post> posts = postService.pendingPostList();
+            List<Post> posts = postService.pendingPostList(PostState.POST_PENDING);
 //            posts.forEach(System.out::println);
             for (Post post : posts) {
                 SysUser user = SpringUtils.getBean(SysUserService.class).selectSysUserByUserId(post.getUserId());
@@ -56,8 +57,8 @@ public class PostTasks {
                 params.put(BpmnConstants.POST_ID, post.getPostId());
                 // 开启审核流程
                 processInstanceService.startProcessInstanceByDeployId("8af89803-0a9f-11ef-8e0b-005056c00001", params, user);
-                // 如果什么异常 修改 帖子状态为3
-                post.setState("3");
+                // 如果没什么异常 修改 帖子状态为3
+                post.setState(PostState.POST_REVIEWING);
                 postService.update(post);
             }
         }

@@ -64,5 +64,5 @@ public interface PostMapper {
      *
      * @return 返回待审核的帖子列表 并且是根据时间升序的[优先处理老的]
      */
-    List<Post> pendingPostList();
+    List<Post> pendingPostList(@Param("state") String state);
 }

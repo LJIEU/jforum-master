@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace等于mapper接口类的全限定名,这样实现对应 -->
+<mapper namespace="com.liu.db.mapper.SensitiveWordMapper">
+    <resultMap id="SensitiveWordMapperResult" type="com.liu.db.entity.SensitiveWord">
+            <result property="id" column="id"/>
+            <result property="word" column="word"/>
+    </resultMap>
+
+    <sql id="selectSensitiveWordVo">
+        select *
+        from sensitive_word
+    </sql>
+    <insert id="insert" parameterType="com.liu.db.entity.SensitiveWord">
+        insert into sensitive_word
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+                    <if test="id != null">
+                        id,
+                    </if>
+                    <if test="word != null and word.length() > 0">
+                        word,
+                    </if>
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+                    <if test="id != null">
+                        #{id},
+                    </if>
+                    <if test="word != null and word.length() > 0">
+                        #{word},
+                    </if>
+        </trim>
+    </insert>
+    <update id="update" parameterType="com.liu.db.entity.SensitiveWord">
+        update sensitive_word
+        <trim prefix="set" suffixOverrides=",">
+                    <if test="word != null and word.length() > 0">
+                        word = #{word},
+                    </if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteById" parameterType="String">
+            update sensitive_word set is_delete = 1
+            where id = #{ids};
+    </delete>
+
+    <select id="selectSensitiveWordList" parameterType="com.liu.db.entity.SensitiveWord"
+            resultMap="SensitiveWordMapperResult">
+        <include refid="selectSensitiveWordVo"/>
+        <where>
+        </where>
+    </select>
+    <select id="selectSensitiveWordById" resultType="com.liu.db.entity.SensitiveWord">
+        <include refid="selectSensitiveWordVo"/>
+        <where>
+            id = #{id}
+                and is_delete = 0
+        </where>
+    </select>
+</mapper>

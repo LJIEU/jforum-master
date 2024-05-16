@@ -161,7 +161,7 @@
     <select id="pendingPostList" resultType="Post">
         select *
         from jforum_system.post
-        where `state` = '2'
+        where `state` = #{state}
           and `is_delete` = '0'
         order by create_time asc
         limit 0,20;

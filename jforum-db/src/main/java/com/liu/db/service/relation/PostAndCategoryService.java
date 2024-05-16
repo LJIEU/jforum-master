@@ -37,4 +37,8 @@ public class PostAndCategoryService {
     public void insert(Long categoryId, String postId) {
         postAndCategoryMapper.insert(categoryId, postId);
     }
+
+    public void update(Long categoryId, String postId) {
+        postAndCategoryMapper.update(categoryId, postId);
+    }
 }

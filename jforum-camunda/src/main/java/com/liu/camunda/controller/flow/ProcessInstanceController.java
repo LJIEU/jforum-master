@@ -123,7 +123,7 @@ public class ProcessInstanceController extends BaseController {
     @PostMapping("/hist")
     public R<List<HistVo>> hist(
             @RequestParam(value = "processInstanceId") String processInstanceId,
-            @RequestParam(value = "businessKey") String businessKey, HttpServletRequest request) {
+            @RequestParam(value = "businessKey", required = false) String businessKey, HttpServletRequest request) {
         SysUser user = SpringUtils.getBean(SysUserService.class).getItemByUserName(SecurityUtils.currentUsername(request));
         if (user == null) {
             throw new ServiceException("用户不存在");

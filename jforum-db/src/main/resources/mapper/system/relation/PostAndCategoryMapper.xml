@@ -33,6 +33,11 @@
         insert into `post_category`(post_id, category_id)
         values (#{postId}, #{categoryId})
     </insert>
+    <update id="update">
+        update `post_category`
+        set category_id = #{categoryId}
+        where post_id = #{postId}
+    </update>
     <select id="selectCategoryByPostId" resultType="com.liu.db.entity.Category">
         select c.*
         from `post_category` as pc

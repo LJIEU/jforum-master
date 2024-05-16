@@ -63,8 +63,8 @@ public class Post extends BaseEntity {
     /**
      * 状态【1:已发布 2:待审核 0:隐藏】
      */
-    @Schema(description = "状态【1:已发布 2:待审核 0:隐藏】")
-    @ExcelProperty(value = "状态【1:已发布 2:待审核 0:隐藏】")
+    @Schema(description = "状态【1:已发布 2:待审核 0:隐藏--默认 3:审核中 5:驳回】")
+    @ExcelProperty(value = "状态【1:已发布 2:待审核 0:隐藏--默认 3:审核中 5:驳回】")
     private String state;
     /**
      * 内容

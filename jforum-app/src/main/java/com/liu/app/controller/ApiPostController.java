@@ -5,6 +5,7 @@ import cn.hutool.core.util.StrUtil;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.github.pagehelper.PageInfo;
 import com.liu.core.config.repeat.RepeatSubmit;
+import com.liu.core.constant.PostState;
 import com.liu.core.controller.BaseController;
 import com.liu.core.excption.user.UserNotExistsException;
 import com.liu.core.result.R;
@@ -17,6 +18,7 @@ import com.liu.db.service.CategoryService;
 import com.liu.db.service.PostService;
 import com.liu.db.service.SysUserService;
 import com.liu.db.service.relation.PostAndCategoryService;
+import com.liu.db.service.relation.PostAndTagService;
 import com.liu.db.vo.PostVo;
 import com.liu.db.vo.api.PostParam;
 import io.swagger.v3.oas.annotations.Operation;
@@ -92,7 +94,7 @@ public class ApiPostController extends BaseController {
         post.setParams(param);
 
         // 只能获取审核通过的[只限于首页帖子]
-        post.setState("1");
+        post.setState(PostState.POST_PUBLISH);
 
         if (isMy) {
             SysUser user = userService.getItemByUserName(SecurityUtils.currentUsername(request));
@@ -149,7 +151,7 @@ public class ApiPostController extends BaseController {
             return R.fail("帖子不存在");
         }
         // 如果帖子的 状态不是公布的那就得进行过滤  只有自己可以查看自己的别人查看不了
-        if (!"1".equals(post.getState())) {
+        if (!PostState.POST_PUBLISH.equals(post.getState())) {
             SysUser user = userService.getItemByUserName(SecurityUtils.currentUsername(request));
             if (user == null || !user.getUserId().equals(post.getUserId())) {
                 return R.fail(5001, "未公开");
@@ -161,6 +163,50 @@ public class ApiPostController extends BaseController {
         return R.success(postVo);
     }
 
+    @Operation(summary = "发布帖子")
+    @GetMapping("/publish/{postId}")
+    public R<String> publish(
+            @PathVariable(value = "postId") String postId,
+            HttpServletRequest request) {
+        return updateState(postId, request);
+    }
+
+    @Operation(summary = "设为隐私")
+    @GetMapping("/privacy/{postId}")
+    public R<String> privacy(
+            @PathVariable(value = "postId") String postId,
+            HttpServletRequest request) {
+        return updateState(postId, request);
+    }
+
+    private R<String> updateState(String postId, HttpServletRequest request) {
+        // 需要判断是否是自己的帖子 并且状态为 5 隐私 才可以进行 发布
+        Post post = postService.selectPostByPostId(postId);
+        if (post == null) {
+            return R.fail("帖子不存在");
+        }
+        SysUser user = userService.getItemByUserName(SecurityUtils.currentUsername(request));
+        if (user == null || !user.getUserId().equals(post.getUserId())) {
+            return R.fail(5001, "未公开");
+        }
+
+        // 公开设置为隐私
+        if (post.getState().equals(PostState.POST_PUBLISH)) {
+            // 设置为 隐私
+            post.setState(PostState.POST_PRIVACY);
+            postService.update(post);
+            return R.success();
+        }
+        // 隐私设置为 待审核
+        if (post.getState().equals(PostState.POST_PRIVACY)) {
+            // 设置为 待审核
+            post.setState(PostState.POST_PENDING);
+            postService.update(post);
+            return R.success();
+        }
+
+        return R.success();
+    }
 //    @Operation(summary = "获取发帖者信息")
 //    @GetMapping("/api/user/{postId}")
 //    public R<Object> getUserByPostId(@PathVariable(value = "postId") String postId) {
@@ -177,6 +223,7 @@ public class ApiPostController extends BaseController {
     @Operation(summary = "创建帖子")
     @PutMapping("/createPost")
     @RepeatSubmit
+
     public R<String> createPost(@Validated @RequestBody PostParam param,
                                 HttpServletRequest request) {
         SysUser user = userService.getItemByUserName(SecurityUtils.currentUsername(request));
@@ -187,9 +234,23 @@ public class ApiPostController extends BaseController {
         return R.success();
     }
 
+    @Operation(summary = "修改帖子")
+    @PostMapping("/update")
+    @RepeatSubmit
+    public R<String> updatePost(@Validated @RequestBody PostParam param,
+                                HttpServletRequest request) {
+        SysUser user = userService.getItemByUserName(SecurityUtils.currentUsername(request));
+        if (user == null) {
+            throw new UserNotExistsException();
+        }
+        postService.update(param, request, user.getUserId());
+        return R.success();
+    }
+
     private PostVo postToVo(Post post) {
         PostVo vo = new PostVo();
         Category category = SpringUtils.getBean(PostAndCategoryService.class).selectCategoryByPostId(post.getPostId());
+        List<String> tags = SpringUtils.getBean(PostAndTagService.class).selectTagsByPostId(post.getPostId());
         SysUser user = SpringUtils.getBean(SysUserService.class).selectSysUserByUserId(post.getUserId());
         vo.setId(post.getPostId());
         vo.setNickname(user.getNickName());
@@ -197,7 +258,6 @@ public class ApiPostController extends BaseController {
         // TODO 2024/5/11/16:56 以后会有一个 个人主页表  这些信息都是由这个表收集
         vo.setAuthorHome("https://www.zhihu.com/people/www.zhiyuan.com");
         vo.setSignature("我的个性签名" + RandomUtil.randomString(10));
-
         vo.setReleaseTime(post.getUpdateTime());
         vo.setViews(post.getViews());
         // TODO 2024/4/25/20:20 模拟数据 后期要与数据库实际
@@ -215,6 +275,8 @@ public class ApiPostController extends BaseController {
         vo.setPlace(post.getIpAddress());
         vo.setCreateTime(post.getCreateTime());
         vo.setType(post.getType());
+        // 设置 标签
+        vo.setTagIds(tags.toArray(new String[0]));
         return vo;
     }
 

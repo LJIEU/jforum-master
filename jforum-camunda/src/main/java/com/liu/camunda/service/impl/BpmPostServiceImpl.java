@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Description:
@@ -169,6 +170,27 @@ public class BpmPostServiceImpl implements BpmPostService {
         result.put("title", post.getTitle());
         result.put("content", post.getContent());
         return R.success(result);
+    }
+
+    @Override
+    public String getInstanceId(String postId) {
+        List<HistoricVariableInstance> list = historyService.createHistoricVariableInstanceQuery().list();
+        List<HistoricVariableInstance> filterList = list.stream()
+                .filter(v -> v.getName().equals(BpmnConstants.POST_ID))
+                .collect(Collectors.toList());
+        for (HistoricVariableInstance variableInstance : filterList) {
+            if (variableInstance.getValue().equals(postId)) {
+                return variableInstance.getProcessInstanceId();
+            }
+        }
+        return "";
+    }
+
+    @Override
+    public void submitPost(String instanceId, SysUser user) {
+        Task task = taskService.createTaskQuery().processInstanceId(instanceId).singleResult();
+        taskService.setAssignee(task.getId(), user.getUserId() + "");
+        taskService.complete(task.getId());
     }
 
 }

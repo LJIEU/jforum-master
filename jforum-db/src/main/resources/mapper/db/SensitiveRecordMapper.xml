@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace等于mapper接口类的全限定名,这样实现对应 -->
+<mapper namespace="com.liu.db.mapper.SensitiveRecordMapper">
+    <resultMap id="SensitiveRecordMapperResult" type="com.liu.db.entity.SensitiveRecord">
+            <result property="id" column="id"/>
+            <result property="userId" column="user_id"/>
+            <result property="contentId" column="content_id"/>
+            <result property="type" column="type"/>
+            <result property="filteredContent" column="filtered_content"/>
+            <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <sql id="selectSensitiveRecordVo">
+        select *
+        from `sensitive_record`
+    </sql>
+    <insert id="insert" parameterType="com.liu.db.entity.SensitiveRecord">
+        insert into `sensitive_record`
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+                    <if test="id != null">
+                        id,
+                    </if>
+                    <if test="userId != null">
+                        user_id,
+                    </if>
+                    <if test="contentId != null and contentId.length() > 0">
+                        content_id,
+                    </if>
+                    <if test="type != null">
+                        type,
+                    </if>
+                    <if test="filteredContent != null and filteredContent.length() > 0">
+                        filtered_content,
+                    </if>
+                create_time
+        </trim>
+        values
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+                    <if test="id != null">
+                        #{id},
+                    </if>
+                    <if test="userId != null">
+                        #{userId},
+                    </if>
+                    <if test="contentId != null and contentId.length() > 0">
+                        #{contentId},
+                    </if>
+                    <if test="type != null">
+                        #{type},
+                    </if>
+                    <if test="filteredContent != null and filteredContent.length() > 0">
+                        #{filteredContent},
+                    </if>
+                sysdate()
+        </trim>
+    </insert>
+    <update id="update" parameterType="com.liu.db.entity.SensitiveRecord">
+        update `sensitive_record`
+        <trim prefix="set" suffixOverrides=",">
+                    <if test="userId != null">
+                        user_id = #{userId},
+                    </if>
+                    <if test="contentId != null and contentId.length() > 0">
+                        content_id = #{contentId},
+                    </if>
+                    <if test="type != null">
+                        type = #{type},
+                    </if>
+                    <if test="filteredContent != null and filteredContent.length() > 0">
+                        filtered_content = #{filteredContent},
+                    </if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteById" parameterType="String">
+            update `sensitive_record` set is_delete = 1
+            where id = #{ids};
+    </delete>
+
+    <select id="selectSensitiveRecordList" parameterType="com.liu.db.entity.SensitiveRecord"
+            resultMap="SensitiveRecordMapperResult">
+        <include refid="selectSensitiveRecordVo"/>
+        <where>
+                    <if test="contentId != null and contentId.length() > 0">
+                        <bind name="contentId" value="contentId + '%'"/>
+                        and content_id like #{contentId}
+                    </if>
+                    <if test="type != null">
+                        and type = #{type}
+                    </if>
+                    <if test="filteredContent != null and filteredContent.length() > 0">
+                        <bind name="filteredContent" value="filteredContent + '%'"/>
+                        and filtered_content like #{filteredContent}
+                    </if>
+        </where>
+    </select>
+    <select id="selectSensitiveRecordById" resultType="com.liu.db.entity.SensitiveRecord">
+        <include refid="selectSensitiveRecordVo"/>
+        <where>
+            id = #{id}
+                and is_delete = 0
+        </where>
+    </select>
+</mapper>

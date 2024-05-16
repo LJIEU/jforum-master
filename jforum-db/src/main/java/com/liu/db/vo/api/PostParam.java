@@ -14,6 +14,9 @@ import java.util.List;
  * @since 2024/05/12 16:06
  */
 public class PostParam {
+
+    private String postId;
+
     @NotNull(message = "分类不能为空")
     @Schema(description = "分类ID")
     private Long categoryId;
@@ -31,6 +34,14 @@ public class PostParam {
 
     @Schema(description = "标签")
     private List<String> tagList;
+
+    public String getPostId() {
+        return postId;
+    }
+
+    public void setPostId(String postId) {
+        this.postId = postId;
+    }
 
     public Long getCategoryId() {
         return categoryId;

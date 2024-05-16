@@ -1,13 +1,18 @@
 package com.liu.camunda.controller.flow;
 
+import cn.hutool.core.util.StrUtil;
 import com.liu.camunda.service.BpmPostService;
 import com.liu.camunda.vo.BpmPostVo;
 import com.liu.camunda.vo.SubmitPostVo;
+import com.liu.core.constant.PostState;
 import com.liu.core.excption.ServiceException;
+import com.liu.core.excption.user.UserNotExistsException;
 import com.liu.core.result.R;
 import com.liu.core.utils.SecurityUtils;
 import com.liu.core.utils.SpringUtils;
+import com.liu.db.entity.Post;
 import com.liu.db.entity.SysUser;
+import com.liu.db.service.PostService;
 import com.liu.db.service.SysUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -19,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Description: 帖子审批流程
@@ -83,6 +89,51 @@ public class BpmPostController {
             @PathVariable(value = "processInstanceId") String processInstanceId,
             HttpServletRequest request) {
         return bpmPostService.getInfo(processInstanceId);
+    }
+
+
+    @Operation(summary = "获取流程实例ID")
+    @GetMapping("/{postId}")
+    public R<String> getInstanceId(
+            @PathVariable("postId") String postId,
+            HttpServletRequest request) {
+        SysUser user = SpringUtils.getBean(SysUserService.class).getItemByUserName(SecurityUtils.currentUsername(request));
+        if (user == null) {
+            throw new UserNotExistsException();
+        }
+        Post post = SpringUtils.getBean(PostService.class).selectPostByPostId(postId);
+        if (post == null || !Objects.equals(post.getUserId(), user.getUserId())) {
+            throw new ServiceException("帖子不存在");
+        }
+        String instanceId = bpmPostService.getInstanceId(postId);
+        if (instanceId == null || StrUtil.isEmpty(instanceId)) {
+            return R.fail();
+        }
+        return R.success(instanceId);
+    }
+
+    @Operation(summary = "驳回的帖子修改后继续提交")
+    @PostMapping("submitPost/{postId}")
+    public R<String> submitPost(
+            @PathVariable("postId") String postId,
+            HttpServletRequest request) {
+        SysUser user = SpringUtils.getBean(SysUserService.class).getItemByUserName(SecurityUtils.currentUsername(request));
+        if (user == null) {
+            throw new UserNotExistsException();
+        }
+        Post post = SpringUtils.getBean(PostService.class).selectPostByPostId(postId);
+        if (post == null || !Objects.equals(post.getUserId(), user.getUserId())) {
+            throw new ServiceException("帖子不存在");
+        }
+        String instanceId = bpmPostService.getInstanceId(postId);
+        // 提交
+        bpmPostService.submitPost(instanceId, user);
+        // 修改 帖子状态 为审核中
+        Post p = new Post();
+        p.setPostId(post.getPostId());
+        p.setState(PostState.POST_REVIEWING);
+        SpringUtils.getBean(PostService.class).update(p);
+        return R.success();
     }
 
 }
